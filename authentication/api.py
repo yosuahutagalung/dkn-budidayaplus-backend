@@ -1,18 +1,11 @@
-from authentication.schema import LoginSchema, RegisterSchema, RefreshSchema
+from authentication.models import JWTAuth
+from authentication.schemas import LoginSchema, RegisterSchema, RefreshSchema
 from ninja import Router
-from ninja.security import HttpBearer
 from rest_framework_simplejwt.tokens import RefreshToken
 from ninja.errors import HttpError
 from django.contrib.auth.models import User
 
 router = Router()
-
-class JWTAuth(HttpBearer):
-    def authenticate(self, request, token):
-        try:
-            return RefreshToken(token).check_blacklist()
-        except Exception:
-            raise HttpError(401, "Invalid token")
 
 @router.post("/login")
 def login(request, data: LoginSchema):
@@ -55,4 +48,17 @@ def register(request, data: RegisterSchema):
     
 @router.post("/refresh")
 def refresh(request, data:RefreshSchema):
-    return
+    try:         
+        refresh = RefreshToken(data.refresh)
+        new_access_token = str(refresh.access_token)
+
+        return {
+            "access": new_access_token
+        }
+    except Exception as e:
+        raise HttpError(400, str(e))
+
+
+@router.get("/protected", auth=JWTAuth())
+def protected(request):
+    return {"message": "This is a protected endpoint"}
