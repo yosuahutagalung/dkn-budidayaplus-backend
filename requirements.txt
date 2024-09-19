@@ -3,3 +3,4 @@ djangorestframework-simplejwt
 django-environ
 psycopg2-binary
 gunicorn
+coverage
