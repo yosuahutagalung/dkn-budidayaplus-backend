@@ -51,8 +51,3 @@ def register(request, data: RegisterSchema):
         }
     except Exception as e:
         raise HttpError(400, str(e))
-
-
-@router.post("/protected", auth=JWTAuth())
-def protected(request):
-    return {"message": "This is a protected route"}
