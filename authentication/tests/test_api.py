@@ -66,3 +66,15 @@ class TestAuth(TestCase):
             "password": "password"
         }))
         self.assertEqual(response.status_code, 404)
+
+    def test_refresh(self):
+        login_res = self.client.post("/login", data=json.dumps({
+            "phone_number": "08123456789",
+            "password": "AkuAnakEmo"
+        }))
+        tokens = login_res.json()
+        refresh = tokens["refresh"]
+
+        response = self.client.post("/refresh", data={"refresh": refresh})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("access", response.json())

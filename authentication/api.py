@@ -1,4 +1,4 @@
-from authentication.schema import LoginSchema, RegisterSchema
+from authentication.schema import LoginSchema, RegisterSchema, RefreshSchema
 from ninja import Router
 from ninja.security import HttpBearer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -51,3 +51,8 @@ def register(request, data: RegisterSchema):
         }
     except Exception as e:
         raise HttpError(400, str(e))
+    
+    
+@router.post("/refresh")
+def refresh(request, data:RefreshSchema):
+    return
