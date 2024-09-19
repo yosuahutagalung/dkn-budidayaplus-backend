@@ -1,6 +1,5 @@
 from django.test import TestCase
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.exceptions import TokenError
 from ninja.errors import HttpError
 from ninja.testing import TestClient
 from ninja import NinjaAPI
