@@ -86,3 +86,18 @@ class TestAuth(TestCase):
             "refresh": "invalidtoken"
         }))
         self.assertEqual(response.status_code, 400)
+
+
+    def test_me(self):
+        login_res = self.client.post("/login", data=json.dumps({
+            "phone_number": "08123456789",
+            "password": "AkuAnakEmo"
+        }))
+        tokens = login_res.json()
+        access = tokens["access"]
+
+        response = self.client.get("/me", headers={"Authorization": f"Bearer {access}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["phone_number"], "08123456789")
+        self.assertEqual(response.json()["first_name"], "Omar")
+        self.assertEqual(response.json()["last_name"], "Khalif")

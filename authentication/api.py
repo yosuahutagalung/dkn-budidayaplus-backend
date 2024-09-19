@@ -1,7 +1,7 @@
 from authentication.models import JWTAuth
 from authentication.schemas import LoginSchema, RegisterSchema, RefreshSchema
 from ninja import Router
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from ninja.errors import HttpError
 from django.contrib.auth.models import User
 
@@ -20,6 +20,7 @@ def login(request, data: LoginSchema):
             "access": str(refresh.access_token),
             "refresh": str(refresh)
         }
+    
     except User.DoesNotExist:
         raise HttpError(404, "User not found")
     
@@ -58,6 +59,16 @@ def refresh(request, data:RefreshSchema):
     except Exception as e:
         raise HttpError(400, str(e))
 
+
+@router.get("/me", auth=JWTAuth())
+def get_user_by_token(request):
+    user = request.auth
+    return {
+        "id": user.id,
+        "phone_number": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name
+    }
 
 @router.get("/protected", auth=JWTAuth())
 def protected(request):
