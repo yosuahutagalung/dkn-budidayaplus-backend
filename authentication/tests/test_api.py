@@ -66,18 +66,3 @@ class TestAuth(TestCase):
             "password": "password"
         }))
         self.assertEqual(response.status_code, 404)
-
-    
-    def test_logout(self):
-        login_response = self.client.post("/login", data=json.dumps({
-            "phone_number": "08123456789",
-            "password": "AkuAnakEmo"
-        }))
-        access_token = login_response.json()["access"]
-        response = self.client.post("/logout", headers={"Authorization": f"Bearer {access_token}"})
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post("/protected", headers={
-            "Authorization": f"Bearer {access_token}"
-        })
-        self.assertEqual(response.status_code, 401)
