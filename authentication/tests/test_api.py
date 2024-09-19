@@ -75,6 +75,14 @@ class TestAuth(TestCase):
         tokens = login_res.json()
         refresh = tokens["refresh"]
 
-        response = self.client.post("/refresh", data={"refresh": refresh})
+        response = self.client.post("/refresh", data=json.dumps({
+            "refresh": refresh
+        }))
         self.assertEqual(response.status_code, 200)
         self.assertIn("access", response.json())
+
+    def test_refresh_invalid(self):
+        response = self.client.post("/refresh", data=json.dumps({
+            "refresh": "invalidtoken"
+        }))
+        self.assertEqual(response.status_code, 400)
