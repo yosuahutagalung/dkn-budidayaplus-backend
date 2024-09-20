@@ -7,9 +7,9 @@ from authentication.models import JWTAuth
 
 router = Router()
 
-@router.post("/ponds/")
+@router.post("/", auth=JWTAuth())
 def add_pond(request, payload: PondAddSchema):
-    owner = get_object_or_404(User, id=payload.owner_id)
+    owner = get_object_or_404(User, id=request.auth.id)
     pond = Pond.objects.create(
         owner=owner,
         name=payload.name,
@@ -18,24 +18,24 @@ def add_pond(request, payload: PondAddSchema):
     )
     return {"id": str(pond.pond_id), "name": pond.name, "owner": pond.owner.username}
 
-@router.get("/ponds/{pond_id}/")
+@router.get("/{pond_id}/", auth=JWTAuth())
 def get_pond(request, pond_id: str):
     pond = get_object_or_404(Pond, pond_id=pond_id)
     return {"id": str(pond.pond_id), "name": pond.name, "owner": pond.owner.username}
 
-@router.get("/ponds/", auth=JWTAuth())
+@router.get("/", auth=JWTAuth())
 def list_ponds_by_user(request):
     user = request.auth
     ponds = Pond.objects.filter(owner=user)
     return [{"id": str(pond.pond_id), "name": pond.name, "owner": pond.owner.username} for pond in ponds]
 
-@router.delete("/ponds/{pond_id}/")
+@router.delete("/{pond_id}/", auth=JWTAuth())
 def delete_pond(request, pond_id: str):
     pond = get_object_or_404(Pond, pond_id=pond_id)
     pond.delete()
     return {"success": True}
 
-@router.put("/ponds/{pond_id}/")
+@router.put("/{pond_id}/", auth=JWTAuth())
 def update_pond(request, pond_id: str, payload: PondEditSchema):
     pond = get_object_or_404(Pond, pond_id=pond_id)
     pond.name = payload.name
