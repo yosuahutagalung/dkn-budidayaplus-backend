@@ -1,9 +1,9 @@
-from authentication.models import JWTAuth
 from authentication.schemas import LoginSchema, RegisterSchema, RefreshSchema
 from ninja import Router
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from ninja_jwt.tokens import RefreshToken
 from ninja.errors import HttpError
 from django.contrib.auth.models import User
+from ninja_jwt.authentication import JWTAuth
 
 router = Router()
 

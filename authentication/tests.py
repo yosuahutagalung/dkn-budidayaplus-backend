@@ -1,6 +1,6 @@
 from django.test import TestCase
 from ninja.testing import TestClient
-from ..api import router
+from .api import router
 import json
 
 class TestAuth(TestCase):
