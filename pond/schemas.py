@@ -1,5 +1,4 @@
 from ninja import Schema
-from authentication.schemas import UserSchema
 
 class PondAddSchema(Schema):
     name: str
