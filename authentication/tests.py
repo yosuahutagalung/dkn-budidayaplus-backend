@@ -13,6 +13,7 @@ class TestAuth(TestCase):
             "password": "AkuAnakEmo"
         }))
 
+
     def test_register(self):
         response = self.client.post(
             "/register",
@@ -41,6 +42,32 @@ class TestAuth(TestCase):
         self.assertEqual(response.status_code, 400)
 
 
+    def test_register_invalid_phone_number(self):
+        response = self.client.post("/register", data=json.dumps({
+            "phone_number": "12345",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password": "password"
+        }))
+        self.assertEqual(response.status_code, 400)
+
+        response2 = self.client.post("/register", data=json.dumps({
+            "phone_number": "12345a",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password": "password"
+        }))
+        self.assertEqual(response2.status_code, 400)
+
+        response3 = self.client.post("/register", data=json.dumps({
+            "phone_number": "123456789012345",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password": "password"
+        }))
+        self.assertEqual(response3.status_code, 400)
+
+
     def test_login(self):
         response = self.client.post("/login", data=json.dumps({
             "phone_number": "08123456789",
@@ -67,6 +94,7 @@ class TestAuth(TestCase):
         }))
         self.assertEqual(response.status_code, 404)
 
+
     def test_refresh(self):
         login_res = self.client.post("/login", data=json.dumps({
             "phone_number": "08123456789",
@@ -80,6 +108,7 @@ class TestAuth(TestCase):
         }))
         self.assertEqual(response.status_code, 200)
         self.assertIn("access", response.json())
+
 
     def test_refresh_invalid(self):
         response = self.client.post("/refresh", data=json.dumps({
@@ -101,6 +130,7 @@ class TestAuth(TestCase):
         self.assertEqual(response.json()["phone_number"], "08123456789")
         self.assertEqual(response.json()["first_name"], "Omar")
         self.assertEqual(response.json()["last_name"], "Khalif")
+
 
     def test_me_invalid(self):
         response = self.client.get("/me", headers={"Authorization ": "Bearer invalidtoken"})
