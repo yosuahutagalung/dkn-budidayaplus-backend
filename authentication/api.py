@@ -69,7 +69,3 @@ def get_user_by_token(request):
         "first_name": user.first_name,
         "last_name": user.last_name
     }
-
-@router.get("/protected", auth=JWTAuth())
-def protected(request):
-    return {"message": "This is a protected endpoint"}
