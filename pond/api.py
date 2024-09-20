@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Pond
 from .schemas import PondAddSchema, PondEditSchema
+from authentication.models import JWTAuth
 
 router = Router()
 
@@ -22,9 +23,10 @@ def get_pond(request, pond_id: str):
     pond = get_object_or_404(Pond, pond_id=pond_id)
     return {"id": str(pond.pond_id), "name": pond.name, "owner": pond.owner.username}
 
-@router.get("/ponds/")
-def list_ponds(request):
-    ponds = Pond.objects.all()
+@router.get("/ponds/", auth=JWTAuth())
+def list_ponds_by_user(request):
+    user = request.auth
+    ponds = Pond.objects.filter(owner=user)
     return [{"id": str(pond.pond_id), "name": pond.name, "owner": pond.owner.username} for pond in ponds]
 
 @router.delete("/ponds/{pond_id}/")
