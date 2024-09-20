@@ -4,6 +4,7 @@ from ninja.testing import TestClient
 from .models import Pond, FishSampling
 from .api import router
 import json
+from uuid import uuid4
 
 class FishSamplingAPITest(TestCase):
     
@@ -59,3 +60,36 @@ class FishSamplingAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['fish_weight'], 2.5)
 
+    def test_add_fish_sampling_with_invalid_data(self):
+        response = self.client.post('/fish-sampling', data=json.dumps({
+            'pond_id': str(self.pond.id),
+            'reporter_id': self.user.id,
+            'fish_weight': 1.2,
+            'fish_length': -10.0,  # Invalid negative length
+            'sample_date': '2024-09-19'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 400)  
+        self.assertIn('fish_length', response.json()['detail'])
+    
+    def test_update_fish_sampling_with_invalid_data(self):
+        response = self.client.put(f'/fish-sampling/{self.fish_sampling.sampling_id}', data=json.dumps({
+            'pond_id': str(self.pond.id),
+            'reporter_id': self.user.id,
+            'fish_weight': -10.0,  # Invalid negative fish weight
+            'fish_length': 4.5,
+            'sample_date': '2024-09-19'
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 400)  
+        self.assertIn('fish_weight', response.json()['detail'])
+    
+    def test_get_nonexistent_fish_sampling(self):
+        non_existent_id = uuid4()  
+        response = self.client.get(f'/fish-sampling/{non_existent_id}')
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('Not Found', response.json()['detail'])
+    
+    def test_delete_nonexistent_fish_sampling(self):
+        non_existent_id = uuid4()
+        response = self.client.delete(f'/fish-sampling/{non_existent_id}')
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('Not Found', response.json()['detail'])
