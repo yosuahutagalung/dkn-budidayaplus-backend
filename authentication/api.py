@@ -12,24 +12,24 @@ def login(request, data: LoginSchema):
     try:
         user = User.objects.get(username=data.phone_number)
         if not user.check_password(data.password):
-            raise HttpError(404, "User not found")
+            raise HttpError(404, "Pengguna tidak terdaftar atau kata sandi salah")
         
         refresh = RefreshToken.for_user(user)
         return {
-            "message": "Login successful",
+            "message": "Login berhasil",
             "access": str(refresh.access_token),
             "refresh": str(refresh)
         }
     
     except User.DoesNotExist:
-        raise HttpError(404, "User not found")
+        raise HttpError(404, "Pengguna tidak terdaftar atau kata sandi salah")
     
 
 @router.post("/register")
 def register(request, data: RegisterSchema):
     try:
         if User.objects.filter(username=data.phone_number).exists():
-            raise HttpError(400, "User already exists")
+            raise HttpError(400, "Pengguna sudah terdaftar")
         
         user = User.objects.create_user(
             username=data.phone_number,
@@ -39,7 +39,7 @@ def register(request, data: RegisterSchema):
         )
         refresh = RefreshToken.for_user(user)
         return {
-            "message": "User created successfully",
+            "message": "Akun berhasil dibuat",
             "access": str(refresh.access_token),
             "refresh": str(refresh)
         }

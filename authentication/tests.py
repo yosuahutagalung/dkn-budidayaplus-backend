@@ -26,7 +26,7 @@ class TestAuth(TestCase):
             content_type="application/json"
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["message"], "User created successfully")
+        self.assertEqual(response.json()["message"], "Akun berhasil dibuat")
         self.assertIn("access", response.json())
         self.assertIn("refresh", response.json())
 
@@ -74,7 +74,7 @@ class TestAuth(TestCase):
             "password": "AkuAnakEmo"
         }))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["message"], "Login successful")
+        self.assertEqual(response.json()["message"], "Login berhasil")
         self.assertIn("access", response.json())
         self.assertIn("refresh", response.json())
 
