@@ -101,3 +101,7 @@ class TestAuth(TestCase):
         self.assertEqual(response.json()["phone_number"], "08123456789")
         self.assertEqual(response.json()["first_name"], "Omar")
         self.assertEqual(response.json()["last_name"], "Khalif")
+
+    def test_me_invalid(self):
+        response = self.client.get("/me", headers={"Authorization ": "Bearer invalidtoken"})
+        self.assertEqual(response.status_code, 401)
