@@ -138,7 +138,6 @@ class TestAuth(TestCase):
 
     
     def test_validate_token(self):
-        print("test_validate_token")
         login_res = self.client.post("/login", data=json.dumps({
             "phone_number": "08123456789",
             "password": "AkuAnakEmo"
@@ -152,7 +151,6 @@ class TestAuth(TestCase):
 
 
     def test_validate_invalid(self):
-        print("test_validate_invalid")
         response = self.client.post("/validate", headers={"Authorization": "Bearer invalidtoken"})
         self.assertEqual(response.status_code, 401)
         self.assertNotIn("message", response.json())
