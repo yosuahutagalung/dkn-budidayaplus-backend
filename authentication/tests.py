@@ -135,3 +135,30 @@ class TestAuth(TestCase):
     def test_me_invalid(self):
         response = self.client.get("/me", headers={"Authorization ": "Bearer invalidtoken"})
         self.assertEqual(response.status_code, 401)
+
+    
+    def test_validate_token(self):
+        print("test_validate_token")
+        login_res = self.client.post("/login", data=json.dumps({
+            "phone_number": "08123456789",
+            "password": "AkuAnakEmo"
+        }), content_type='application/json')
+        tokens = login_res.json()
+        access = tokens["access"]
+
+        response = self.client.post("/validate", headers={"Authorization": f"Bearer {access}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "Token valid")
+
+
+    def test_validate_invalid(self):
+        print("test_validate_invalid")
+        response = self.client.post("/validate", headers={"Authorization": "Bearer invalidtoken"})
+        self.assertEqual(response.status_code, 401)
+        self.assertNotIn("message", response.json())
+
+
+    def test_validate_wrong_method(self):
+        print("test_validate_wrong_method")
+        response = self.client.get("/validate", headers={"Authorization": "Bearer invalidtoken"})
+        self.assertEqual(response.status_code, 405)
