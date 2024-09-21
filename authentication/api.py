@@ -60,6 +60,11 @@ def refresh(request, data:RefreshSchema):
         raise HttpError(400, str(e))
 
 
+@router.post("/validate", auth=JWTAuth())
+def validate(request):
+    return {"message": "Token valid"}
+
+
 @router.get("/me", auth=JWTAuth())
 def get_user_by_token(request):
     user = request.auth
