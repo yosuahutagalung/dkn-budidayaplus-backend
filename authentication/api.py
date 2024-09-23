@@ -1,9 +1,9 @@
-from authentication.models import JWTAuth
 from authentication.schemas import LoginSchema, RegisterSchema, RefreshSchema
 from ninja import Router
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from ninja_jwt.tokens import RefreshToken
 from ninja.errors import HttpError
 from django.contrib.auth.models import User
+from ninja_jwt.authentication import JWTAuth
 
 router = Router()
 
@@ -12,24 +12,24 @@ def login(request, data: LoginSchema):
     try:
         user = User.objects.get(username=data.phone_number)
         if not user.check_password(data.password):
-            raise HttpError(404, "User not found")
+            raise HttpError(404, "Pengguna tidak terdaftar atau kata sandi salah")
         
         refresh = RefreshToken.for_user(user)
         return {
-            "message": "Login successful",
+            "message": "Login berhasil",
             "access": str(refresh.access_token),
             "refresh": str(refresh)
         }
     
     except User.DoesNotExist:
-        raise HttpError(404, "User not found")
+        raise HttpError(404, "Pengguna tidak terdaftar atau kata sandi salah")
     
 
 @router.post("/register")
 def register(request, data: RegisterSchema):
     try:
         if User.objects.filter(username=data.phone_number).exists():
-            raise HttpError(400, "User already exists")
+            raise HttpError(400, "Pengguna sudah terdaftar")
         
         user = User.objects.create_user(
             username=data.phone_number,
@@ -39,7 +39,7 @@ def register(request, data: RegisterSchema):
         )
         refresh = RefreshToken.for_user(user)
         return {
-            "message": "User created successfully",
+            "message": "Akun berhasil dibuat",
             "access": str(refresh.access_token),
             "refresh": str(refresh)
         }
@@ -60,6 +60,11 @@ def refresh(request, data:RefreshSchema):
         raise HttpError(400, str(e))
 
 
+@router.post("/validate", auth=JWTAuth())
+def validate(request):
+    return {"message": "Token valid"}
+
+
 @router.get("/me", auth=JWTAuth())
 def get_user_by_token(request):
     user = request.auth
@@ -69,7 +74,3 @@ def get_user_by_token(request):
         "first_name": user.first_name,
         "last_name": user.last_name
     }
-
-@router.get("/protected", auth=JWTAuth())
-def protected(request):
-    return {"message": "This is a protected endpoint"}
