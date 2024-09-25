@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Pond
 from .schemas import PondAddSchema, PondEditSchema
-from authentication.models import JWTAuth
+from ninja_jwt.authentication import JWTAuth
 
 router = Router()
 

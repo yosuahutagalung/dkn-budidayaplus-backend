@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User, Pond
+from pond.models import Pond
+from django.contrib.auth.models import User
 import uuid
 
 class FishSampling(models.Model):
@@ -11,4 +12,4 @@ class FishSampling(models.Model):
     sample_date = models.DateField()
 
     def __str__(self):
-        return self.name
+        return self.sampling_id

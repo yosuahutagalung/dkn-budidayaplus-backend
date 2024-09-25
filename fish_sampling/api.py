@@ -1,16 +1,16 @@
+from uuid import UUID
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import Pond, FishSampling
-from .schemas import FishSamplingCreateSchema, FishSamplingEditSchema, FishSamplingResponseSchema
-from uuid import UUID
-from typing import List
+from .models import FishSampling
+from pond.models import Pond
+from .schemas import FishSamplingCreateSchema, FishSamplingEditSchema
 
 router = Router()
 
-@router.post("/fish-sampling", response=FishSamplingResponseSchema)
+@router.post("/")
 def create_fish_sampling(request, payload: FishSamplingCreateSchema):
-    pond = get_object_or_404(Pond, id=payload.pond_id)
+    pond = get_object_or_404(Pond, pond_id=payload.pond_id)
     reporter = get_object_or_404(User, id=payload.reporter_id)
     fish_sampling = FishSampling.objects.create(
         pond=pond,
@@ -19,21 +19,22 @@ def create_fish_sampling(request, payload: FishSamplingCreateSchema):
         fish_length=payload.fish_length,
         sample_date=payload.sample_date
     )
-    return fish_sampling
+    return {"id": str(fish_sampling.sampling_id), "reporter": str(fish_sampling.reporter)}
 
-@router.get("/fish-sampling/{sampling_id}", response=FishSamplingResponseSchema)
-def get_fish_sampling(request, sampling_id: UUID):
+@router.get("/{sampling_id}/")
+def get_fish_sampling(request, sampling_id: str):
     fish_sampling = get_object_or_404(FishSampling, sampling_id=sampling_id)
-    return fish_sampling
+    return {"id": str(fish_sampling.sampling_id), "reporter": str(fish_sampling.reporter)}
 
-@router.get("/fish-sampling/", response=List[FishSamplingResponseSchema])
+@router.get("/")
 def list_fish_samplings(request):
-    return FishSampling.objects.all()
+    fish_samplings = FishSampling.objects.all()
+    return [{"id": str(fish_sampling.sampling_id), "reporter": str(fish_sampling.reporter)} for fish_sampling in fish_samplings]
 
-@router.put("/fish-sampling/{sampling_id}", response=FishSamplingResponseSchema)
-def update_fish_sampling(request, sampling_id: UUID, payload: FishSamplingEditSchema):
+@router.put("/{sampling_id}/")
+def update_fish_sampling(request, sampling_id: str, payload: FishSamplingEditSchema):
     fish_sampling = get_object_or_404(FishSampling, sampling_id=sampling_id)
-    pond = get_object_or_404(Pond, id=payload.pond_id)
+    pond = get_object_or_404(Pond, pond_id=payload.pond_id)
     reporter = get_object_or_404(User, id=payload.reporter_id)
     fish_sampling.pond = pond
     fish_sampling.reporter = reporter
@@ -41,10 +42,10 @@ def update_fish_sampling(request, sampling_id: UUID, payload: FishSamplingEditSc
     fish_sampling.fish_length = payload.fish_length
     fish_sampling.sample_date = payload.sample_date
     fish_sampling.save()
-    return fish_sampling
+    return {"id": str(fish_sampling.sampling_id), "reporter": str(fish_sampling.reporter)}
 
-@router.delete("/fish-sampling/{sampling_id}")
-def delete_fish_sampling(request, sampling_id: UUID):
+@router.delete("/{sampling_id}/")
+def delete_fish_sampling(request, sampling_id: str):
     fish_sampling = get_object_or_404(FishSampling, sampling_id=sampling_id)
     fish_sampling.delete()
     return {"success": True}

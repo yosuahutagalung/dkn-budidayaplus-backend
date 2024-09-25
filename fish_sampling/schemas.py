@@ -1,25 +1,16 @@
 from ninja import Schema
-from uuid import UUID
-from datetime import date
+from datetime import datetime
 
 class FishSamplingCreateSchema(Schema):
-    pond_id: UUID
+    pond_id: str
     reporter_id: int
     fish_weight: float
     fish_length: float
-    sample_date: date
+    sample_date: datetime
 
 class FishSamplingEditSchema(Schema):
-    pond_id: int
+    pond_id: str
     reporter_id: int
     fish_weight: float
     fish_length: float
-    sample_date: date
-
-class FishSamplingResponseSchema(Schema):
-    sampling_id: UUID
-    pond: str
-    reporter: str
-    fish_weight: float
-    fish_length: float
-    sample_date: date
+    sample_date: datetime
