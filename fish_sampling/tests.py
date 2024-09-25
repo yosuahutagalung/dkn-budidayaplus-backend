@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from ninja.testing import TestClient
 from .models import Pond, FishSampling
 from .api import router
-import json, uuid
-from uuid import uuid4
+import json
+from rest_framework_simplejwt.tokens import AccessToken
 
 class FishSamplingAPITest(TestCase):
     
@@ -24,6 +24,13 @@ class FishSamplingAPITest(TestCase):
             fish_length=25.0,
             sample_date='2024-09-01'
         )
+        self.fish_sampling_userA = FishSampling.objects.create(
+            pond=self.pond,
+            reporter=self.user,
+            fish_weight=2.0,
+            fish_length=50.0,
+            sample_date='2024-09-10'
+        )
 
     def test_add_fish_sampling(self):
         response = self.client.post('/', data=json.dumps({
@@ -32,20 +39,24 @@ class FishSamplingAPITest(TestCase):
             'fish_weight': 2.0,
             'fish_length': 30.0,
             'sample_date': '2024-09-10'
-        }), content_type='application/json')
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
 
     def test_get_fish_sampling(self):
-        response = self.client.get(f'/{self.fish_sampling.sampling_id}/')
+        response = self.client.get(f'/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
 
     def test_list_fish_samplings(self):
-        response = self.client.get('/')
+        response = self.client.get("/", headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        expected_data = [
+                    {"id": str(self.fish_sampling.sampling_id), "reporter": self.fish_sampling.reporter.username},
+                    {"id": str(self.fish_sampling_userA.sampling_id), "reporter": self.fish_sampling_userA.reporter.username},
+                ]
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.json()) > 0)
+        self.assertEqual(response.json(), expected_data)
 
     def test_delete_fish_sampling(self):
-        response = self.client.delete(f'/{self.fish_sampling.sampling_id}/')
+        response = self.client.delete(f'/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['success'])
 
@@ -56,7 +67,7 @@ class FishSamplingAPITest(TestCase):
             'fish_weight': 2.5,
             'fish_length': 35.0,
             'sample_date': '2024-09-15'
-        }), content_type='application/json')
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
 
     def test_add_fish_sampling_with_invalid_data(self):
@@ -67,7 +78,7 @@ class FishSamplingAPITest(TestCase):
             'fish_weight': 1.2,
             'fish_length': -10.0,  # Invalid negative length
             'sample_date': '2024-09-19'
-        }), content_type='application/json')
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)  
     
     def test_update_fish_sampling_with_invalid_data(self):
@@ -78,5 +89,9 @@ class FishSamplingAPITest(TestCase):
             'fish_weight': -10.0,  # Invalid negative fish weight
             'fish_length': 4.5,
             'sample_date': '2024-09-19'
-        }), content_type='application/json')
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)  
+    
+    def test_list_fish_samplings_unauthorized(self):
+        response = self.client.get('/', headers={})
+        self.assertEqual(response.status_code, 401)
