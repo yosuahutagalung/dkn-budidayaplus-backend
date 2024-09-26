@@ -8,7 +8,6 @@ import json, uuid
 
 
 class PondAPITest(TestCase):
-    
     def setUp(self):
         self.client = TestClient(router)
         self.user = User.objects.create_user(username='08123456789', password='12345')
@@ -16,20 +15,26 @@ class PondAPITest(TestCase):
             owner=self.user,
             name='Test Pond',
             image_name='test_image.jpg',
-            volume=1000.0
+            length=10.0,
+            width=5.0,
+            depth=2.0
         )
         self.pond_omar = Pond.objects.create(
             owner=self.user,
             name='Test Pond Omar',
             image_name='test_image_omar.jpg',
-            volume=6969.0
+            length=40.0,
+            width=60.0,
+            depth=3.0
         )
     
     def test_add_pond(self):
         response = self.client.post('/', data=json.dumps({
             'name': 'New Pond',
             'image_name': 'new_image.jpg',
-            'volume': 500.0
+            'length': 500.0,
+            'width': 500.0,
+            'depth': 2.0
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['name'], 'New Pond')
@@ -37,7 +42,9 @@ class PondAPITest(TestCase):
     def test_add_pond_no_name(self):
         response = self.client.post('/', data=json.dumps({
             'image_name': 'new_image.jpg',
-            'volume': 500.0
+            'length': 500.0,
+            'width': 500.0,
+            'depth': 2.0
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 422)
 
@@ -78,7 +85,9 @@ class PondAPITest(TestCase):
         response = self.client.put(f'/{self.pond.pond_id}/', data=json.dumps({
             'name': 'Updated Pond',
             'image_name': 'updated_image.jpg',
-            'volume': 1500.0
+            'length': 400.0,
+            'width': 300.0,
+            'depth': 2.0
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['name'], 'Updated Pond')
@@ -87,6 +96,24 @@ class PondAPITest(TestCase):
         response = self.client.put(f'/{uuid.uuid4()}/', data=json.dumps({
             'name': 'Updated Pond',
             'image_name': 'updated_image.jpg',
-            'volume': 1500.0
+            'length': 400.0,
+            'width': 300.0,
+            'depth': 2.0
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
+
+class PondModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='081234567890', password='password')
+
+        self.pond = Pond.objects.create(
+            owner=self.user,
+            name='Test Pond',
+            image_name='pond_image.jpg',
+            length=10.0,
+            width=5.0,
+            depth=2.0
+        )
+
+    def test_str_method(self):
+        self.assertEqual(str(self.pond), 'Test Pond')

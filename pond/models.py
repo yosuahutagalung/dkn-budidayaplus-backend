@@ -7,7 +7,9 @@ class Pond(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     image_name = models.CharField(max_length=255)
-    volume = models.FloatField()
+    length = models.FloatField()
+    width = models.FloatField()
+    depth = models.FloatField()
 
     def __str__(self):
         return self.name
