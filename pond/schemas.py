@@ -1,11 +1,8 @@
 from ninja import Schema
 
-class PondAddSchema(Schema):
+class PondSchema(Schema):
     name: str
     image_name: str
-    volume: float
-
-class PondEditSchema(Schema):
-    name: str
-    image_name: str
-    volume: float
+    length: float
+    width: float
+    depth: float
