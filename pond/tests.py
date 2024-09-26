@@ -58,12 +58,13 @@ class PondAPITest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_list_ponds_by_user(self):
-        token = str(AccessToken.for_user(self.user))
         response = self.client.get("/", headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
 
         expected_data = [
-                    {"id": str(self.pond.pond_id), "name": self.pond.name, "owner": self.pond.owner.username},
-                    {"id": str(self.pond_omar.pond_id), "name": self.pond_omar.name, "owner": self.pond_omar.owner.username},
+                    {"pond_id": str(self.pond.pond_id), "name": self.pond.name, "image_name" : self.pond.image_name, 
+                     "owner": self.pond.owner.username, "length": self.pond.length, "width": self.pond.width, "depth": self.pond.depth},
+                    {"pond_id": str(self.pond_omar.pond_id), "name": self.pond_omar.name, "image_name" : self.pond_omar.image_name,
+                     "owner": self.pond_omar.owner.username, "length": self.pond_omar.length, "width": self.pond_omar.width, "depth": self.pond_omar.depth},
                 ]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
