@@ -3,24 +3,17 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn --workers 3 --bind 0.0.0.0:8000 budidayaplus.wsgi:application
     volumes:
-      - .:/app  # Optional for development (keeps the code updated live)
+      - .:/app  # Mounts the current directory to /app in the container
     ports:
-      - "8000:8000"
-    env_file: .env  # Reference your .env file for environment variables
-    depends_on:
-      - db
-
-  db:
-    image: postgres:13
+      - "8000:8000"  # Exposes port 8000 to the host
     environment:
-      POSTGRES_DB: $DB_NAME
-      POSTGRES_USER: $DB_USER
-      POSTGRES_PASSWORD: $DB_PASSWORD
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - DEBUG=1  # Set DEBUG to 1 for development; consider changing this in production
+      - DB_HOST=${DB_HOST}  # Database host from environment variable
+      - DB_PORT=${DB_PORT}  # Database port from environment variable
+      - DB_NAME=${DB_NAME}  # Database name from environment variable
+      - DB_USER=${DB_USER}  # Database user from environment variable
+      - DB_PASSWORD=${DB_PASSWORD}  # Database password from environment variable
 
-volumes:
-  postgres_data:
+# Note: Ensure the necessary environment variables are set in your .env file or your host environment
