@@ -51,6 +51,9 @@ jobs:
           # Apply migrations inside the web container
           docker-compose run web python manage.py migrate
 
+          # Collect static files
+          docker-compose run web python manage.py collectstatic --noinput
+
           # Bring up the containers after migrations
           docker-compose up -d
           

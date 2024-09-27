@@ -1,18 +1,25 @@
-# Use the official Python image as the base image
+# Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
+# Set the working directory in the container
 WORKDIR /app
 
-RUN pip install --no-cache-dir virtualenv
-
-RUN python -m venv /app/venv
-
+# Copy the requirements file into the container
 COPY requirements.txt /app/
-RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the current directory contents into the container at /app
 COPY . /app/
-EXPOSE 8000
-CMD ["/app/venv/bin/gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "budidayaplus.wsgi:application"]
+
+# Ensure the environment variables are set in the container (for safety)
+ENV DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY \
+    DB_HOST=$DB_HOST \
+    DB_PORT=$DB_PORT \
+    DB_USER=$DB_USER \
+    DB_PASSWORD=$DB_PASSWORD \
+    DB_NAME=$DB_NAME
+
+# Run the Django server
+CMD ["gunicorn", "myproject.wsgi:application", "--bind", "0.0.0.0:8000"]
