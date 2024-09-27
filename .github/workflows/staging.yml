@@ -18,12 +18,15 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Deploy to VM via SSH
+    - name: Deploy to VM via SSH and Docker Compose
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} << 'EOF'
           cd /home/andromeda/dkn/budidayaplus_backend
 
-          # Export environment variables
+          # Pull the latest code
+          git pull origin staging
+
+          # Export environment variables from GitHub secrets to the VM
           export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
           export DB_HOST=${{ secrets.DB_HOST }}
           export DB_USER=${{ secrets.DB_USER }}
@@ -31,7 +34,7 @@ jobs:
           export DB_PORT=${{ secrets.DB_PORT }}
           export DB_NAME=${{ secrets.DB_NAME }}
 
-          # Write environment variables to .env
+          # Write the environment variables to .env file (Optional if you want to ensure a .env file exists)
           echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" > .env
           echo "DB_HOST=$DB_HOST" >> .env
           echo "DB_USER=$DB_USER" >> .env
@@ -39,24 +42,21 @@ jobs:
           echo "DB_PORT=$DB_PORT" >> .env
           echo "DB_NAME=$DB_NAME" >> .env
 
-          # Pull latest code
-          git pull origin staging
-
-          # Stop existing containers
+          # Stop the existing containers if they are running
           docker-compose down
 
-          # Build and start containers without bringing them up immediately
+          # Build the Docker images
           docker-compose build
-          
+
           # Apply migrations inside the web container
           docker-compose run web python manage.py migrate
 
           # Collect static files
           docker-compose run web python manage.py collectstatic --noinput
 
-          # Bring up the containers after migrations
+          # Bring up the containers in detached mode
           docker-compose up -d
-          
-          # Check logs to ensure everything started correctly
+
+          # Optional: View the web container logs to ensure it's running
           docker-compose logs web
         EOF

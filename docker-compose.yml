@@ -4,17 +4,15 @@ services:
   web:
     build: .
     image: budidayaplus_web:latest
-    command: gunicorn --workers 3 --bind 0.0.0.0:8000 budidayaplus.wsgi:application
+    command: gunicorn --workers 3 --bind 0.0.0.0:8000 myproject.wsgi:application
     volumes:
-      - .:/app  # Mounts the current directory to /app in the container
+      - .:/app
     ports:
-      - "8000:8000"  # Exposes port 8000 to the host
+      - "8000:8000"
     environment:
-      - DEBUG=1  # Set DEBUG to 1 for development; consider changing this in production
-      - DB_HOST=${DB_HOST}  # Database host from environment variable
-      - DB_PORT=${DB_PORT}  # Database port from environment variable
-      - DB_NAME=${DB_NAME}  # Database name from environment variable
-      - DB_USER=${DB_USER}  # Database user from environment variable
-      - DB_PASSWORD=${DB_PASSWORD}  # Database password from environment variable
-
-# Note: Ensure the necessary environment variables are set in your .env file or your host environment
+      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+      DB_HOST: $DB_HOST
+      DB_PORT: $DB_PORT
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+      DB_NAME: $DB_NAME
