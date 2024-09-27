@@ -39,9 +39,21 @@ jobs:
           echo "DB_PORT=$DB_PORT" >> .env
           echo "DB_NAME=$DB_NAME" >> .env
 
-          # Pull latest code and restart services
+          # Pull latest code
           git pull origin staging
+
+          # Stop existing containers
           docker-compose down
+
+          # Build and start containers without bringing them up immediately
+          docker-compose build
+          
+          # Apply migrations inside the web container
           docker-compose run web python manage.py migrate
-          docker-compose up --build -d
+
+          # Bring up the containers after migrations
+          docker-compose up -d
+          
+          # Check logs to ensure everything started correctly
+          docker-compose logs web
         EOF
