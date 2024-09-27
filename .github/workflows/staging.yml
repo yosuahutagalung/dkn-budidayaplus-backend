@@ -42,5 +42,6 @@ jobs:
           # Pull latest code and restart services
           git pull origin staging
           docker-compose down
+          docker-compose run web python manage.py migrate
           docker-compose up --build -d
         EOF
