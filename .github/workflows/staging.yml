@@ -20,7 +20,7 @@ jobs:
 
     - name: Deploy to VM via SSH and Docker Compose
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} << 'EOF'
+        ssh -T -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} << 'EOF'
           cd /home/andromeda/dkn/budidayaplus_backend
 
           # Pull the latest code
