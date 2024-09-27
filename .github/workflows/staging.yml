@@ -21,7 +21,7 @@ jobs:
     - name: Deploy to VM via SSH
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} << 'EOF'
-          cd /home/andromeda/dkn/budidayaplus 
+          cd /home/andromeda/dkn/budidayaplus_backend
 
           # Export environment variables
           export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
