@@ -3,6 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
+    image: budidayaplus_web:latest
     command: gunicorn --workers 3 --bind 0.0.0.0:8000 budidayaplus.wsgi:application
     volumes:
       - .:/app  # Mounts the current directory to /app in the container
