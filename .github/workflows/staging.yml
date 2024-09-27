@@ -1,0 +1,46 @@
+name: CI/CD Pipeline to Deploy on VM
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH agent
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to VM via SSH
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} << 'EOF'
+          cd /home/andromeda/dkn/budidayaplus 
+
+          # Export environment variables
+          export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+          export DB_HOST=${{ secrets.DB_HOST }}
+          export DB_USER=${{ secrets.DB_USER }}
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export DB_PORT=${{ secrets.DB_PORT }}
+          export DB_NAME=${{ secrets.DB_NAME }}
+
+          # Write environment variables to .env
+          echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" > .env
+          echo "DB_HOST=$DB_HOST" >> .env
+          echo "DB_USER=$DB_USER" >> .env
+          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+          echo "DB_PORT=$DB_PORT" >> .env
+          echo "DB_NAME=$DB_NAME" >> .env
+
+          # Pull latest code and restart services
+          git pull origin staging
+          docker-compose down
+          docker-compose up --build -d
+        EOF
