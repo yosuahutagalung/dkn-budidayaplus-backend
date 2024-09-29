@@ -1,13 +1,13 @@
 from django.test import TestCase
-from ninja.testing import TestClient
-from .api import router
+from ninja_extra.testing import TestClient
+from .controller import AuthController
 import json
 from django.contrib.auth.models import User
 from ninja_jwt.tokens import RefreshToken
 
 class TestAuth(TestCase):
     def setUp(self):
-        self.client = TestClient(router)
+        self.client = TestClient(AuthController)
         self.client.post("/register", data=json.dumps({
             "phone_number": "08123456789",
             "first_name": "Omar",

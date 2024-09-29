@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fish_sampling',
     'pond',
+    'ninja_extra'
 ]
 
 NINJA_JWT = {

@@ -12,4 +12,4 @@ class FishSampling(models.Model):
     sample_date = models.DateField()
 
     def __str__(self):
-        return self.sampling_id
+        return str(self.sampling_id)

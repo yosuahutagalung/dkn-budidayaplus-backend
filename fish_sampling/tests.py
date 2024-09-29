@@ -1,21 +1,23 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from ninja.testing import TestClient
+from ninja_extra.testing import TestClient
 from .models import Pond, FishSampling
-from .api import router
+from .controller import FishSamplingController
 import json
 from rest_framework_simplejwt.tokens import AccessToken
 
 class FishSamplingAPITest(TestCase):
     
     def setUp(self):
-        self.client = TestClient(router)
+        self.client = TestClient(FishSamplingController)
         self.user = User.objects.create_user(username='userA', password='abc123')
         self.pond = Pond.objects.create(
             owner=self.user,
             name='Test Pond',
             image_name='test_pond.png',
-            volume=20000.0
+            width=20.0,
+            length=30.0,
+            depth=5.0
         )
         self.fish_sampling = FishSampling.objects.create(
             pond=self.pond,
@@ -76,7 +78,7 @@ class FishSamplingAPITest(TestCase):
             'pond_id': str(self.pond.pond_id),
             'reporter_id': self.user.id,
             'fish_weight': 1.2,
-            'fish_length': -10.0,  # Invalid negative length
+            'fish_length': -10.0,
             'sample_date': '2024-09-19'
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)  
@@ -86,7 +88,7 @@ class FishSamplingAPITest(TestCase):
             'sampling_id': str(self.fish_sampling.sampling_id),
             'pond_id': str(self.pond.pond_id),
             'reporter_id': self.user.id,
-            'fish_weight': -10.0,  # Invalid negative fish weight
+            'fish_weight': -10.0,
             'fish_length': 4.5,
             'sample_date': '2024-09-19'
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
@@ -95,3 +97,28 @@ class FishSamplingAPITest(TestCase):
     def test_list_fish_samplings_unauthorized(self):
         response = self.client.get('/', headers={})
         self.assertEqual(response.status_code, 401)
+
+
+class FishSamplingModelTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='081234567890', password='password')
+
+        self.pond = Pond.objects.create(
+            owner=self.user,
+            name='Test Pond',
+            image_name='pond_image.jpg',
+            length=10.0,
+            width=5.0,
+            depth=2.0
+        )
+
+        self.fish_sampling = FishSampling.objects.create(
+            pond=self.pond,
+            reporter=self.user,
+            fish_weight=1.5,
+            fish_length=25.0,
+            sample_date='2024-09-01'
+        )
+
+    def test_fish_sampling_str(self):
+        self.assertEqual(str(self.fish_sampling), str(self.fish_sampling.sampling_id))

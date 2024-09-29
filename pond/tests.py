@@ -1,15 +1,15 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import AccessToken
-from ninja.testing import TestClient
+from ninja_extra.testing import TestClient
 from .models import Pond
-from .api import router
+from .controller import PondController
 import json, uuid
 
 
 class PondAPITest(TestCase):
     def setUp(self):
-        self.client = TestClient(router)
+        self.client = TestClient(PondController)
         self.user = User.objects.create_user(username='08123456789', password='12345')
         self.pond = Pond.objects.create(
             owner=self.user,
@@ -61,16 +61,30 @@ class PondAPITest(TestCase):
         response = self.client.get("/", headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
 
         expected_data = [
-                    {"pond_id": str(self.pond.pond_id), "name": self.pond.name, "image_name" : self.pond.image_name, 
-                     "owner": self.pond.owner.username, "length": self.pond.length, "width": self.pond.width, "depth": self.pond.depth},
-                    {"pond_id": str(self.pond_omar.pond_id), "name": self.pond_omar.name, "image_name" : self.pond_omar.image_name,
-                     "owner": self.pond_omar.owner.username, "length": self.pond_omar.length, "width": self.pond_omar.width, "depth": self.pond_omar.depth},
-                ]
+            {
+                "pond_id": str(self.pond.pond_id), 
+                "name": self.pond.name,
+                "image_name" : self.pond.image_name, 
+                "owner": self.pond.owner.username, 
+                "length": self.pond.length, 
+                "width": self.pond.width, 
+                "depth": self.pond.depth
+            },
+            {
+                "pond_id": str(self.pond_omar.pond_id),
+                "name": self.pond_omar.name,
+                "image_name" : self.pond_omar.image_name,
+                "owner": self.pond_omar.owner.username, 
+                "length": self.pond_omar.length, 
+                "width": self.pond_omar.width, 
+                "depth": self.pond_omar.depth
+            },
+        ]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
     def test_list_ponds_by_user_invalid_token(self):
-        response = self.client.get("/", headers={"Authorization": f"Bearer Invalid Token"})
+        response = self.client.get("/", headers={"Authorization": "Bearer Invalid Token"})
         self.assertEqual(response.status_code, 401)
 
     def test_delete_pond(self):
