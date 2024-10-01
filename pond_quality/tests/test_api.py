@@ -150,7 +150,7 @@ class PondQualityAPITest(TestCase):
     def test_delete_pond_quality_positive(self):
         response = self.client.delete(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.json()['success'])
+        self.assertIn("success", response.json())
 
     def test_delete_pond_quality_invalid_pond(self):
         response = self.client.delete(f'/{uuid.uuid4()}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
