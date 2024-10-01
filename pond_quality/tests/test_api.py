@@ -19,6 +19,14 @@ class PondQualityAPITest(TestCase):
             width = 1.0,
             depth = 1.0
         )
+        self.pond2 = Pond.objects.create(
+            owner = self.user,
+            name = 'Test Pond 2',
+            image_name = 'test.jpg',
+            length = 1.0,
+            width = 1.0,
+            depth = 1.0
+        )
         self.pond_quality = PondQuality.objects.create(
             pond = self.pond,
             reporter = self.user,
@@ -171,6 +179,11 @@ class PondQualityAPITest(TestCase):
         response = self.client.delete(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
         self.assertEqual(response.status_code, 401)
 
+    def test_delete_pond_quality_different_pond(self):
+        response = self.client.delete(f'/{self.pond2.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
+
     def test_get_pond_quality_positive(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
@@ -193,6 +206,10 @@ class PondQualityAPITest(TestCase):
         response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
         self.assertEqual(response.status_code, 401)
 
+    def test_get_pond_quality_different_pond(self):
+        response = self.client.get(f'/{self.pond2.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
     
     def test_update_pond_quality_positive(self):
         response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
@@ -213,7 +230,6 @@ class PondQualityAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(updated_data.ph_level, 8.0)
 
-    
     def test_update_pond_quality_blank_image(self):
         response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
             'image_name': '',
@@ -315,3 +331,19 @@ class PondQualityAPITest(TestCase):
             'phosphate': 0.0
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
         self.assertEqual(response.status_code, 401)
+
+    def test_update_pond_different_pond(self):
+        response = self.client.put(f'/{self.pond2.pond_id}/{self.pond_quality.id}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
