@@ -34,7 +34,7 @@ def get_pond_quality(request, pond_quality_id: str):
 
 @router.delete("/{pond_id}/{pond_quality_id}/", auth=JWTAuth())
 def delete_pond_quality(request, pond_quality_id: str):
-    return None
+    return {"success": False}
 
 @router.put("/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
 def update_pond_quality(request, pond_quality_id: str, payload: PondQualityInput):
