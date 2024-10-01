@@ -156,10 +156,6 @@ class PondQualityAPITest(TestCase):
         response = self.client.delete(f'/{uuid.uuid4()}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
 
-    def test_delete_pond_quality_invalid_pond_quality(self):
-        response = self.client.delete(f'/{self.pond.pond_id}/{uuid.uuid4()}/', headers={"Authorization": f"Bearer {str (AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 404)
-
     def test_delete_pond_quality_invalid_token(self):
         response = self.client.delete(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": "Bearer Invalid Token"})
         self.assertEqual(response.status_code, 401)
@@ -169,7 +165,11 @@ class PondQualityAPITest(TestCase):
         self.client.delete(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str (AccessToken.for_user(self.user))}"})
         response = self.client.delete(f'/{self.pond.pond_id}/{deleted_id}/', headers={"Authorization": f"Bearer {str (AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
-
+        
+    def test_delete_pond_quality_invalid_user(self):
+        user = User.objects.create_user(username='081234567891', password='password')
+        response = self.client.delete(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
+        self.assertEqual(response.status_code, 401)
 
     def test_get_pond_quality_positive(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
@@ -186,4 +186,9 @@ class PondQualityAPITest(TestCase):
 
     def test_get_pond_quality_invalid_token(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": "Bearer Invalid Token"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_pond_quality_invalid_user(self):
+        user = User.objects.create_user(username='081234567891', password='password')
+        response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
         self.assertEqual(response.status_code, 401)

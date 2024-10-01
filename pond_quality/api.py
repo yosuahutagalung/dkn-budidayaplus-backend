@@ -35,10 +35,10 @@ def get_pond_quality(request, pond_id: str, pond_quality_id: str):
     pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
     
     if (pond_quality.pond != pond):
-        return HttpError(404, "Data tidak ditemukan")
+        raise HttpError(404, "Data tidak ditemukan")
     
     if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        return HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
+        raise HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
     
     return pond_quality
 
@@ -49,10 +49,10 @@ def delete_pond_quality(request, pond_id: str, pond_quality_id: str):
     pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
 
     if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        return HttpError(401, "Anda tidak memiliki akses untuk menghapus data ini")
+        raise HttpError(401, "Anda tidak memiliki akses untuk menghapus data ini")
     
     if (pond_quality.pond != pond):
-        return HttpError(404, "Data tidak ditemukan")
+        raise HttpError(404, "Data tidak ditemukan")
     
     pond_quality.delete()
     return {"success": True}
