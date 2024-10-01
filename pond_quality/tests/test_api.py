@@ -192,3 +192,126 @@ class PondQualityAPITest(TestCase):
         user = User.objects.create_user(username='081234567891', password='password')
         response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
         self.assertEqual(response.status_code, 401)
+
+    
+    def test_update_pond_quality_positive(self):
+        response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        updated_data = PondQuality.objects.get(id=self.pond_quality.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(updated_data.ph_level, 8.0)
+
+    
+    def test_update_pond_quality_blank_image(self):
+        response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
+            'image_name': '',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        updated_data = PondQuality.objects.get(id=self.pond_quality.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(updated_data.image_name, 'test.jpg')
+
+    def test_update_pond_quality_no_image(self):
+        response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        updated_data = PondQuality.objects.get(id=self.pond_quality.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(updated_data.image_name, 'test.jpg')
+
+    def test_update_pond_quality_invalid_pond(self):
+        response = self.client.put(f'/{uuid.uuid4()}/{self.pond_quality.id}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_pond_quality_invalid_pond_quality(self):
+        response = self.client.put(f'/{self.pond.pond_id}/{uuid.uuid4()}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_pond_quality_invalid_token(self):
+        response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": "Bearer Invalid Token"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_update_pond_quality_invalid_user(self):
+        user = User.objects.create_user(username='081234567891', password='password')
+        response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 8.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
+        self.assertEqual(response.status_code, 401)
