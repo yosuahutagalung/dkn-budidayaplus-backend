@@ -22,4 +22,4 @@ class PondQuality(models.Model):
     phosphate = models.FloatField()
 
     def __str__(self):
-        return str(self.id)
+        return 

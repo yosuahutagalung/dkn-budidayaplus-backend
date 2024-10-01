@@ -31,4 +31,4 @@ class PondQualityModelTest(TestCase):
         )
 
     def test_str_method(self):
-        self.assertEqual(str(self.pond_quality), str(self.pond_quality.id))
+        self.assertEqual(str(self.pond_quality), self.pond_quality.id)
