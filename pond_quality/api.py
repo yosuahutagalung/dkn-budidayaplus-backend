@@ -31,7 +31,16 @@ def add_pond_quality(request, pond_id: str, payload: PondQualityInput):
 
 @router.get("/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
 def get_pond_quality(request, pond_id: str, pond_quality_id: str):
-    return None
+    pond = get_object_or_404(Pond, pond_id=pond_id)
+    pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
+    
+    if (pond_quality.pond != pond):
+        return HttpError(404, "Data tidak ditemukan")
+    
+    if (pond_quality.reporter != request.auth or pond.owner != request.auth):
+        return HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
+    
+    return pond_quality
 
 
 @router.delete("/{pond_id}/{pond_quality_id}/", auth=JWTAuth())
