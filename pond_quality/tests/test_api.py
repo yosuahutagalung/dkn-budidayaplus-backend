@@ -50,7 +50,7 @@ class PondQualityAPITest(TestCase):
 
     
     def test_add_pond_quality_positive(self):
-        response = self.client.post(f'/{uuid.uuid4()}/', data=json.dumps({
+        response = self.client.post(f'/{self.pond.pond_id}/', data=json.dumps({
             'image_name': 'test.jpg',
             'ph_level': 7.0,
             'salinity': 0.0,
@@ -65,7 +65,7 @@ class PondQualityAPITest(TestCase):
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         data = response.json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['pond_id'], str(self.pond.pond_id))
+        self.assertEqual(data['pond'], str(self.pond.pond_id))
         self.assertEqual(data['image_name'], 'test.jpg')
         self.assertEqual(data['ph_level'], 7.0)
 
