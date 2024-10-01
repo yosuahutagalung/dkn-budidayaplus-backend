@@ -11,7 +11,9 @@ router = Router()
 
 @router.get("/{pond_id}/", auth=JWTAuth(), response={200: List[PondQualityOutput]})
 def list_pond_quality(request, pond_id: str):
-    return []
+    pond = get_object_or_404(Pond, pond_id=pond_id)
+    pond_quality = PondQuality.objects.filter(pond=pond)
+    return pond_quality
 
 
 @router.post("/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
