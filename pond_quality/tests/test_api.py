@@ -169,3 +169,21 @@ class PondQualityAPITest(TestCase):
         self.client.delete(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str (AccessToken.for_user(self.user))}"})
         response = self.client.delete(f'/{self.pond.pond_id}/{deleted_id}/', headers={"Authorization": f"Bearer {str (AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
+
+
+    def test_get_pond_quality_positive(self):
+        response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['ph_level'], 7.0)
+
+    def test_get_pond_quality_invalid_pond(self):
+        response = self.client.get(f'/{uuid.uuid4()}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_pond_quality_invalid_pond_quality(self):
+        response = self.client.get(f'/{self.pond.pond_id}/{uuid.uuid4()}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_pond_quality_invalid_token(self):
+        response = self.client.get(f'/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": "Bearer Invalid Token"})
+        self.assertEqual(response.status_code, 401)
