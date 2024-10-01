@@ -18,7 +18,14 @@ def list_pond_quality(request, pond_id: str):
 
 @router.post("/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
 def add_pond_quality(request, pond_id: str, payload: PondQualityInput):
-    return None
+    pond = get_object_or_404(Pond, pond_id=pond_id)
+    reporter = get_object_or_404(User, id=request.auth.id)
+    pond_quality = PondQuality.objects.create(
+        pond = pond,
+        reporter = reporter,
+        **payload.dict()
+    )
+    return pond_quality
 
 
 @router.get("/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
