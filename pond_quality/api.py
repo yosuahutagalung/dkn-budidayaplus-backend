@@ -7,6 +7,7 @@ from pond_quality.schemas import PondQualityInput, PondQualityOutput
 from django.contrib.auth.models import User
 from typing import List
 from ninja.errors import HttpError
+from django.core.exceptions import ObjectDoesNotExist
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
 
@@ -44,9 +45,21 @@ def get_pond_quality(request, pond_id: str, pond_quality_id: str):
     
     return pond_quality
 
-@router.get("/{pond_id}/latest/", auth=JWTAuth(), response={200: PondQualityOutput})
+
+@router.get("/{pond_id}/latest", auth=JWTAuth(), response={200: PondQualityOutput})
 def get_latest_pond_quality(request, pond_id: str):
-    return None
+    pond = get_object_or_404(Pond, pond_id=pond_id)
+    
+    try:
+        pond_quality = PondQuality.objects.filter(pond=pond).latest('recorded_at')
+    except ObjectDoesNotExist:
+        raise HttpError(404, DATA_NOT_FOUND)
+
+    if (pond_quality.reporter != request.auth or pond.owner != request.auth):
+        raise HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
+    
+    return pond_quality
+
 
 @router.delete("/{pond_id}/{pond_quality_id}/", auth=JWTAuth())
 def delete_pond_quality(request, pond_id: str, pond_quality_id: str):
