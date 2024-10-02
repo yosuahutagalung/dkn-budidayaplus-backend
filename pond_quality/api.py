@@ -44,6 +44,9 @@ def get_pond_quality(request, pond_id: str, pond_quality_id: str):
     
     return pond_quality
 
+@router.get("/{pond_id}/latest/", auth=JWTAuth(), response={200: PondQualityOutput})
+def get_latest_pond_quality(request, pond_id: str):
+    return None
 
 @router.delete("/{pond_id}/{pond_quality_id}/", auth=JWTAuth())
 def delete_pond_quality(request, pond_id: str, pond_quality_id: str):

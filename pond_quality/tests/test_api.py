@@ -210,6 +210,28 @@ class PondQualityAPITest(TestCase):
         response = self.client.get(f'/{self.pond2.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
 
+
+    def test_get_latest_pond_quality_positive(self):
+        response = self.client.get(f'/{self.pond.pond_id}/latest/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_latest_pond_quality_invalid_pond(self):
+        response = self.client.get(f'/{uuid.uuid4()}/latest/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_latest_pond_quality_invalid_token(self):
+        response = self.client.get(f'/{self.pond.pond_id}/latest/', headers={"Authorization": "Bearer Invalid Token"})
+        self.assertEqual(response.status_code, 401)
+    
+    def test_get_latest_pond_quality_invalid_user(self):
+        user = User.objects.create_user(username='081234567891', password='password')
+        response = self.client.get(f'/{self.pond.pond_id}/latest/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_latest_pond_quality_not_found(self):
+        response = self.client.get(f'/{self.pond2.pond_id}/latest/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+
     
     def test_update_pond_quality_positive(self):
         response = self.client.put(f'/{self.pond.pond_id}/{self.pond_quality.id}/', data=json.dumps({
