@@ -1,16 +1,20 @@
-from ninja import Schema
-from datetime import datetime
+from ninja import Field, Schema
+from datetime import date
 
 class FishSamplingCreateSchema(Schema):
-    pond_id: str
-    reporter_id: int
     fish_weight: float
     fish_length: float
-    sample_date: datetime
+    sample_date: date = Field(default_factory=date.today)
 
-class FishSamplingEditSchema(Schema):
+class FishSamplingEditSchema(Schema): 
+    fish_weight: float 
+    fish_length: float
+    sample_date: date
+
+class FishSamplingOutputSchema(Schema):
+    sampling_id: str
     pond_id: str
-    reporter_id: int
+    reporter: str = Field(None, alias="reporter.username")
     fish_weight: float
     fish_length: float
-    sample_date: datetime
+    sample_date: date
