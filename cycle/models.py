@@ -8,6 +8,7 @@ class Cycle(models.Model):
     fish_amounts = models.IntegerField()
     starting_date = models.DateField()
     ending_date = models.DateField()
-
+    pond = models.ForeignKey(Pond, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return self.cycle_id
+        return str(self.cycle_id)
