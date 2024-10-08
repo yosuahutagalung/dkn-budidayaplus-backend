@@ -3,10 +3,16 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn --workers 3 --bind 0.0.0.0:8000 budidayaplus.wsgi:application
+    image: budidayaplus_web:latest
+    command: gunicorn --workers 3 --bind 0.0.0.0:8000 myproject.wsgi:application
     volumes:
       - .:/app
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=1
+      DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+      DB_HOST: $DB_HOST
+      DB_PORT: $DB_PORT
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+      DB_NAME: $DB_NAME
