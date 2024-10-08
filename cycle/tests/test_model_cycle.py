@@ -39,7 +39,7 @@ class CycleModelTest(TestCase):
                 supervisor=self.user,
                 start_date=starting_date,
                 end_date=ending_date
-           )
+            )
             
     def test_date_valid(self):
         starting_date = datetime.strptime('2024-09-01', '%Y-%m-%d')

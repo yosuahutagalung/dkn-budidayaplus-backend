@@ -20,8 +20,6 @@ class Cycle(models.Model):
         super().clean()
         if self.end_date != self.start_date + timedelta(days=60):
             raise ValidationError('End date must be exactly 60 days after the start date.')
-        if self.end_date <= self.start_date:
-            raise ValidationError('End date must be after the start date.')
 
     def __str__(self):
         return str(self.id)
