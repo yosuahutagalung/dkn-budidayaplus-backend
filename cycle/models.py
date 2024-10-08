@@ -32,5 +32,10 @@ class CycleFishDistribution(models.Model):
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE)
     fish_amount = models.IntegerField(validators=[MinValueValidator(1)])
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return str(self.id)
