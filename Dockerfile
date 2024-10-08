@@ -13,6 +13,10 @@ RUN python -m venv /app/venv
 
 COPY requirements.txt /app/
 RUN /app/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# Ensure the environment is activated before any commands are run
+ENV PATH="/app/venv/bin:$PATH"
+
 COPY . /app/
 EXPOSE 8000
 CMD ["/app/venv/bin/gunicorn", "--workers", "3", "--bind", "0.0.0.0:8000", "budidayaplus.wsgi:application"]
