@@ -3,7 +3,7 @@ name: CI/CD Pipeline to Deploy on VM
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   deploy:
@@ -28,19 +28,9 @@ jobs:
 
           # Export environment variables from GitHub secrets to the VM
           export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-          export DB_HOST=${{ secrets.DB_HOST }}
-          export DB_USER=${{ secrets.DB_USER }}
-          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          export DB_PORT=${{ secrets.DB_PORT }}
-          export DB_NAME=${{ secrets.DB_NAME }}
 
-          # Write the environment variables to .env file (Optional if you want to ensure a .env file exists)
+          # Write the environment variable to .env file (Optional if you want to ensure a .env file exists)
           echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" > .env
-          echo "DB_HOST=$DB_HOST" >> .env
-          echo "DB_USER=$DB_USER" >> .env
-          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-          echo "DB_PORT=$DB_PORT" >> .env
-          echo "DB_NAME=$DB_NAME" >> .env
 
           # Stop the existing containers if they are running
           docker-compose down
