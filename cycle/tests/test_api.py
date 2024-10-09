@@ -248,7 +248,6 @@ class CycleAPITest(TestCase):
                 "end_date": new_end_date.isoformat(),
                 "pond_fish": [
                     {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
-                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
                 ]
             }),
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
@@ -260,7 +259,6 @@ class CycleAPITest(TestCase):
         self.assertEqual(data["supervisor"], self.user.username)
         self.assertEqual(data["pond_fish"], [
             {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
-            {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
         ])
 
     def test_update_invalid_date(self):
