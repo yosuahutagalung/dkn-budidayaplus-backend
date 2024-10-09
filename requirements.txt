@@ -6,3 +6,4 @@ gunicorn
 coverage
 django-ninja-jwt
 python-dotenv
+Django==4.2
