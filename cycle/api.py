@@ -70,7 +70,11 @@ def get_cycle(request):
     
 @router.delete("/{id}/", auth=JWTAuth())
 def delete_cycle(request, id: str):
-    return None
+    cycle = get_object_or_404(Cycle, id=id)
+    if cycle.supervisor != request.auth:
+        raise HttpError(403, "Anda tidak memiliki akses untuk menghapus data ini")
+    cycle.delete()
+    return 200, "Cycle deleted"
 
 @router.put("/{id}/", auth=JWTAuth(), response={200: CycleOutputSchema})
 def update_pond(request, id: str):
