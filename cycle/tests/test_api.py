@@ -146,7 +146,6 @@ class CycleAPITest(TestCase):
 
         self.assertEqual(response.status_code, 422)
 
-    
     def test_create_cycle_invalid_fish_amount(self):
         start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
         end_time = start_time + timedelta(days=60)
@@ -166,3 +165,41 @@ class CycleAPITest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['detail'], "Jumlah ikan harus lebih dari 0")
+
+
+    def test_get_cycle(self):
+        response = self.client.get(
+            f"/",
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["start_date"], self.cycle.start_date.isoformat())
+        self.assertEqual(data["end_date"], self.cycle.end_date.isoformat())
+        self.assertEqual(data["supervisor"], self.user.username)
+        self.assertEqual(data["pond_fish"], [
+            {"pond_id": str(self.pond.pond_id), "fish_amount": 1000}
+        ])
+
+    def test_get_cycle_expired(self):
+        start_time = datetime.now() - timedelta(days=61)
+        end_time = datetime.now() - timedelta(days=1)
+
+        Cycle.objects.create(
+            supervisor = self.user,
+            start_date = start_time,
+            end_date = end_time,
+        )
+
+        response = self.client.get(
+            f"/",
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_cycle_invalid_token(self):
+        response = self.client.get(
+            f"/",
+            headers={"Authorization": f"Bearer invalidToken"},
+        )
+        self.assertEqual(response.status_code, 401)
