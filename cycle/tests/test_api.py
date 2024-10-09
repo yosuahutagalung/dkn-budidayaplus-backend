@@ -6,7 +6,7 @@ from ninja_jwt.tokens import AccessToken
 from ninja.testing import TestClient
 from cycle.api import router
 from datetime import datetime, timedelta
-import json
+import json, uuid
 
 class CycleAPITest(TestCase):
     def setUp(self):
@@ -202,3 +202,37 @@ class CycleAPITest(TestCase):
             headers={"Authorization": "Bearer invalidToken"},
         )
         self.assertEqual(response.status_code, 401)
+
+
+    def test_delete_cycle(self):
+        response = self.client.delete(
+            f"/{self.cycle.id}/",
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Cycle.objects.filter(id=self.cycle.id).exists())
+
+    def test_delete_cycle_invalid_token(self):
+        response = self.client.delete(
+            f"/{self.cycle.id}/",
+            headers={"Authorization": "Bearer invalidToken"},
+        )
+        self.assertEqual(response.status_code, 401)
+        self.assertTrue(Cycle.objects.filter(id=self.cycle.id).exists())
+
+    def test_delete_cycle_not_found(self):
+        response = self.client.delete(
+            f"/{uuid.uuid4()}/",
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_cycle_wrong_user(self):
+        user = User.objects.create_user(username="08123456788", password="admin1234")
+        response = self.client.delete(
+            f"/{self.cycle.id}/",
+            headers={"Authorization": f"Bearer {AccessToken.for_user(user)}"},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()['detail'], "Anda tidak memiliki akses untuk menghapus data ini")
+        self.assertTrue(Cycle.objects.filter(id=self.cycle.id).exists())
