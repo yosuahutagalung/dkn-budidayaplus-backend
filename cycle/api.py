@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from pond.models import Pond
@@ -46,9 +47,27 @@ def create_cycle(request, payload: CycleInputSchema):
     }
 
 @router.get("/", auth=JWTAuth(), response={200: CycleOutputSchema})
-def get_cycle(request, id: str):
-    return None
+def get_cycle(request):
+    today = datetime.today().date()
+    cycle = Cycle.objects.filter(start_date__lte=today, end_date__gte=today).order_by('-start_date').first()
 
+    if not cycle:
+        raise HttpError(404, "Tidak ada siklus yang berlangsung saat ini")
+    
+    pond_fish = CycleFishDistribution.objects.filter(cycle=cycle)
+
+    pond_fish_output = [
+        pond_fish_amount for pond_fish_amount in pond_fish
+    ]
+
+    return {
+        "id": str(cycle.id),
+        "start_date": cycle.start_date,
+        "end_date": cycle.end_date,
+        "supervisor": str(cycle.supervisor),
+        "pond_fish": pond_fish_output
+    }
+    
 @router.delete("/{id}/", auth=JWTAuth())
 def delete_cycle(request, id: str):
     return None
