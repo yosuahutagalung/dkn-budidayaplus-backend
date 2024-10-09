@@ -124,7 +124,7 @@ class CycleAPITest(TestCase):
                     {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
                 ]
             }),
-            headers={"Authorization": f"Bearer invalidToken"},
+            headers={"Authorization": "Bearer invalidToken"},
         )
 
         self.assertEqual(response.status_code, 401)
@@ -169,7 +169,7 @@ class CycleAPITest(TestCase):
 
     def test_get_cycle(self):
         response = self.client.get(
-            f"/",
+            "/",
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
         )
         self.assertEqual(response.status_code, 200)
@@ -182,24 +182,23 @@ class CycleAPITest(TestCase):
         ])
 
     def test_get_cycle_expired(self):
-        start_time = datetime.now() - timedelta(days=61)
-        end_time = datetime.now() - timedelta(days=1)
+        now = datetime.today().date()
+        start_time = now - timedelta(days=61)
+        end_time = start_time + timedelta(days=60)
 
-        Cycle.objects.create(
-            supervisor = self.user,
-            start_date = start_time,
-            end_date = end_time,
-        )
+        self.cycle.start_date = start_time
+        self.cycle.end_date = end_time
+        self.cycle.save()
 
         response = self.client.get(
-            f"/",
+            "/",
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
         )
         self.assertEqual(response.status_code, 404)
 
     def test_get_cycle_invalid_token(self):
         response = self.client.get(
-            f"/",
-            headers={"Authorization": f"Bearer invalidToken"},
+            "/",
+            headers={"Authorization": "Bearer invalidToken"},
         )
         self.assertEqual(response.status_code, 401)
