@@ -48,8 +48,9 @@ def create_cycle(request, payload: CycleInputSchema):
 
 @router.get("/", auth=JWTAuth(), response={200: CycleOutputSchema})
 def get_cycle(request):
+    supervisor = get_object_or_404(User, id=request.auth.id)
     today = datetime.today().date()
-    cycle = Cycle.objects.filter(start_date__lte=today, end_date__gte=today).order_by('-start_date').first()
+    cycle = Cycle.objects.filter(start_date__lte=today, end_date__gte=today, supervisor=supervisor).order_by('-start_date').first()
 
     if not cycle:
         raise HttpError(404, "Tidak ada siklus yang berlangsung saat ini")
