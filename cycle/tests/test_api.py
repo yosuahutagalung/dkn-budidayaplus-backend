@@ -6,7 +6,7 @@ from ninja_jwt.tokens import AccessToken
 from ninja.testing import TestClient
 from cycle.api import router
 from datetime import datetime, timedelta
-import json, uuid
+import json
 
 class CycleAPITest(TestCase):
     def setUp(self):
@@ -14,18 +14,22 @@ class CycleAPITest(TestCase):
         end_time = start_time + timedelta(days=60)
 
         self.client = TestClient(router)
-        self.user = User.objects.create_user(username='08123456789', password='12345')
+        self.user = User.objects.create_user(username='08123456789', password='admin1234')
         self.pond = Pond.objects.create(
             name='Pond 1',
-            area=1000,
+            width=1,
+            length=3,
             depth=2,
-            owner=self.user
+            owner=self.user,
+            image_name='test1.jpg'
         )
         self.pond2 = Pond.objects.create(
-            name='Pond 2',
-            area=1000,
+            name='Pond 2', 
+            width=1,
             depth=2,
-            owner=self.user
+            length=3,
+            owner=self.user,
+            image_name='test2.jpg'
         )
         self.cycle = Cycle.objects.create(
             supervisor = self.user,
@@ -43,37 +47,39 @@ class CycleAPITest(TestCase):
         end_time = start_time + timedelta(days=60)
 
         response = self.client.post(
-            "/cycle/",
+            "/",
             json.dumps({
                 "start_date": start_time.isoformat(),
                 "end_date": end_time.isoformat(),
                 "pond_fish": [
-                    {"pond_id": str(self.pond.id), "fish_amount": 100},
-                    {"pond_id": str(self.pond2.id), "fish_amount": 200}
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
                 ]
             }),
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
         )
-
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["start_date"], start_time.isoformat())
         self.assertEqual(data["end_date"], end_time.isoformat())
         self.assertEqual(data["supervisor"], self.user.username)
-        self.assertEqual(data["fish_distribution"], [])
+        self.assertEqual(data["pond_fish"], [
+            {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+            {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
+        ])
 
     def test_create_cycle_invalid_date(self):
         start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
         end_time = start_time - timedelta(days=60)
 
         response = self.client.post(
-            "/cycle/",
+            "/",
             json.dumps({
                 "start_date": start_time.isoformat(),
                 "end_date": end_time.isoformat(),
                 "pond_fish": [
-                    {"pond_id": str(self.pond.id), "fish_amount": 100},
-                    {"pond_id": str(self.pond2.id), "fish_amount": 200}
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
                 ]
             }),
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
@@ -88,13 +94,13 @@ class CycleAPITest(TestCase):
         end_time = start_time + timedelta(days=59)
 
         response = self.client.post(
-            "/cycle/",
+            "/",
             json.dumps({
                 "start_date": start_time.isoformat(),
                 "end_date": end_time.isoformat(),
                 "pond_fish": [
-                    {"pond_id": str(self.pond.id), "fish_amount": 100},
-                    {"pond_id": str(self.pond2.id), "fish_amount": 200}
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
                 ]
             }),
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
@@ -109,16 +115,54 @@ class CycleAPITest(TestCase):
         end_time = start_time + timedelta(days=60)
 
         response = self.client.post(
-            "/cycle/",
+            "/",
             json.dumps({
                 "start_date": start_time.isoformat(),
                 "end_date": end_time.isoformat(),
                 "pond_fish": [
-                    {"pond_id": str(self.pond.id), "fish_amount": 100},
-                    {"pond_id": str(self.pond2.id), "fish_amount": 200}
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
                 ]
             }),
             headers={"Authorization": f"Bearer invalidToken"},
         )
 
         self.assertEqual(response.status_code, 401)
+
+    def test_create_one_blank_field(self):
+        end_time = datetime.strptime('2024-09-01', '%Y-%m-%d') + timedelta(days=60)
+
+        response = self.client.post(
+            "/",
+            json.dumps({
+                "end_date": end_time.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+
+        self.assertEqual(response.status_code, 422)
+
+    
+    def test_create_cycle_invalid_fish_amount(self):
+        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        end_time = start_time + timedelta(days=60)
+
+        response = self.client.post(
+            "/",
+            json.dumps({
+                "start_date": start_time.isoformat(),
+                "end_date": end_time.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 0},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['detail'], "Jumlah ikan harus lebih dari 0")
