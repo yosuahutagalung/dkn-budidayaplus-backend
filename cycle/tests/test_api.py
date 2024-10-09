@@ -280,3 +280,107 @@ class CycleAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['detail'], "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
+
+    def test_update_invalid_date2(self):
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date + timedelta(days=59)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['detail'], "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
+
+    def test_update_invalid_token(self):
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date + timedelta(days=60)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": "Bearer invalidToken"},
+        )
+        self.assertEqual(response.status_code, 401)
+
+    def test_update_one_blank_field(self):
+        new_end_date = datetime.strptime('2024-08-01', '%Y-%m-%d') + timedelta(days=60)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 422)
+
+    def test_update_invalid_fish_amount(self):
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date + timedelta(days=60)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 0},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['detail'], "Jumlah ikan harus lebih dari 0")
+
+    def test_update_cycle_not_found(self):  
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date + timedelta(days=60)
+        response = self.client.put(
+            f"/{uuid.uuid4()}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_cycle_wrong_user(self):
+        user = User.objects.create_user(username="08123456788", password="admin1234")
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date + timedelta(days=60)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(user)}"},
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()['detail'], "Anda tidak memiliki akses untuk mengubah data ini")
