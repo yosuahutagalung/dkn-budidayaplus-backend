@@ -1,4 +1,3 @@
-django
 django-ninja
 djangorestframework-simplejwt
 django-environ
