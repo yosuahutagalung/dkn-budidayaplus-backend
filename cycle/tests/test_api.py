@@ -236,3 +236,47 @@ class CycleAPITest(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()['detail'], "Anda tidak memiliki akses untuk menghapus data ini")
         self.assertTrue(Cycle.objects.filter(id=self.cycle.id).exists())
+
+
+    def test_update_cycle(self):
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date + timedelta(days=60)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["start_date"], new_start_date.isoformat())
+        self.assertEqual(data["end_date"], new_end_date.isoformat())
+        self.assertEqual(data["supervisor"], self.user.username)
+        self.assertEqual(data["pond_fish"], [
+            {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+            {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+        ])
+
+    def test_update_invalid_date(self):
+        new_start_date = datetime.strptime('2024-08-01', '%Y-%m-%d')
+        new_end_date = new_start_date - timedelta(days=60)
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.isoformat(),
+                "end_date": new_end_date.isoformat(),
+                "pond_fish": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['detail'], "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
