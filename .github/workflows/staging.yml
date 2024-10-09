@@ -24,7 +24,7 @@ jobs:
           cd /home/andromeda/dkn/budidayaplus_backend
 
           # Pull the latest code
-          git pull origin staging
+          git pull origin main
 
           # Export environment variables from GitHub secrets to the VM
           export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
