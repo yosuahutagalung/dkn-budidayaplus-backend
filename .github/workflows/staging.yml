@@ -3,7 +3,7 @@ name: CI/CD Pipeline to Deploy on VM
 on:
   push:
     branches:
-      - main
+      - staging
 
 jobs:
   deploy:
@@ -13,13 +13,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Deploy to VM via SSH using appleboy/ssh-action
-      uses: appleboy/ssh-action@v0.1.8
+    - name: Set up SSH agent
+      uses: webfactory/ssh-agent@v0.5.3
       with:
-        host: ${{ secrets.VM_IP }}
-        username: ${{ secrets.VM_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to VM via SSH and Docker Compose
+      run: |
+        ssh -T -o StrictHostKeyChecking=no ${{ secrets.VM_USERNAME }}@${{ secrets.VM_IP }} << 'EOF'
           cd /home/andromeda/dkn/budidayaplus_backend
 
           # Pull the latest code
@@ -48,3 +49,4 @@ jobs:
 
           # Optional: View the web container logs to ensure it's running
           docker-compose logs web
+        EOF
