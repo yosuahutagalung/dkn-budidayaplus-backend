@@ -45,7 +45,7 @@ class CycleAPITest(TestCase):
         )
 
     def test_create_cycle(self):
-        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        start_time = datetime.strptime('2025-09-01', '%Y-%m-%d')
         end_time = start_time + timedelta(days=60)
 
         response = self.client.post(
@@ -67,7 +67,7 @@ class CycleAPITest(TestCase):
         self.assertEqual(data["supervisor"], self.user.username)
 
     def test_create_cycle_invalid_date(self):
-        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        start_time = datetime.strptime('2025-11-01', '%Y-%m-%d')
         end_time = start_time - timedelta(days=60)
 
         response = self.client.post(
@@ -88,7 +88,7 @@ class CycleAPITest(TestCase):
         self.assertEqual(data["detail"], "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
 
     def test_create_cycle_invalid_date2(self):
-        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        start_time = datetime.strptime('2025-09-01', '%Y-%m-%d')
         end_time = start_time + timedelta(days=59)
 
         response = self.client.post(
@@ -108,8 +108,29 @@ class CycleAPITest(TestCase):
         data = response.json()
         self.assertEqual(data["detail"], "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
 
-    def test_create_cycle_invalid_token(self):
+    def test_create_cycle_overlapping(self):
         start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        end_time = start_time + timedelta(days=60)
+
+        response = self.client.post(
+            "/",
+            json.dumps({
+                "start_date": start_time.strftime('%Y-%m-%d'),
+                "end_date": end_time.strftime('%Y-%m-%d'),
+                "pond_fish_amount": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 100},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 200}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertEqual(data["detail"], "Anda sudah memiliki siklus yang berlangsung saat ini")
+
+    def test_create_cycle_invalid_token(self):
+        start_time = datetime.strptime('2025-09-01', '%Y-%m-%d')
         end_time = start_time + timedelta(days=60)
 
         response = self.client.post(
@@ -128,7 +149,7 @@ class CycleAPITest(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_create_one_blank_field(self):
-        end_time = datetime.strptime('2024-09-01', '%Y-%m-%d') + timedelta(days=60)
+        end_time = datetime.strptime('2025-09-01', '%Y-%m-%d') + timedelta(days=60)
 
         response = self.client.post(
             "/",
@@ -145,7 +166,7 @@ class CycleAPITest(TestCase):
         self.assertEqual(response.status_code, 422)
 
     def test_create_cycle_invalid_fish_amount(self):
-        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        start_time = datetime.strptime('2025-09-01', '%Y-%m-%d')
         end_time = start_time + timedelta(days=60)
 
         response = self.client.post(
@@ -376,6 +397,36 @@ class CycleAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()['detail'], "Anda tidak memiliki akses untuk mengubah data ini")
+
+    def test_update_cycle_overlapping(self):
+        old_start_date = self.cycle.start_date
+        old_end_date = self.cycle.end_date
+
+        new_start_date = datetime.strptime('2025-09-01', '%Y-%m-%d').date()
+        new_end_date = new_start_date + timedelta(days=60)
+
+        Cycle.objects.create(
+            supervisor=self.user,
+            start_date=new_start_date,
+            end_date=new_end_date
+        )
+
+        response = self.client.put(
+            f"/{self.cycle.id}/",
+            json.dumps({
+                "start_date": new_start_date.strftime('%Y-%m-%d'),
+                "end_date": new_end_date.strftime('%Y-%m-%d'),
+                "pond_fish_amount": [
+                    {"pond_id": str(self.pond.pond_id), "fish_amount": 300},
+                    {"pond_id": str(self.pond2.pond_id), "fish_amount": 400}
+                ]
+            }),
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(self.cycle.start_date, old_start_date)
+        self.assertEqual(self.cycle.end_date, old_end_date)
+        self.assertEqual(response.json()['detail'], "Anda sudah memiliki siklus yang berlangsung saat ini")
 
 
     def test_get_cycle_by_id(self):
