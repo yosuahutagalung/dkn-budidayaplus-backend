@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.contrib.auth.models import User
-from cycle.models import Cycle, CycleFishDistribution
+from cycle.models import Cycle, PondFishAmount
 from pond.models import Pond
 
 class CycleModelTest(TestCase):
@@ -24,7 +24,7 @@ class CycleModelTest(TestCase):
             start_date=starting_date,
             end_date=ending_date
         )
-        self.cycle_fish_distribution = CycleFishDistribution.objects.create(
+        self.cycle_fish_distribution = PondFishAmount.objects.create(
             cycle=self.cycle,
             pond=self.pond,
             fish_amount = 10,
@@ -34,7 +34,7 @@ class CycleModelTest(TestCase):
         self.assertEqual(str(self.cycle_fish_distribution), str(self.cycle_fish_distribution.id))
 
     def test_save_valid_fish_amount(self):
-        cycle_fish_distribution = CycleFishDistribution.objects.create(
+        cycle_fish_distribution = PondFishAmount.objects.create(
             cycle=self.cycle,
             pond=self.pond,
             fish_amount = 10,
@@ -43,7 +43,7 @@ class CycleModelTest(TestCase):
 
     def test_save_invalid_fish_amount(self):
         with self.assertRaises(ValidationError):
-            CycleFishDistribution.objects.create(
+            PondFishAmount.objects.create(
                 cycle=self.cycle,
                 pond=self.pond,
                 fish_amount = -10,

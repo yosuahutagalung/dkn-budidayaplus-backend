@@ -25,9 +25,9 @@ class Cycle(models.Model):
         return str(self.id)
     
 
-class CycleFishDistribution(models.Model):
+class PondFishAmount(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
+    cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE, related_name='pond_fish_amount')
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE)
     fish_amount = models.IntegerField(validators=[MinValueValidator(1)])
 
