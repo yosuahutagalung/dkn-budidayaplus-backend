@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date
 from django.db import models
 from django.core.exceptions import ValidationError
 from pond.models import Pond
@@ -11,6 +11,11 @@ class Cycle(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @property
+    def is_active(self):
+        today = date.today()
+        return self.start_date <= today <= self.end_date
 
     def save(self, *args, **kwargs):
         self.clean()
