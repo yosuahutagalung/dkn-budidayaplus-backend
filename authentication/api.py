@@ -1,5 +1,6 @@
 from authentication.schemas import LoginSchema, RegisterSchema, RefreshSchema
 from ninja import Router
+from ninja.throttling import AnonRateThrottle
 from ninja_jwt.tokens import RefreshToken
 from ninja_jwt.exceptions import TokenError
 from ninja.errors import HttpError
@@ -9,7 +10,7 @@ from ninja_jwt.authentication import JWTAuth
 router = Router()
 
 
-@router.post("/login")
+@router.post("/login", throttle=AnonRateThrottle(rate="10/h"))
 def login(request, data: LoginSchema):
     try:
         user = User.objects.get(username=data.phone_number)
