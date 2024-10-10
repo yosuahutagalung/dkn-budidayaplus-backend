@@ -2,18 +2,16 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from pond.models import Pond
-from cycle.schemas import CycleInputSchema, CycleOutputSchema
+from cycle.schemas import CycleInput, CycleSchema
 from ninja_jwt.authentication import JWTAuth
-from cycle.models import Cycle, CycleFishDistribution
+from cycle.models import Cycle, PondFishAmount
 from ninja.errors import HttpError
 from django.contrib.auth.models import User
 
 router = Router()
 
-@router.post('/', auth=JWTAuth(), response={200: CycleOutputSchema})
-def create_cycle(request, payload: CycleInputSchema):
-    pond_fish_amt_list = payload.pond_fish
-    pond_fish_output = []
+@router.post('/', auth=JWTAuth())
+def create_cycle(request, payload: CycleInput):
     supervisor = get_object_or_404(User, id=request.auth.id)
     try: 
         cycle = Cycle.objects.create(
@@ -25,28 +23,21 @@ def create_cycle(request, payload: CycleInputSchema):
         raise HttpError(400, "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
 
     try:
-        for pond_fish_amount in pond_fish_amt_list:
-            pond_id = pond_fish_amount.pond_id
-            pond = Pond.objects.get(pond_id=pond_id)
-            pond_fish = CycleFishDistribution.objects.create(
+        pond_fish_amount_list = payload.pond_fish_amount
+        for pond_fish_amt in pond_fish_amount_list:
+            pond = Pond.objects.get(pond_id=pond_fish_amt.pond_id)
+            PondFishAmount.objects.create(
                 cycle=cycle,
                 pond=pond,
-                fish_amount=pond_fish_amount.fish_amount
+                fish_amount=pond_fish_amt.fish_amount
             )
-            pond_fish_output.append(pond_fish)
     except:
         cycle.delete()
         raise HttpError(400, "Jumlah ikan harus lebih dari 0")
-    
-    return {
-        "id": str(cycle.id),
-        "start_date": cycle.start_date,
-        "end_date": cycle.end_date,
-        "supervisor": str(cycle.supervisor),
-        "pond_fish": pond_fish_output
-    }
 
-@router.get("/", auth=JWTAuth(), response={200: CycleOutputSchema})
+    return CycleSchema.from_orm(cycle)
+
+@router.get("/", auth=JWTAuth())
 def get_cycle(request):
     supervisor = get_object_or_404(User, id=request.auth.id)
     today = datetime.today().date()
@@ -55,19 +46,7 @@ def get_cycle(request):
     if not cycle:
         raise HttpError(404, "Tidak ada siklus yang berlangsung saat ini")
     
-    pond_fish = CycleFishDistribution.objects.filter(cycle=cycle)
-
-    pond_fish_output = [
-        pond_fish_amount for pond_fish_amount in pond_fish
-    ]
-
-    return {
-        "id": str(cycle.id),
-        "start_date": cycle.start_date,
-        "end_date": cycle.end_date,
-        "supervisor": str(cycle.supervisor),
-        "pond_fish": pond_fish_output
-    }
+    return CycleSchema.from_orm(cycle)
     
 @router.delete("/{id}/", auth=JWTAuth())
 def delete_cycle(request, id: str):
@@ -77,11 +56,9 @@ def delete_cycle(request, id: str):
     cycle.delete()
     return 200, "Cycle deleted"
 
-@router.put("/{id}/", auth=JWTAuth(), response={200: CycleOutputSchema})
-def update_pond(request, id: str, payload: CycleInputSchema):
+@router.put("/{id}/", auth=JWTAuth())
+def update_cycle(request, id: str, payload: CycleInput):
     cycle = get_object_or_404(Cycle, id=id)
-    pond_fish_amt_list = payload.pond_fish
-    pond_fish_output = []
 
     if cycle.supervisor != request.auth:
         raise HttpError(403, "Anda tidak memiliki akses untuk mengubah data ini")
@@ -94,22 +71,20 @@ def update_pond(request, id: str, payload: CycleInputSchema):
         raise HttpError(400, "Tanggal selesai harus tepat 60 hari setelah tanggal mulai")
 
     try:
-        for pond_fish_amount in pond_fish_amt_list:
-            pond_id = pond_fish_amount.pond_id
-            pond = Pond.objects.get(pond_id=pond_id)
-
-            pond_fish = CycleFishDistribution.objects.get(cycle=cycle, pond=pond)
-            pond_fish.fish_amount = pond_fish_amount.fish_amount
+        pond_fish_amount_list = payload.pond_fish_amount
+        for pond_fish_amt in pond_fish_amount_list:
+            pond = Pond.objects.get(pond_id=pond_fish_amt.pond_id)
+            pond_fish = PondFishAmount.objects.get(cycle=cycle, pond=pond)
+            pond_fish.fish_amount = pond_fish_amt.fish_amount
             pond_fish.save()
-
-            pond_fish_output.append(pond_fish)
     except:
         raise HttpError(400, "Jumlah ikan harus lebih dari 0")
     
-    return {
-        "id": str(cycle.id),
-        "start_date": cycle.start_date,
-        "end_date": cycle.end_date,
-        "supervisor": str(cycle.supervisor),
-        "pond_fish": pond_fish_output
-    }
+    return CycleSchema.from_orm(cycle)
+
+@router.get("/{id}/", auth=JWTAuth())
+def get_cycle_by_id(request, id: str):
+    cycle = get_object_or_404(Cycle, id=id)
+    if cycle.supervisor != request.auth:
+        raise HttpError(403, "Anda tidak memiliki akses untuk melihat data ini")
+    return CycleSchema.from_orm(cycle)
