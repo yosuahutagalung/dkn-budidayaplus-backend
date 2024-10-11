@@ -15,7 +15,9 @@ class FishSamplingAPITest(TestCase):
             owner=self.user,
             name='Test Pond',
             image_name='test_pond.png',
-            volume=20000.0
+            length=10.0,
+            width=5.0,
+            depth=2.0
         )
         self.fish_sampling = FishSampling.objects.create(
             pond=self.pond,
@@ -33,7 +35,7 @@ class FishSamplingAPITest(TestCase):
         )
 
     def test_add_fish_sampling(self):
-        response = self.client.post('/', data=json.dumps({
+        response = self.client.post(f'/{self.pond.pond_id}/', data=json.dumps({
             'pond_id': str(self.pond.pond_id),  
             'reporter_id': self.user.id,     
             'fish_weight': 2.0,
@@ -43,25 +45,27 @@ class FishSamplingAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_fish_sampling(self):
-        response = self.client.get(f'/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        response = self.client.get(f'/{self.pond.pond_id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
 
     def test_list_fish_samplings(self):
-        response = self.client.get("/", headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        response = self.client.get(f'/{self.pond.pond_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         expected_data = [
-                    {"id": str(self.fish_sampling.sampling_id), "reporter": self.fish_sampling.reporter.username},
-                    {"id": str(self.fish_sampling_userA.sampling_id), "reporter": self.fish_sampling_userA.reporter.username},
+                    {"sampling_id": str(self.fish_sampling.sampling_id), "pond_id": str(self.fish_sampling.pond.pond_id),"reporter": self.fish_sampling.reporter.username,\
+                      "fish_weight": self.fish_sampling.fish_weight, "fish_length": self.fish_sampling.fish_length, "sample_date": self.fish_sampling.sample_date},
+                    {"sampling_id": str(self.fish_sampling_userA.sampling_id), "pond_id": str(self.fish_sampling_userA.pond.pond_id),"reporter": self.fish_sampling_userA.reporter.username,\
+                      "fish_weight": self.fish_sampling_userA.fish_weight, "fish_length": self.fish_sampling_userA.fish_length, "sample_date": self.fish_sampling_userA.sample_date}
                 ]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
 
     def test_delete_fish_sampling(self):
-        response = self.client.delete(f'/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        response = self.client.delete(f'/{self.pond.pond_id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['success'])
 
     def test_update_fish_sampling(self):
-        response = self.client.put(f'/{self.fish_sampling.sampling_id}/', data=json.dumps({
+        response = self.client.put(f'/{self.pond.pond_id}/{self.fish_sampling.sampling_id}/', data=json.dumps({
             'pond_id': str(self.pond.pond_id),  
             'reporter_id': self.user.id,  
             'fish_weight': 2.5,
@@ -71,7 +75,7 @@ class FishSamplingAPITest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_add_fish_sampling_with_invalid_data(self):
-        response = self.client.post('/', data=json.dumps({
+        response = self.client.post(f'/{self.pond.pond_id}/', data=json.dumps({
             'sampling_id': str(self.fish_sampling.sampling_id),
             'pond_id': str(self.pond.pond_id),
             'reporter_id': self.user.id,
@@ -82,7 +86,7 @@ class FishSamplingAPITest(TestCase):
         self.assertEqual(response.status_code, 200)  
     
     def test_update_fish_sampling_with_invalid_data(self):
-        response = self.client.put(f'/{self.fish_sampling.sampling_id}/', data=json.dumps({
+        response = self.client.put(f'/{self.pond.pond_id}/{self.fish_sampling.sampling_id}/', data=json.dumps({
             'sampling_id': str(self.fish_sampling.sampling_id),
             'pond_id': str(self.pond.pond_id),
             'reporter_id': self.user.id,
@@ -93,5 +97,5 @@ class FishSamplingAPITest(TestCase):
         self.assertEqual(response.status_code, 200)  
     
     def test_list_fish_samplings_unauthorized(self):
-        response = self.client.get('/', headers={})
+        response = self.client.get(f'/{self.pond.pond_id}/{self.fish_sampling.sampling_id}/', headers={})
         self.assertEqual(response.status_code, 401)
