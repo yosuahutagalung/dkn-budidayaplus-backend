@@ -30,12 +30,14 @@ class FoodSamplingAPITest(TestCase):
         self.food_sampling = FoodSampling.objects.create(
             pond=self.pond,
             reporter=self.user,
+            cycle=self.cycle,
             food_quantity=10,
             sample_date='2024-09-01'
         )
         self.food_sampling_userA = FoodSampling.objects.create(
             pond=self.pond,
             reporter=self.user,
+            cycle=self.cycle,
             food_quantity=10,
             sample_date='2024-09-10'
         )
@@ -52,7 +54,7 @@ class FoodSamplingAPITest(TestCase):
 
     def test_add_food_sampling_with_invalid_data(self):
         response = self.client.post(f'/{self.pond.pond_id}/{self.cycle.id}/', data=json.dumps({
-            'sampling_id': str(self.fish_sampling.sampling_id),
+            'sampling_id': str(self.food_sampling.sampling_id),
             'pond_id': str(self.pond.pond_id),
             'reporter_id': self.user.id,
             'cycle_id': str(self.cycle.id),
