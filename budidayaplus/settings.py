@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'pond',
     'pond_quality',
     'cycle',
+    'food_sampling',
 ]
 
 NINJA_JWT = {
