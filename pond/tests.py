@@ -103,6 +103,27 @@ class PondAPITest(TestCase):
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
 
+    def test_update_pond_no_name(self):
+        response = self.client.put(f'/{self.pond.pond_id}/', data=json.dumps({
+            'image_name': 'updated_image.jpg',
+            'length': 400.0,
+            'width': 300.0,
+            'depth': 2.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 422)
+
+    def test_update_pond_blank_image_name(self):
+        response = self.client.put(f'/{self.pond.pond_id}/', data=json.dumps({
+            'name': 'Updated Pond',
+            'image_name': '',
+            'length': 400.0,
+            'width': 300.0,
+            'depth': 2.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.pond.image_name, 'test_image.jpg')
+        self.assertEqual(response.json()['image_name'], 'test_image.jpg')
+
 class PondModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='081234567890', password='password')
