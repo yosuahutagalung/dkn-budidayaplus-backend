@@ -1,9 +1,10 @@
 from django.test import TestCase
 from ninja.testing import TestClient
 from django.contrib.auth.models import User
-from .models import Pond, Cycle
+from .models import Pond, Cycle, FoodSampling
 from rest_framework_simplejwt.tokens import AccessToken
 from datetime import datetime, timedelta
+from .api import router
 
 class FoodSamplingAPITest(TestCase):
 
@@ -48,10 +49,10 @@ class FoodSamplingAPITest(TestCase):
     def test_list_food_samplings(self):
         response = self.client.get(f'/{self.pond.pond_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         expected_data = [
-            {"food_id": str(self.food_sampling.food_id), "pond_id": str(self.food_sampling.pond.pond_id), "reporter": self.food_sampling.reporter, \
-             "food_amount": self.food_sampling.food_amount, "date": self.food_sampling.date},
-            {"food_id": str(self.food_sampling_userA.food_id), "pond_id": str(self.food_sampling_userA.pond.pond_id), "reporter": self.food_sampling_userA.reporter, \
-             "food_amount": self.food_sampling_userA.food_amount, "date": self.food_sampling_userA.date}
+            {"food_id": str(self.food_sampling.food_id), "pond_id": str(self.food_sampling.pond.pond_id), "reporter": str(self.food_sampling.reporter), \
+             "food_amount": float(self.food_sampling.food_amount), "date": self.food_sampling.date},
+            {"food_id": str(self.food_sampling_userA.food_id), "pond_id": str(self.food_sampling_userA.pond.pond_id), "reporter": str(self.food_sampling_userA.reporter), \
+             "food_amount": float(self.food_sampling_userA.food_amount), "date": self.food_sampling_userA.date}
         ]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
