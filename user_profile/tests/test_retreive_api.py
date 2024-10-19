@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from user_profile.models import UserProfile
 from datetime import date
 from ninja_jwt.tokens import AccessToken
+from unittest.mock import patch
 
 class RetreiveUserProfileAPITest(TestCase):
     def setUp(self):
@@ -18,7 +19,10 @@ class RetreiveUserProfileAPITest(TestCase):
             gender='M'
         )
 
-    def test_retreive_profile(self):
+    @patch('user_profile.services.retreive_service_impl.RetreiveServiceImpl.retreive_profile')
+    def test_retreive_profile(self, mock_retreive_profile):
+        mock_retreive_profile.return_value = self.profile
+
         response = self.client.get(
             f'/{self.user.username}/',
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
@@ -30,14 +34,20 @@ class RetreiveUserProfileAPITest(TestCase):
         self.assertEqual(data['birthdate'], '2024-01-01')
         self.assertEqual(data['gender'], 'M')
 
-    def test_retreive_profile_not_found(self):
+    @patch('user_profile.services.retreive_service_impl.RetreiveServiceImpl.retreive_profile')
+    def test_retreive_profile_not_found(self, mock_retreive_profile):
+        mock_retreive_profile.side_effect = UserProfile.DoesNotExist
+
         response = self.client.get(
             f'/08123456788/',
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
         )
         self.assertEqual(response.status_code, 404)
     
-    def test_retreive_profile_unauthorized(self):
+    @patch('user_profile.services.retreive_service_impl.RetreiveServiceImpl.retreive_profile')
+    def test_retreive_profile_unauthorized(self, mock_retreive_profile):
+        mock_retreive_profile.return_value = self.profile
+
         response = self.client.get(
             f'/{self.user.username}/',
             headers={"Authorization": "Bearer invalid_token"}
