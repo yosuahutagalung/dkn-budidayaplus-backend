@@ -15,3 +15,4 @@ def get_profile(request, username: str):
         return profile
     except UserProfile.DoesNotExist:
         raise HttpError(404, "Profile tidak ditemukan")
+    
