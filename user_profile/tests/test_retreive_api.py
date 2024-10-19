@@ -9,7 +9,7 @@ from unittest.mock import patch
 from django.db.models.signals import post_save
 from user_profile.signals import create_user_profile
 
-class RetreiveUserProfileAPITest(TestCase):
+class RetrieveUserProfileAPITest(TestCase):
     def setUp(self):
         post_save.disconnect(create_user_profile, sender=User)
         self.client = TestClient(router)
@@ -22,9 +22,9 @@ class RetreiveUserProfileAPITest(TestCase):
             gender='M'
         )
 
-    @patch('user_profile.services.retreive_service_impl.RetreiveServiceImpl.retreive_profile')
-    def test_retreive_profile(self, mock_retreive_profile):
-        mock_retreive_profile.return_value = self.profile
+    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    def test_retrieve_profile(self, mock_retrieve_profile):
+        mock_retrieve_profile.return_value = self.profile
 
         response = self.client.get(
             f'/{self.user.username}/',
@@ -37,9 +37,9 @@ class RetreiveUserProfileAPITest(TestCase):
         self.assertEqual(data['birthdate'], '2024-01-01')
         self.assertEqual(data['gender'], 'M')
 
-    @patch('user_profile.services.retreive_service_impl.RetreiveServiceImpl.retreive_profile')
-    def test_retreive_profile_not_found(self, mock_retreive_profile):
-        mock_retreive_profile.side_effect = UserProfile.DoesNotExist
+    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    def test_retrieve_profile_not_found(self, mock_retrieve_profile):
+        mock_retrieve_profile.side_effect = UserProfile.DoesNotExist
 
         response = self.client.get(
             f'/08123456788/',
@@ -47,9 +47,9 @@ class RetreiveUserProfileAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
     
-    @patch('user_profile.services.retreive_service_impl.RetreiveServiceImpl.retreive_profile')
-    def test_retreive_profile_unauthorized(self, mock_retreive_profile):
-        mock_retreive_profile.return_value = self.profile
+    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    def test_retrieve_profile_unauthorized(self, mock_retrieve_profile):
+        mock_retrieve_profile.return_value = self.profile
 
         response = self.client.get(
             f'/{self.user.username}/',
