@@ -8,4 +8,4 @@ class UserProfile(models.Model):
     address = models.TextField(max_length=255, blank=True)
     image_name = models.CharField(max_length=255, blank=True)
     gender = models.CharField(max_length=1, blank=True)
-    birthdate = models.DateField(blank=True)
+    birthdate = models.DateField(blank=True, null=True)

@@ -6,9 +6,12 @@ from user_profile.models import UserProfile
 from datetime import date
 from ninja_jwt.tokens import AccessToken
 from unittest.mock import patch
+from django.db.models.signals import post_save
+from user_profile.signals import create_user_profile
 
 class RetreiveUserProfileAPITest(TestCase):
     def setUp(self):
+        post_save.disconnect(create_user_profile, sender=User)
         self.client = TestClient(router)
         self.user = User.objects.create_user(username='08123456789', password='admin1234')
         self.profile = UserProfile.objects.create(
