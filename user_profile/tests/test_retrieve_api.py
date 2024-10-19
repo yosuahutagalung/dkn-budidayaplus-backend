@@ -56,3 +56,16 @@ class RetrieveUserProfileAPITest(TestCase):
             headers={"Authorization": "Bearer invalid_token"}
         )
         self.assertEqual(response.status_code, 401)
+
+    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    def test_retrieve_profile_generic_error(self, mock_retrieve_profile):
+        """Test generic error handling when an unexpected exception occurs."""
+        mock_retrieve_profile.side_effect = Exception("Unexpected error")
+
+        response = self.client.get(
+            f'/{self.user.username}/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json().get("detail"), "Unexpected error")
