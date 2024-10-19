@@ -10,8 +10,7 @@ router = Router(auth=JWTAuth())
 @router.get("/{username}/", response=ProfileSchema)
 def get_profile(request, username: str):
     try:
-        service = RetrieveServiceImpl()
-        profile = service.retrieve_profile(username)
+        profile = RetrieveServiceImpl.retrieve_profile(username)
         return profile
     except UserProfile.DoesNotExist:
         raise HttpError(404, "Profile tidak ditemukan")
