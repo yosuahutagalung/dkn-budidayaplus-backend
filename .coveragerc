@@ -12,6 +12,7 @@ omit =
     */settings.py
     */__init__.py
     */tests.py
+    */signals.py
 
 [report]
 omit =
@@ -26,3 +27,4 @@ omit =
     */settings.py
     */__init__.py
     */tests.py
+    */signals.py
