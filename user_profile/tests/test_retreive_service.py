@@ -21,5 +21,5 @@ class RetreiveServiceTest(TestCase):
         self.assertEqual(profile, self.profile)
 
     def test_retreive_profile_not_found(self):
-        profile = self.service.retreive_profile('08123456788')
-        self.assertIsNone(profile)
+        with self.assertRaises(UserProfile.DoesNotExist):
+            self.service.retreive_profile('08123456788')
