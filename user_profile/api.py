@@ -6,11 +6,11 @@ from ninja.errors import HttpError
 from user_profile.schemas import ProfileSchema
 
 router = Router(auth=JWTAuth())
-service = RetrieveServiceImpl()
 
 @router.get("/{username}/", response=ProfileSchema)
 def get_profile(request, username: str):
     try:
+        service = RetrieveServiceImpl()
         profile = service.retrieve_profile(username)
         return profile
     except UserProfile.DoesNotExist:
