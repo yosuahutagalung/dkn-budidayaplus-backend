@@ -2,6 +2,8 @@ from django.test import TestCase
 from ninja.testing import TestClient
 from .api import router
 import json
+from django.contrib.auth.models import User
+from ninja_jwt.tokens import RefreshToken
 
 class TestAuth(TestCase):
     def setUp(self):
@@ -114,7 +116,20 @@ class TestAuth(TestCase):
         response = self.client.post("/refresh", data=json.dumps({
             "refresh": "invalidtoken"
         }))
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], "Token invalid atau telah kadaluarsa")
+
+
+    def test_refresh_with_deleted_user(self):
+        user = User.objects.create_user(username="testuser", password="password123")
+        refresh_token = RefreshToken.for_user(user)
+    
+        user.delete()
+    
+        response = self.client.post("/refresh", data=json.dumps({"refresh": str(refresh_token)}))
+    
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["detail"], "Pengguna tidak ditemukan atau token tidak valid")
 
 
     def test_me(self):
@@ -157,6 +172,5 @@ class TestAuth(TestCase):
 
 
     def test_validate_wrong_method(self):
-        print("test_validate_wrong_method")
         response = self.client.get("/validate", headers={"Authorization": "Bearer invalidtoken"})
         self.assertEqual(response.status_code, 405)
