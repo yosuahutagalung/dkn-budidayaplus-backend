@@ -1,14 +1,18 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from ninja.testing import TestClient
-from .models import Pond, FishSampling
+from .models import Pond, FishSampling, Cycle
 from .api import router
 import json
 from rest_framework_simplejwt.tokens import AccessToken
+from datetime import datetime, timedelta
 
 class FishSamplingAPITest(TestCase):
     
     def setUp(self):
+        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        end_time = start_time + timedelta(days=60)
+
         self.client = TestClient(router)
         self.user = User.objects.create_user(username='userA', password='abc123')
         self.pond = Pond.objects.create(
@@ -19,9 +23,15 @@ class FishSamplingAPITest(TestCase):
             width=5.0,
             depth=2.0
         )
+        self.cycle = Cycle.objects.create(
+            supervisor = self.user,
+            start_date = start_time,
+            end_date = end_time,
+        )
         self.fish_sampling = FishSampling.objects.create(
             pond=self.pond,
             reporter=self.user,
+            cycle=self.cycle,
             fish_weight=1.5,
             fish_length=25.0,
             sample_date='2024-09-01'
@@ -29,6 +39,7 @@ class FishSamplingAPITest(TestCase):
         self.fish_sampling_userA = FishSampling.objects.create(
             pond=self.pond,
             reporter=self.user,
+            cycle=self.cycle,
             fish_weight=2.0,
             fish_length=50.0,
             sample_date='2024-09-10'
@@ -99,3 +110,45 @@ class FishSamplingAPITest(TestCase):
     def test_list_fish_samplings_unauthorized(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.fish_sampling.sampling_id}/', headers={})
         self.assertEqual(response.status_code, 401)
+
+class FishSamplingModelTest(TestCase):
+
+    def setUp(self):
+        start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
+        end_time = start_time + timedelta(days=60)
+
+        self.client = TestClient(router)
+        self.user = User.objects.create_user(username='userA', password='abc123')
+        self.pond = Pond.objects.create(
+            owner=self.user,
+            name='Test Pond',
+            image_name='test_pond.png',
+            length=10.0,
+            width=5.0,
+            depth=2.0
+        )
+        self.cycle = Cycle.objects.create(
+            supervisor = self.user,
+            start_date = start_time,
+            end_date = end_time,
+        )
+        self.fish_sampling = FishSampling.objects.create(
+            pond=self.pond,
+            reporter=self.user,
+            cycle=self.cycle,
+            fish_weight=1.5,
+            fish_length=25.0,
+            sample_date='2024-09-01'
+        )
+        self.fish_sampling_userA = FishSampling.objects.create(
+            pond=self.pond,
+            reporter=self.user,
+            cycle=self.cycle,
+            fish_weight=2.0,
+            fish_length=50.0,
+            sample_date='2024-09-10'
+        )
+    
+    def test_str_method(self):
+        expected_str = str(self.fish_sampling.sampling_id) 
+        self.assertEqual(str(self.fish_sampling), expected_str)
