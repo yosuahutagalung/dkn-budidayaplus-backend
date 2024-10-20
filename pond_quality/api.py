@@ -13,6 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
 CYCLE_NOT_ACTIVE = "Siklus tidak aktif"
+UNAUTHORIZED_ACCESS = "Anda tidak memiliki akses untuk melihat data ini"
 
 router = Router()
 
@@ -64,7 +65,7 @@ def get_pond_quality(request, cycle_id: str, pond_id: str, pond_quality_id: str)
         raise HttpError(404, DATA_NOT_FOUND)
     
     if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        raise HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
+        raise HttpError(401, UNAUTHORIZED_ACCESS)
     
     return pond_quality
 
@@ -82,6 +83,6 @@ def get_latest_pond_quality(request, cycle_id: str, pond_id: str):
         raise HttpError(404, DATA_NOT_FOUND)
 
     if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        raise HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
+        raise HttpError(401, UNAUTHORIZED_ACCESS)
     
     return pond_quality
