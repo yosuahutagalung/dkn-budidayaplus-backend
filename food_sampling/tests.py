@@ -61,7 +61,8 @@ class FoodSamplingAPITest(TestCase):
         response = self.client.get(f'/{self.pond.pond_id}/{self.food_sampling.food_id}/', headers={})
         self.assertEqual(response.status_code, 401)
 
-class PondModelTest(TestCase):
+class FoodSamplingModelTest(TestCase):
+    
     def setUp(self):
         start_time = datetime.strptime('2024-09-01', '%Y-%m-%d')
         end_time = start_time + timedelta(days=60)
