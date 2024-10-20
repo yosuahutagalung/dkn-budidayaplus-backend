@@ -13,7 +13,7 @@ router = Router()
 @router.post('/', auth=JWTAuth())
 def create_cycle(request, payload: CycleInput):
     supervisor = get_object_or_404(User, id=request.auth.id)
-    active_cycles = Cycle.objects.filter(start_date__lte=payload.start_date, end_date__gte=payload.end_date, supervisor=supervisor)
+    active_cycles = Cycle.objects.filter(start_date__lte=payload.end_date, end_date__gte=payload.start_date, supervisor=supervisor)
     
     if active_cycles.exists():
         raise HttpError(400, "Anda sudah memiliki siklus yang berlangsung saat ini")
@@ -65,7 +65,7 @@ def delete_cycle(request, id: str):
 def update_cycle(request, id: str, payload: CycleInput):
     cycle = get_object_or_404(Cycle, id=id)
     supervisor = get_object_or_404(User, id=request.auth.id)
-    active_cycles = Cycle.objects.filter(start_date__lte=payload.start_date, end_date__gte=payload.end_date, supervisor=supervisor).exclude(id=id)
+    active_cycles = Cycle.objects.filter(start_date__lte=payload.end_date, end_date__gte=payload.start_date, supervisor=supervisor).exclude(id=id)
     
     if active_cycles.exists():
         raise HttpError(400, "Anda sudah memiliki siklus yang berlangsung saat ini")
