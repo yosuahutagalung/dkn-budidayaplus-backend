@@ -70,12 +70,17 @@ def get_pond_quality(request, cycle_id: str, pond_id: str, pond_quality_id: str)
     return pond_quality
 
 
-@router.get("/{pond_id}/latest", auth=JWTAuth(), response={200: PondQualityOutput})
-def get_latest_pond_quality(request, pond_id: str):
+@router.get("/{cycle_id}/{pond_id}/latest", auth=JWTAuth(), response={200: PondQualityOutput})
+def get_latest_pond_quality(request, cycle_id: str, pond_id: str):
+    cycle = Cycle.objects.get(id=cycle_id)
     pond = get_object_or_404(Pond, pond_id=pond_id)
     
+    today = datetime.now().date()
+    if not (cycle.start_date <= today <= cycle.end_date):
+        raise HttpError(400, CYCLE_NOT_ACTIVE)
+    
     try:
-        pond_quality = PondQuality.objects.filter(pond=pond).latest('recorded_at')
+        pond_quality = PondQuality.objects.filter(pond=pond, cycle=cycle).latest('recorded_at')
     except ObjectDoesNotExist:
         raise HttpError(404, DATA_NOT_FOUND)
 
