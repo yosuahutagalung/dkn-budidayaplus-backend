@@ -59,39 +59,3 @@ def get_latest_pond_quality(request, pond_id: str):
         raise HttpError(401, "Anda tidak memiliki akses untuk melihat data ini")
     
     return pond_quality
-
-
-@router.delete("/{pond_id}/{pond_quality_id}/", auth=JWTAuth())
-def delete_pond_quality(request, pond_id: str, pond_quality_id: str):
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
-
-    if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        raise HttpError(401, "Anda tidak memiliki akses untuk menghapus data ini")
-    
-    if (pond_quality.pond != pond):
-        raise HttpError(404, DATA_NOT_FOUND)
-    
-    pond_quality.delete()
-    return {"success": True}
-
-
-@router.put("/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
-def update_pond_quality(request, pond_id: str, pond_quality_id: str, payload: PondQualityInput):
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
-    
-    if (pond_quality.reporter != request.auth):
-        raise HttpError(401, "Anda tidak memiliki akses untuk mengubah data ini")
-    
-    if (pond_quality.pond != pond):
-        raise HttpError(404, DATA_NOT_FOUND)
-    
-    data = payload.dict()
-    for attr, value in data.items():
-        if not value:
-            continue
-        setattr(pond_quality, attr, value)
-
-    pond_quality.save()
-    return pond_quality
