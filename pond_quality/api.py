@@ -1,6 +1,8 @@
+from datetime import datetime
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja_jwt.authentication import JWTAuth
+from cycle.models import Cycle
 from pond.models import Pond
 from pond_quality.models import PondQuality
 from pond_quality.schemas import PondQualityInput, PondQualityOutput
@@ -10,13 +12,20 @@ from ninja.errors import HttpError
 from django.core.exceptions import ObjectDoesNotExist
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
+CYCLE_NOT_ACTIVE = "Siklus tidak aktif"
 
 router = Router()
 
-@router.get("/{pond_id}/", auth=JWTAuth(), response={200: List[PondQualityOutput]})
-def list_pond_quality(request, pond_id: str):
+@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: List[PondQualityOutput]})
+def list_pond_quality(request, cycle_id: str, pond_id: str):
+    cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
     pond = get_object_or_404(Pond, pond_id=pond_id)
-    pond_quality = PondQuality.objects.filter(pond=pond)
+
+    today = datetime.now().date()
+    if not (cycle.start_date <= today <= cycle.end_date):
+        raise HttpError(400, CYCLE_NOT_ACTIVE)
+    
+    pond_quality = PondQuality.objects.filter(cycle=cycle, pond=pond)
     return pond_quality
 
 
