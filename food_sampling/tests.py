@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from ninja.testing import TestClient
 from .models import Pond, FoodSampling, Cycle
 from .api import router
-import json
+import json, uuid
 from rest_framework_simplejwt.tokens import AccessToken
 from datetime import datetime, timedelta
 
@@ -62,3 +62,25 @@ class FoodSamplingAPITest(TestCase):
             'sample_date': '2024-09-19'
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 400)
+    
+    def test_add_food_sampling_with_pond_not_found(self):
+        response = self.client.post(f'/{uuid.uuid4()}/{self.cycle.id}/', data=json.dumps({
+            'sampling_id': str(self.food_sampling.sampling_id),
+            'pond_id': str(uuid.uuid4()),
+            'reporter_id': self.user.id,
+            'cycle_id': str(self.cycle.id),
+            'food_quantity': 30,
+            'sample_date': '2024-09-19'
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+    
+    def test_add_food_sampling_with_cycle_not_found(self):
+        response = self.client.post(f'/{self.pond.pond_id}/{uuid.uuid4()}/', data=json.dumps({
+            'sampling_id': str(self.food_sampling.sampling_id),
+            'pond_id': str(self.pond.pond_id),
+            'reporter_id': self.user.id,
+            'cycle_id': str(uuid.uuid4()),
+            'food_quantity': 30,
+            'sample_date': '2024-09-19'
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
