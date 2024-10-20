@@ -61,4 +61,4 @@ class FoodSamplingAPITest(TestCase):
             'food_quantity': -30,
             'sample_date': '2024-09-19'
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
