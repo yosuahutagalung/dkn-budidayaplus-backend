@@ -29,11 +29,18 @@ def list_pond_quality(request, cycle_id: str, pond_id: str):
     return pond_quality
 
 
-@router.post("/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
-def add_pond_quality(request, pond_id: str, payload: PondQualityInput):
+@router.post("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
+def add_pond_quality(request, cycle_id: str, pond_id: str, payload: PondQualityInput):
+    cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
+
+    today = datetime.now().date()
+    if not (cycle.start_date <= today <= cycle.end_date):
+        raise HttpError(400, CYCLE_NOT_ACTIVE)
+    
     pond = get_object_or_404(Pond, pond_id=pond_id)
     reporter = get_object_or_404(User, id=request.auth.id)
     pond_quality = PondQuality.objects.create(
+        cycle = cycle,
         pond = pond,
         reporter = reporter,
         **payload.dict()
