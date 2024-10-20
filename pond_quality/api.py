@@ -48,10 +48,18 @@ def add_pond_quality(request, cycle_id: str, pond_id: str, payload: PondQualityI
     return pond_quality
 
 
-@router.get("/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
-def get_pond_quality(request, pond_id: str, pond_quality_id: str):
+@router.get("/{cycle_id}/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
+def get_pond_quality(request, cycle_id: str, pond_id: str, pond_quality_id: str):
+    cycle = Cycle.objects.get(id=cycle_id)
     pond = get_object_or_404(Pond, pond_id=pond_id)
     pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
+
+    today = datetime.now().date()
+    if not (cycle.start_date <= today <= cycle.end_date):
+        raise HttpError(400, CYCLE_NOT_ACTIVE)
+    
+    if (pond_quality.cycle != cycle):
+        raise HttpError(404, DATA_NOT_FOUND)
     
     if (pond_quality.pond != pond):
         raise HttpError(404, DATA_NOT_FOUND)
