@@ -246,6 +246,27 @@ class PondQualityAPITest(TestCase):
         response = self.client.get(f'/{self.cycle.id}/{self.pond2.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
 
+    def test_get_pond_quality_cycle_not_active(self):
+        starting_date = datetime.now() - timedelta(days=90)
+        ending_date = starting_date + timedelta(days=60)
+        cycle = Cycle.objects.create(
+            supervisor=self.user,
+            start_date=starting_date,
+            end_date=ending_date
+        )
+        response = self.client.get(f'/{cycle.id}/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 400)
+    
+    def test_get_pond_quality_different_cycle(self):
+        starting_date = datetime.now()
+        ending_date = starting_date + timedelta(days=60)
+        cycle = Cycle.objects.create(
+            supervisor=self.user,
+            start_date=starting_date,
+            end_date=ending_date
+        )
+        response = self.client.get(f'/{cycle.id}/{self.pond.pond_id}/{self.pond_quality.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
 
     def test_get_latest_pond_quality_positive(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
@@ -267,3 +288,14 @@ class PondQualityAPITest(TestCase):
     def test_get_latest_pond_quality_not_found(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond2.pond_id}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
+    
+    def test_get_latest_pond_quality_cycle_not_active(self):
+        starting_date = datetime.now() - timedelta(days=90)
+        ending_date = starting_date + timedelta(days=60)
+        cycle = Cycle.objects.create(
+            supervisor=self.user,
+            start_date=starting_date,
+            end_date=ending_date
+        )
+        response = self.client.get(f'/{cycle.id}/{self.pond.pond_id}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 400)
