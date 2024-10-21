@@ -9,6 +9,9 @@ from unittest.mock import patch
 from django.db.models.signals import post_save
 from user_profile.signals import create_user_profile
 
+service_impl = "RetrieveServiceImpl" # change this if implementation changes
+MOCK_SERVICE = f'user_profile.services.retrieve_service_impl.{service_impl}.retrieve_profile'
+
 class RetrieveUserProfileAPITest(TestCase):
     def setUp(self):
         post_save.disconnect(create_user_profile, sender=User)
@@ -22,7 +25,7 @@ class RetrieveUserProfileAPITest(TestCase):
             gender='M'
         )
 
-    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    @patch(MOCK_SERVICE)
     def test_retrieve_profile(self, mock_retrieve_profile):
         mock_retrieve_profile.return_value = self.profile
 
@@ -37,7 +40,7 @@ class RetrieveUserProfileAPITest(TestCase):
         self.assertEqual(data['birthdate'], '2024-01-01')
         self.assertEqual(data['gender'], 'M')
 
-    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    @patch(MOCK_SERVICE)
     def test_retrieve_profile_not_found(self, mock_retrieve_profile):
         mock_retrieve_profile.side_effect = UserProfile.DoesNotExist
 
@@ -47,7 +50,7 @@ class RetrieveUserProfileAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
     
-    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    @patch(MOCK_SERVICE)
     def test_retrieve_profile_unauthorized(self, mock_retrieve_profile):
         mock_retrieve_profile.return_value = self.profile
 
@@ -57,7 +60,7 @@ class RetrieveUserProfileAPITest(TestCase):
         )
         self.assertEqual(response.status_code, 401)
 
-    @patch('user_profile.services.retrieve_service_impl.RetrieveServiceImpl.retrieve_profile')
+    @patch(MOCK_SERVICE)
     def test_retrieve_profile_generic_error(self, mock_retrieve_profile):
         """Test generic error handling when an unexpected exception occurs."""
         mock_retrieve_profile.side_effect = Exception("Unexpected error")
