@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'pond',
     'pond_quality',
     'cycle',
+    'user_profile',
+    'ninja_extra',
 ]
 
 NINJA_JWT = {
