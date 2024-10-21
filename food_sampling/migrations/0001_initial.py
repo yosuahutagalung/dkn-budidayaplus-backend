@@ -11,18 +11,19 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('cycle', '0004_rename_cyclefishdistribution_pondfishamount'),
         ('pond', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FishSampling',
+            name='FoodSampling',
             fields=[
-                ('sampling_id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('fish_weight', models.FloatField()),
-                ('fish_length', models.FloatField()),
-                ('sample_date', models.DateField()),
+                ('food_id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('food_amount', models.FloatField()),
+                ('date', models.DateField()),
+                ('cycle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cycle.cycle')),
                 ('pond', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pond.pond')),
                 ('reporter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
