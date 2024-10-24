@@ -25,8 +25,8 @@ class CycleService:
 
     @staticmethod
     def get_active_cycle(supervisor: User):
-        pass
+        return CycleRepo.get_active_cycle(supervisor)
 
     @staticmethod   
     def get_cycle_by_id(id: str):
-        pass
+        return CycleRepo.get_cycle_by_id(id)
