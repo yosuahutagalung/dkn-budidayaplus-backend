@@ -22,3 +22,11 @@ class CycleService:
         PondFishAmountRepo.bulk_create(payload.pond_fish_amount, cycle)
 
         return cycle 
+
+    @staticmethod
+    def get_active_cycle(supervisor: User):
+        return CycleRepo.get_active_cycle(supervisor)
+
+    @staticmethod   
+    def get_cycle_by_id(id: str):
+        return CycleRepo.get_cycle_by_id(id)

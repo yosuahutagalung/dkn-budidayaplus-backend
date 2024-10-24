@@ -15,7 +15,6 @@ class CycleServiceTest(TestCase):
             ]
         )
 
-
     @patch('cycle.repositories.cycle_repo.CycleRepo.is_active_cycle_exist') 
     @patch('cycle.repositories.pond_fish_amount_repo.PondFishAmountRepo.bulk_create')  
     @patch('cycle.repositories.cycle_repo.CycleRepo.create')
@@ -110,3 +109,41 @@ class CycleServiceTest(TestCase):
         self.assertEqual(mock_bulk_create_pfa.call_count, 0)
         self.assertEqual(mock_create_cycle.call_count, 0)
         self.assertEqual(mock_is_active_cycle_exist.call_count, 1)
+
+
+    @patch('cycle.repositories.cycle_repo.CycleRepo.get_cycle_by_id')
+    def test_get_cycle_by_id(self, mock_get):
+        mock_get.return_value = MagicMock()
+
+        cycle = CycleService.get_cycle_by_id(str(uuid.uuid4()))
+
+        self.assertEqual(mock_get.call_count, 1)
+        self.assertEqual(cycle, mock_get.return_value) 
+
+
+    @patch('cycle.repositories.cycle_repo.CycleRepo.get_cycle_by_id')
+    def test_get_cycle_by_id_not_exist(self, mock_get):
+        mock_get.return_value = None
+
+        cycle = CycleService.get_cycle_by_id(str(uuid.uuid4()))
+
+        self.assertEqual(mock_get.call_count, 1)
+        self.assertIsNone(cycle)
+    
+    @patch('cycle.repositories.cycle_repo.CycleRepo.get_active_cycle')
+    def test_get_active_cycle(self, mock_get):
+        mock_get.return_value = MagicMock()
+
+        cycle = CycleService.get_active_cycle(MagicMock())
+
+        self.assertEqual(mock_get.call_count, 1)
+        self.assertEqual(cycle, mock_get.return_value)
+    
+    @patch('cycle.repositories.cycle_repo.CycleRepo.get_active_cycle')
+    def test_get_active_cycle_not_exist(self, mock_get):
+        mock_get.return_value = None
+
+        cycle = CycleService.get_active_cycle(MagicMock())
+
+        self.assertEqual(mock_get.call_count, 1)
+        self.assertIsNone(cycle)
