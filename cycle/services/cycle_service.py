@@ -8,4 +8,17 @@ from cycle.schemas import CycleInput
 class CycleService:
     @staticmethod
     def create_cycle(supervisor: User, payload: CycleInput):
-        pass
+        if CycleRepo.is_active_cycle_exist(supervisor, payload.start_date, payload.end_date):
+            raise ValueError("Anda sudah memiliki siklus yang aktif")
+
+        if not is_valid_period(payload.start_date, payload.end_date):
+            raise ValueError("Periode siklus harus 60 hari")
+        
+        for pond_fish_amount in payload.pond_fish_amount:
+            if (not is_valid_fish_amount(pond_fish_amount.fish_amount)):
+                raise ValueError("Jumlah ikan harus lebih dari 0")
+
+        cycle = CycleRepo.create(payload.start_date, payload.end_date, supervisor)        
+        PondFishAmountRepo.bulk_create(payload.pond_fish_amount, cycle)
+
+        return cycle 
