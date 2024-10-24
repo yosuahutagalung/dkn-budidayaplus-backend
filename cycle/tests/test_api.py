@@ -46,6 +46,15 @@ class CycleAPITest(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+    
+    @patch('cycle.services.cycle_service.CycleService.create_cycle')
+    def test_create_cycle_active_cycle_exist(self, mock_create_cycle):
+        mock_create_cycle.side_effect = ValueError("Anda sudah memiliki siklus yang aktif")
+
+        response = self.client.post('/', data=json.dumps(self.data_input), headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail': 'Anda sudah memiliki siklus yang aktif'})
 
     @patch('cycle.services.cycle_service.CycleService.create_cycle')
     def test_create_cycle_invalid_fish_amount(self, mock_create_cycle):
