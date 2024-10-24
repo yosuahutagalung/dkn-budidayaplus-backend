@@ -44,6 +44,7 @@ class CycleServiceTest(TestCase):
         self.mock_is_active_cycle_exist.assert_called_with(self.supervisor, self.data_input.start_date, self.data_input.end_date)
         self.mock_create_cycle.assert_called_with(self.data_input.start_date, self.data_input.end_date, self.supervisor)
 
+
     def test_create_active_cycle_exists(self):
         self.mock_is_active_cycle_exist.return_value = True
 
@@ -56,6 +57,7 @@ class CycleServiceTest(TestCase):
         self.assertEqual(str(context.exception), "Anda sudah memiliki siklus yang aktif")
         self.mock_is_active_cycle_exist.assert_called_with(self.supervisor, self.data_input.start_date, self.data_input.end_date)
 
+
     def test_create_invalid_date_lt(self):
         self.mock_is_active_cycle_exist.return_value = False
         self.data_input.end_date -= timedelta(days=30)
@@ -67,6 +69,7 @@ class CycleServiceTest(TestCase):
         self.assertEqual(self.mock_create_cycle.call_count, 0)
         self.assertEqual(str(context.exception), "Periode siklus harus 60 hari")
 
+
     def test_create_invalid_date_gt(self):
         self.mock_is_active_cycle_exist.return_value = False
         self.data_input.end_date += timedelta(days=1)
@@ -77,6 +80,7 @@ class CycleServiceTest(TestCase):
         self.assertEqual(self.mock_bulk_create_pfa.call_count, 0)
         self.assertEqual(self.mock_create_cycle.call_count, 0)
         self.assertEqual(str(context.exception), "Periode siklus harus 60 hari")
+
 
     def test_create_invalid_fish_amount(self):
         self.mock_is_active_cycle_exist.return_value = False
