@@ -41,3 +41,19 @@ class CycleRepoTest(TestCase):
         )
 
         self.assertFalse(active_cycle_exist)
+    
+    def test_get_active_cycle(self):
+        active_cycle = Cycle.objects.create(
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=60),
+            supervisor=self.user
+        )
+
+        cycle = CycleRepo.get_active_cycle(self.user)
+
+        self.assertEqual(active_cycle, cycle)
+
+    def test_get_active_cycle_not_exist(self):
+        cycle = CycleRepo.get_active_cycle(self.user)
+
+        self.assertIsNone(cycle)

@@ -15,3 +15,7 @@ class CycleRepo:
             supervisor=supervisor
         )
         return cycle
+
+    @staticmethod
+    def get_active_cycle(supervisor: User):
+        pass
