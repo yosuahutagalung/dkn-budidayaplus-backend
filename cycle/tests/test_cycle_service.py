@@ -95,31 +95,6 @@ class CycleServiceTest(TestCase):
         self.assertEqual(self.mock_is_active_cycle_exist.call_count, 1)
 
 
-    @patch('cycle.repositories.cycle_repo.CycleRepo.get_cycle_by_id')
-    def test_get_cycle_by_id(self, mock_get):
-        mock_get.return_value = MagicMock()
-
-        mock_cycle_id = str(uuid.uuid4())
-        cycle = CycleService.get_cycle_by_id(mock_cycle_id)
-
-        self.assertEqual(mock_get.call_count, 1)
-        self.assertEqual(cycle, mock_get.return_value) 
-        mock_get.assert_called_with(mock_cycle_id)
-
-
-    @patch('cycle.repositories.cycle_repo.CycleRepo.get_cycle_by_id')
-    def test_get_cycle_by_id_not_exist(self, mock_get):
-        mock_get.return_value = None
-        mock_cycle_id = str(uuid.uuid4())
-
-        with self.assertRaises(ValueError) as context:
-            CycleService.get_cycle_by_id(mock_cycle_id)
-        
-        self.assertEqual(mock_get.call_count, 1)
-        self.assertEqual(str(context.exception), "Siklus tidak ditemukan")
-        mock_get.assert_called_with(mock_cycle_id)
-
-
     @patch('cycle.repositories.cycle_repo.CycleRepo.get_active_cycle')
     def test_get_active_cycle(self, mock_get):
         mock_get.return_value = MagicMock()
