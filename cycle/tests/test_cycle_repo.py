@@ -3,6 +3,7 @@ from cycle.models import Cycle
 from datetime import date, timedelta
 from django.contrib.auth.models import User
 from cycle.repositories.cycle_repo import CycleRepo
+import uuid
 
 class CycleRepoTest(TestCase):
     def setUp(self):
@@ -57,3 +58,20 @@ class CycleRepoTest(TestCase):
         cycle = CycleRepo.get_active_cycle(self.user)
 
         self.assertIsNone(cycle)
+
+    def test_get_cycle_by_id(self):
+        cycle = Cycle.objects.create(
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=60),
+            supervisor=self.user
+        )
+
+        cycle_by_id = CycleRepo.get_cycle_by_id(cycle.id)
+        
+        self.assertEqual(cycle, cycle_by_id)
+    
+    def test_get_cycle_by_id_not_exist(self):
+        ex_id = uuid.uuid4()
+        cycle_by_id = CycleRepo.get_cycle_by_id(str(ex_id))
+
+        self.assertIsNone(cycle_by_id)

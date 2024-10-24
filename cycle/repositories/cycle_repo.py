@@ -19,3 +19,7 @@ class CycleRepo:
     @staticmethod
     def get_active_cycle(supervisor: User):
         pass
+
+    @staticmethod
+    def get_cycle_by_id(id: str):
+        pass
