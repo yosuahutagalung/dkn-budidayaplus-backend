@@ -1,3 +1,4 @@
+import uuid
 from django.test import TestCase
 from django.contrib.auth.models import User
 from ninja.testing import TestClient
@@ -18,6 +19,14 @@ class FishSamplingAPITest(TestCase):
         self.pond = Pond.objects.create(
             owner=self.user,
             name='Test Pond',
+            image_name='test_pond.png',
+            length=10.0,
+            width=5.0,
+            depth=2.0
+        )
+        self.pondB = Pond.objects.create(
+            owner=self.user,
+            name='Test Pond B',
             image_name='test_pond.png',
             length=10.0,
             width=5.0,
@@ -55,10 +64,68 @@ class FishSamplingAPITest(TestCase):
             'cycle_id': str(self.cycle.id)
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
+    
+    def test_add_fish_sampling_with_invalid_data(self):
+        response = self.client.post(f'/{self.pond.pond_id}/{self.cycle.id}/', data=json.dumps({
+            'sampling_id': str(self.fish_sampling.sampling_id),
+            'pond_id': str(self.pond.pond_id),
+            'reporter_id': self.user.id,
+            'fish_weight': 1.2,
+            'fish_length': -10.0,  # Invalid negative length
+            'sample_date': '2024-09-19',
+            'cycle_id': str(self.cycle.id)
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)  
+    
+    def test_add_fish_sampling_with_invalid_cycle(self):
+        response = self.client.post(f'/{self.pond.pond_id}/{uuid.uuid4()}/', data=json.dumps({
+            'pond_id': str(self.pond.pond_id),  
+            'reporter_id': self.user.id,     
+            'fish_weight': 2.0,
+            'fish_length': 30.0,
+            'sample_date': '2024-09-10',
+            'cycle_id': str(self.cycle.id)
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
 
     def test_get_fish_sampling(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
+    
+    def test_get_fish_sampling_cycle_not_active(self):
+        starting_date = datetime.now() - timedelta(days=90)
+        ending_date = starting_date + timedelta(days=60)
+        cycle = Cycle.objects.create(
+            supervisor=self.user,
+            start_date=starting_date,
+            end_date=ending_date
+        )
+        response = self.client.get(f'/{self.pond.pond_id}/{cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 400)
+    
+    def test_get_fish_sampling_different_cycle(self):
+        starting_date = datetime.now()
+        ending_date = starting_date + timedelta(days=60)
+        cycle = Cycle.objects.create(
+            supervisor=self.user,
+            start_date=starting_date,
+            end_date=ending_date
+        )
+        response = self.client.get(f'/{self.pond.pond_id}/{cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+    
+    def test_get_fish_sampling_invalid_pond(self):
+        response = self.client.get(f'/{uuid.uuid4()}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+    
+    def test_get_fish_sampling_different_pond(self):
+        response = self.client.get(f'/{self.pondB.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+    
+    def test_get_fish_sampling_invalid_user(self):
+        user = User.objects.create_user(username='userB', password='password')
+        response = self.client.get(f'/{self.pond.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
+        self.assertEqual(response.status_code, 401)
 
     def test_list_fish_samplings(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.cycle.id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
@@ -70,6 +137,14 @@ class FishSamplingAPITest(TestCase):
                 ]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), expected_data)
+    
+    def test_list_fish_samplings_unauthorized(self):
+        response = self.client.get(f'/{self.pond.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={})
+        self.assertEqual(response.status_code, 401)
+    
+    def test_list_fish_samplings_by_pond_invalid_cycle(self):
+        response = self.client.get(f'/{self.pond.pond_id}/{uuid.uuid4()}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
 
     def test_delete_fish_sampling(self):
         response = self.client.delete(f'/{self.pond.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
@@ -85,18 +160,6 @@ class FishSamplingAPITest(TestCase):
             'sample_date': '2024-09-15'
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
-
-    def test_add_fish_sampling_with_invalid_data(self):
-        response = self.client.post(f'/{self.pond.pond_id}/{self.cycle.id}/', data=json.dumps({
-            'sampling_id': str(self.fish_sampling.sampling_id),
-            'pond_id': str(self.pond.pond_id),
-            'reporter_id': self.user.id,
-            'fish_weight': 1.2,
-            'fish_length': -10.0,  # Invalid negative length
-            'sample_date': '2024-09-19',
-            'cycle_id': str(self.cycle.id)
-        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 200)  
     
     def test_update_fish_sampling_with_invalid_data(self):
         response = self.client.put(f'/{self.pond.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', data=json.dumps({
@@ -109,9 +172,6 @@ class FishSamplingAPITest(TestCase):
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)  
     
-    def test_list_fish_samplings_unauthorized(self):
-        response = self.client.get(f'/{self.pond.pond_id}/{self.cycle.id}/{self.fish_sampling.sampling_id}/', headers={})
-        self.assertEqual(response.status_code, 401)
 
 class FishSamplingModelTest(TestCase):
 
