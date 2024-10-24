@@ -121,3 +121,75 @@ class CycleAPITest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'detail': 'Unexpected error'})
+
+
+    @patch('cycle.services.cycle_service.CycleService.get_active_cycle')
+    def test_get_active_cycle_exists(self, mock_get):
+        mock_cycle = MagicMock(spec=Cycle)
+        mock_cycle.id = uuid.uuid4()  
+        mock_cycle.start_date = date(2024, 10, 23)  
+        mock_cycle.end_date = date(2024, 12, 22)  
+        mock_cycle.supervisor = self.user  
+        mock_get.return_value = mock_cycle
+
+        response = self.client.get('/', headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {
+            'id': str(mock_cycle.id),
+            'start_date': '2024-10-23',
+            'end_date': '2024-12-22',
+            'supervisor': self.user.username,
+            'pond_fish_amount': []
+        })
+
+    @patch('cycle.services.cycle_service.CycleService.get_active_cycle')
+    def test_get_active_cycle_not_exists(self, mock_get):
+        mock_get.return_value = None
+        response = self.client.get('/', headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {'detail': 'Tidak ada siklus yang aktif'})
+
+    @patch('cycle.services.cycle_service.CycleService.get_active_cycle')
+    def test_get_active_cycle_generic_error(self, mock_get):
+        mock_get.side_effect = Exception("Unexpected error")
+        response = self.client.get('/', headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+        self.assertEqual(response.status_code, 400)
+    
+    @patch('cycle.services.cycle_service.CycleService.get_cycle_by_id')
+    def test_get_cycle_by_id(self, mock_get):
+        mock_cycle = MagicMock(spec=Cycle)
+        mock_cycle.id = uuid.uuid4()  
+        mock_cycle.start_date = date(2024, 10, 23)  
+        mock_cycle.end_date = date(2024, 12, 22)  
+        mock_cycle.supervisor = self.user  
+        mock_get.return_value = mock_cycle
+
+        response = self.client.get(f'/{mock_cycle.id}/', headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {
+            'id': str(mock_cycle.id),
+            'start_date': '2024-10-23',
+            'end_date': '2024-12-22',
+            'supervisor': self.user.username,
+            'pond_fish_amount': []
+        })
+    
+    @patch('cycle.services.cycle_service.CycleService.get_cycle_by_id')
+    def test_get_cycle_by_id_not_found(self, mock_get):
+        mock_get.return_value = None
+
+        response = self.client.get(f'/{uuid.uuid4()}/', headers = {"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {'detail': 'Siklus tidak ditemukan'})
+
+    @patch('cycle.services.cycle_service.CycleService.get_cycle_by_id')
+    def test_get_cycle_by_id_generic_error(self, mock_get):
+        mock_get.side_effect = Exception("Unexpected error")
+
+        response = self.client.get(f'/{uuid.uuid4()}/', headers = {"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
+
+        self.assertEqual(response.status_code, 400)

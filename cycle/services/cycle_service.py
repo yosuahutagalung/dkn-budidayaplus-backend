@@ -25,8 +25,14 @@ class CycleService:
 
     @staticmethod
     def get_active_cycle(supervisor: User):
-        return CycleRepo.get_active_cycle(supervisor)
+        cycle = CycleRepo.get_active_cycle(supervisor)
+        if cycle is None:
+            raise ValueError("Siklus tidak ditemukan")
+        return cycle
 
     @staticmethod   
     def get_cycle_by_id(id: str):
-        return CycleRepo.get_cycle_by_id(id)
+        cycle = CycleRepo.get_cycle_by_id(id)
+        if cycle is None:
+            raise ValueError("Siklus tidak ditemukan")
+        return cycle

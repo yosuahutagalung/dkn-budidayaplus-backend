@@ -15,3 +15,11 @@ def create_cycle(request, payload: CycleInput):
         raise HttpError(400, str(e)) 
     except Exception as e:
         raise HttpError(400, str(e))
+
+@router.get('/', auth=JWTAuth())
+def get_active_cycle(request):
+    pass
+
+@router.get('/{id}/', auth=JWTAuth())
+def get_cycle_by_id(request, id: str):
+    pass
