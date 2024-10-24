@@ -18,8 +18,20 @@ def create_cycle(request, payload: CycleInput):
 
 @router.get('/', auth=JWTAuth())
 def get_active_cycle(request):
-    pass
+    try:
+        cycle = CycleService.get_active_cycle(request.auth)
+        return CycleSchema.from_orm(cycle)
+    except ValueError as e:
+        raise HttpError(404, 'Tidak ada siklus yang aktif')
+    except Exception as e:
+        raise HttpError(400, str(e))
 
 @router.get('/{id}/', auth=JWTAuth())
 def get_cycle_by_id(request, id: str):
-    pass
+    try:
+        cycle = CycleService.get_cycle_by_id(id)
+        return CycleSchema.from_orm(cycle)
+    except ValueError as e:
+        raise HttpError(404, 'Siklus tidak ditemukan')
+    except Exception as e:
+        raise HttpError(400, str(e))
