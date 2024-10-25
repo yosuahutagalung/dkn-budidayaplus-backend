@@ -30,7 +30,13 @@ SECRET_KEY = 'django-insecure-39uz4hca1(q05vo*4nfzkz&3-vg#4+x4%-495^6wkq!onyjl8j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['103.177.95.189', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    '103.177.95.189', 
+    'localhost',
+    '127.0.0.1',
+    "https://dkn-budidayaplus.vercel.app",
+    "https://dkn-budidayaplus-staging.vercel.app"
+]
 
 
 # Application definition
@@ -46,6 +52,7 @@ INSTALLED_APPS = [
     'pond',
     'pond_quality',
     'cycle',
+    'corsheaders'
 ]
 
 NINJA_JWT = {
@@ -99,10 +106,39 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://dkn-budidayaplus.vercel.app",
+    "https://dkn-budidayaplus-staging.vercel.app",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000"
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
 ]
 
 ROOT_URLCONF = 'budidayaplus.urls'
