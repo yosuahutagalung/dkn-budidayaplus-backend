@@ -5,7 +5,7 @@ from datetime import date
 from user_profile.services.update_service_impl import UpdateServiceImpl
 from django.db.models.signals import post_save
 from user_profile.signals import create_user_profile
-
+from user_profile.schemas import UpdateProfileSchema
 class UpdateServiceImplTest(TestCase):
     def setUp(self):
         post_save.disconnect(create_user_profile, sender=User)
@@ -20,7 +20,7 @@ class UpdateServiceImplTest(TestCase):
         self.service = UpdateServiceImpl()
     
     def test_update_positive(self):
-        profile = self.service.update_profile('08123456789', UpdateProfileSchemas({
+        profile = self.service.update_profile('08123456789', UpdateProfileSchema({
                 "first_name": "Kevin",
                 "last_name": "Heryanto",
                 "image_name": "test.jpg"
