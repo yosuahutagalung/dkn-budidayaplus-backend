@@ -19,6 +19,7 @@ class PondQualityInput(Schema):
 
 class PondQualityOutput(Schema):
     id: UUID4
+    cycle: UUID4 = Field(None, alias="cycle.id")
     pond: UUID4 = Field(None, alias="pond.pond_id")
     reporter: str = Field(None, alias="reporter.username")
     recorded_at: datetime
