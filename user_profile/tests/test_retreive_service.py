@@ -12,10 +12,7 @@ class RetrieveServiceImplTest(TestCase):
         self.user = User.objects.create_user(username='08123456789', password='admin1234')
         self.profile = UserProfile.objects.create(
             user=self.user,
-            address='Jl. Jendral Sudirman No. 1', 
             image_name='profile.jpg',
-            birthdate=date(2024, 1, 1), 
-            gender='M' 
         )
         self.service = RetrieveServiceImpl()
     
