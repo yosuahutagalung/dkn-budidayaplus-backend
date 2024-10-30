@@ -16,3 +16,7 @@ def get_profile(request, username: str):
         raise HttpError(404, "Profile tidak ditemukan")
     except Exception as e:
         raise HttpError(400, str(e))
+
+@router.get("/", response=ProfileSchema)
+def get_profile_by_user(request):
+    pass
