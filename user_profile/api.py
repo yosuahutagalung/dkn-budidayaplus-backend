@@ -19,4 +19,10 @@ def get_profile(request, username: str):
 
 @router.get("/", response=ProfileSchema)
 def get_profile_by_user(request):
-    pass
+    try:
+        profile = RetrieveServiceImpl.retrieve_profile_by_user(request.auth)
+        return profile
+    except UserProfile.DoesNotExist:
+        raise HttpError(404, "Profile tidak ditemukan")
+    except Exception as e:
+        raise HttpError(400, str(e))
