@@ -8,4 +8,4 @@ class RetrieveServiceImpl(RetrieveService):
 
     @staticmethod
     def retrieve_profile_by_user(user):
-        pass
+        return UserProfile.objects.get(user=user)
