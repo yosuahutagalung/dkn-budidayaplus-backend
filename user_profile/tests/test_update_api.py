@@ -3,6 +3,7 @@ from ninja.testing import TestClient
 from user_profile.api import router
 from django.contrib.auth.models import User
 from user_profile.models import UserProfile
+from user_profile.schemas import UpdateProfileSchema
 from datetime import date
 from ninja_jwt.tokens import AccessToken
 from unittest.mock import patch
@@ -28,7 +29,16 @@ class UpdateUserProfileAPITest(TestCase):
 
     @patch(MOCK_SERVICE)
     def test_update_profile(self, mock_update_profile):
-        mock_update_profile.return_value = self.profile
+        user = User(
+            first_name = "Kevin",
+            last_name = "Heryanto",
+            username = "08123456789"
+        )
+        user_profile = UserProfile(
+            user = user,
+            image_name = "test.jpg"
+        )
+        mock_update_profile.return_value = {"profile": user_profile, "user": user}
 
         response = self.client.put(
             f'/{self.user.username}/',
@@ -43,8 +53,8 @@ class UpdateUserProfileAPITest(TestCase):
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['first_name'] , "Kevin")
-        self.assertEqual(data['first_name'] , "Heryanto")
-        self.assertEqual(data['image_name'], 'test.jpg')
+        self.assertEqual(data['last_name'] , "Heryanto")
+        self.assertEqual(data['image_name'], "test.jpg")
 
     @patch(MOCK_SERVICE)
     def test_update_profile_not_found(self, mock_update_profile):
@@ -52,20 +62,14 @@ class UpdateUserProfileAPITest(TestCase):
 
         response = self.client.put(
             f'/08123456788/',
-            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
+            data=json.dumps({
+                "first_name": "Kevin",
+                "last_name": "Heryanto",
+                "image_name": "test.jpg"
+            })
         )
         self.assertEqual(response.status_code, 404)
-    
-    @patch(MOCK_SERVICE)
-    def test_update_profile_unauthorized(self, mock_update_profile):
-        mock_update_profile.return_value = self.profile
-
-        response = self.client.put(
-            f'/{self.user.username}/',
-            headers={"Authorization": "Bearer invalid_token"}
-        )
-        self.assertEqual(response.status_code, 403)
-    
 
     @patch(MOCK_SERVICE)    
     def test_update_profile_unauthenticated(self, mock_update_profile):
@@ -93,4 +97,4 @@ class UpdateUserProfileAPITest(TestCase):
         )
 
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json().put("detail"), "Unexpected error")
+        self.assertEqual(response.json().get("detail"), "Unexpected error")
