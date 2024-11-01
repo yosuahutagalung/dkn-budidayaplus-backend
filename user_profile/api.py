@@ -7,12 +7,18 @@ from user_profile.schemas import ProfileSchema
 
 router = Router(auth=JWTAuth())
 
-@router.get("/{username}/", response=ProfileSchema)
-def get_profile(request, username: str):
+def handle_exceptions(func, *args, **kwargs):
     try:
-        profile = RetrieveServiceImpl.retrieve_profile(username)
-        return profile
+        return func(*args, **kwargs)
     except UserProfile.DoesNotExist:
         raise HttpError(404, "Profile tidak ditemukan")
     except Exception as e:
         raise HttpError(400, str(e))
+
+@router.get("/{username}/", response=ProfileSchema)
+def get_profile(request, username: str):
+    return handle_exceptions(RetrieveServiceImpl.retrieve_profile, username)
+
+@router.get("/", response=ProfileSchema)
+def get_profile_by_user(request):
+    return handle_exceptions(RetrieveServiceImpl.retrieve_profile_by_user, request.auth)

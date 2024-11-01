@@ -5,3 +5,7 @@ class RetrieveServiceImpl(RetrieveService):
     @staticmethod
     def retrieve_profile(username): 
         return UserProfile.objects.get(user__username=username)
+
+    @staticmethod
+    def retrieve_profile_by_user(user):
+        return UserProfile.objects.get(user=user)
