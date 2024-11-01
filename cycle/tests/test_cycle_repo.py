@@ -77,7 +77,6 @@ class CycleRepoTest(TestCase):
         self.assertIsNone(cycle_by_id)
 
     def test_stop_cycle(self):
-        # Create an active cycle
         cycle = Cycle.objects.create(
             start_date=date.today(),
             end_date=date.today() + timedelta(days=60),
@@ -92,7 +91,6 @@ class CycleRepoTest(TestCase):
         self.assertEqual(stopped_cycle.end_date, date.today())
 
     def test_stop_cycle_already_stopped(self):
-        # Create a cycle that is already stopped
         cycle = Cycle.objects.create(
             start_date=date.today() - timedelta(days=70),
             end_date=date.today() - timedelta(days=10),
