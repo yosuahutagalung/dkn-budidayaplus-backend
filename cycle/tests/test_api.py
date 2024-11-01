@@ -167,7 +167,7 @@ class CycleAPITest(TestCase):
         mock_cycle.status = "STOPPED"
         mock_stop_cycle.return_value = mock_cycle
 
-        response = self.client.post(
+        self.client.post(
             f'/{mock_cycle.id}/stop',
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
         )
