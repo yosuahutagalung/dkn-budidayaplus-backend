@@ -3,7 +3,6 @@ from ninja.testing import TestClient
 from user_profile.api import router
 from django.contrib.auth.models import User
 from user_profile.models import UserProfile
-from user_profile.schemas import UpdateProfileSchema
 from datetime import date
 from ninja_jwt.tokens import AccessToken
 from unittest.mock import patch
@@ -21,10 +20,7 @@ class UpdateUserProfileAPITest(TestCase):
         self.user = User.objects.create_user(username='08123456789', password='admin1234', first_name='Lala', last_name='Lele')
         self.profile = UserProfile.objects.create(
             user=self.user,
-            address='Jl. Jendral Sudirman No. 1', 
-            image_name='profile.jpg',
-            birthdate=date(2024, 1, 1),
-            gender='M'
+            image_name='profile.jpg'
         )
 
     @patch(MOCK_SERVICE)
