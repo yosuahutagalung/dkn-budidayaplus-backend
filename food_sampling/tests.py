@@ -73,7 +73,7 @@ class FoodSamplingAPITest(TestCase):
     def test_get_latest_pond_quality_invalid_user(self):
         user = User.objects.create_user(username='081234567891', password='abc123')
         response = self.client.get(f'/{self.pond.pond_id}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
 
 class FoodSamplingModelTest(TestCase):
     

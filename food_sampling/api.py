@@ -19,3 +19,9 @@ def list_food_samplings(request, pond_id: str):
     pond = get_object_or_404(Pond, pond_id=pond_id)
     food_samplings = FoodSampling.objects.filter(pond=pond)
     return [food for food in food_samplings]
+
+@router.get("/{pond_id}/latest", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
+def get_latest_food_sampling(request, pond_id: str):
+    pond = get_object_or_404(Pond, pond_id=pond_id)
+    food_sampling = FoodSampling.objects.filter(pond=pond).latest('date')
+    return food_sampling
