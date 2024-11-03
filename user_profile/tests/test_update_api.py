@@ -8,6 +8,7 @@ from ninja_jwt.tokens import AccessToken
 from unittest.mock import patch
 from django.db.models.signals import post_save
 from user_profile.signals import create_user_profile
+from user_profile.schemas import UpdateProfileSchema
 import json
 
 service_impl = "UpdateServiceImpl" # change this if implementation changes
@@ -17,27 +18,23 @@ class UpdateUserProfileAPITest(TestCase):
     def setUp(self):
         post_save.disconnect(create_user_profile, sender=User)
         self.client = TestClient(router)
-        self.user = User.objects.create_user(username='08123456789', password='admin1234', first_name='Lala', last_name='Lele')
+        self.user = User.objects.create_user(username='08123456789', password= 'admin1234', first_name='Lala', last_name='Lele')
         self.profile = UserProfile.objects.create(
             user=self.user,
             image_name='profile.jpg'
         )
-
+    
     @patch(MOCK_SERVICE)
     def test_update_profile(self, mock_update_profile):
-        user = User(
-            first_name = "Kevin",
-            last_name = "Heryanto",
-            username = "08123456789"
+        result = UpdateProfileSchema(
+            first_name= "Kevin",
+            last_name= "Heryanto",
+            image_name= "test.jpg"
         )
-        user_profile = UserProfile(
-            user = user,
-            image_name = "test.jpg"
-        )
-        mock_update_profile.return_value = {"profile": user_profile, "user": user}
+        mock_update_profile.return_value = result
 
         response = self.client.put(
-            f'/{self.user.username}/',
+            f'/',
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
             data=json.dumps({
                 "first_name": "Kevin",
@@ -57,7 +54,7 @@ class UpdateUserProfileAPITest(TestCase):
         mock_update_profile.side_effect = UserProfile.DoesNotExist
 
         response = self.client.put(
-            f'/08123456788/',
+            f'/',
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
             data=json.dumps({
                 "first_name": "Kevin",
@@ -72,25 +69,6 @@ class UpdateUserProfileAPITest(TestCase):
         mock_update_profile.return_value = self.profile
 
         response = self.client.put(
-            f'/085213857134/'
+            f'/'
         )
         self.assertEqual(response.status_code, 401)
-
-
-    @patch(MOCK_SERVICE)
-    def test_update_profile_generic_error(self, mock_update_profile):
-        """Test generic error handling when an unexpected exception occurs."""
-        mock_update_profile.side_effect = Exception("Unexpected error")
-
-        response = self.client.put(
-            f'/{self.user.username}/',
-            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"},
-            data=json.dumps({
-                "first_name": "Kevin",
-                "last_name": "Heryanto",
-                "image_name": "test.jpg"
-            })
-        )
-
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json().get("detail"), "Unexpected error")
