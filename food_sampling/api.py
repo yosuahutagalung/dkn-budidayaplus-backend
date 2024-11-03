@@ -5,10 +5,12 @@ from ninja_jwt.authentication import JWTAuth
 from .models import FoodSampling
 from pond.models import Pond
 from cycle.models import Cycle
-from .schemas import FoodSamplingOutputSchema
+from .schemas import FoodSamplingCreateSchema, FoodSamplingOutputSchema
 from datetime import datetime
 from ninja.errors import HttpError
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
+from django.contrib.auth.models import User
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
 CYCLE_NOT_ACTIVE = "Siklus tidak aktif"
@@ -66,5 +68,25 @@ def get_latest_food_sampling(request, pond_id: str, cycle_id: str):
 
     if (food_sampling.reporter != request.auth or pond.owner != request.auth):
         raise HttpError(401, UNAUTHORIZED_ACCESS)
+
+@router.post("/{pond_id}/{cycle_id}/", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
+def create_food_sampling(request, pond_id: str, cycle_id:str, payload: FoodSamplingCreateSchema):
+    try:
+        pond = get_object_or_404(Pond, pond_id=pond_id)
+        reporter = get_object_or_404(User, id=request.auth.id)
+        cycle = get_object_or_404(Cycle, id=cycle_id)
+    except Http404:
+        raise HttpError(404, "Pond/Cycle tidak ditemukan")
+    
+    try:
+        food_sampling = FoodSampling.objects.create(
+            pond=pond,
+            reporter=reporter,
+            cycle=cycle,
+            food_quantity=payload.food_quantity,
+            sample_date=payload.sample_date
+        )
+    except:
+        raise HttpError(400, "Input kuantitas makanan tidak valid")
     
     return food_sampling

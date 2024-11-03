@@ -5,12 +5,12 @@ from django.contrib.auth.models import User
 import uuid
 
 class FoodSampling(models.Model):
-    food_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sampling_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE)
     reporter = models.ForeignKey(User, on_delete=models.CASCADE)
-    cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     food_amount = models.FloatField()
-    date = models.DateField()
+    sample_date = models.DateField()
 
     def __str__(self):
         # return self.food_id
