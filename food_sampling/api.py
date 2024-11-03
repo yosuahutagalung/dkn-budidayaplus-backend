@@ -23,11 +23,11 @@ def check_cycle_active(cycle):
     if not (cycle.start_date <= today <= cycle.end_date):
         raise HttpError(400, CYCLE_NOT_ACTIVE)
 
-@router.get("/{cycle_id}/{pond_id}/{food_id}/", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
-def get_food_sampling(request, cycle_id: str, pond_id: str, food_id: str):
+@router.get("/{cycle_id}/{pond_id}/{sampling_id}/", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
+def get_food_sampling(request, cycle_id: str, pond_id: str, sampling_id: str):
     cycle = Cycle.objects.get(id=cycle_id)
     pond = get_object_or_404(Pond, pond_id=pond_id)
-    food_sampling = get_object_or_404(FoodSampling, food_id=food_id)
+    food_sampling = get_object_or_404(FoodSampling, sampling_id=sampling_id)
 
     check_cycle_active(cycle)
 
@@ -62,14 +62,16 @@ def get_latest_food_sampling(request, pond_id: str, cycle_id: str):
     check_cycle_active(cycle)
 
     try:
-        food_sampling = FoodSampling.objects.filter(pond=pond, cycle=cycle).latest('date')
+        food_sampling = FoodSampling.objects.filter(pond=pond, cycle=cycle).latest('sample_date')
     except ObjectDoesNotExist:
         raise HttpError(404, DATA_NOT_FOUND)
 
     if (food_sampling.reporter != request.auth or pond.owner != request.auth):
         raise HttpError(401, UNAUTHORIZED_ACCESS)
+    
+    return food_sampling
 
-@router.post("/{pond_id}/{cycle_id}/", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
+@router.post("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
 def create_food_sampling(request, pond_id: str, cycle_id:str, payload: FoodSamplingCreateSchema):
     try:
         pond = get_object_or_404(Pond, pond_id=pond_id)

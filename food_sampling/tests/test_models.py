@@ -32,10 +32,10 @@ class FoodSamplingModelTest(TestCase):
             pond=self.pond,
             reporter=self.user,
             cycle=self.cycle,
-            food_amount='1.0',
-            date='2024-10-15',
+            food_quantity='1.0',
+            sample_date='2024-10-15',
         )
 
     def test_str_method(self):
-        expected_str = f"Food Sampling for {self.pond.name} on {self.food_sampling.date}"
+        expected_str = f"Food Sampling for {self.pond.name} on {self.food_sampling.sample_date}"
         self.assertEqual(str(self.food_sampling), expected_str)
