@@ -1,3 +1,4 @@
+import uuid
 from django.test import TestCase
 from ninja.testing import TestClient
 from django.contrib.auth.models import User
@@ -13,7 +14,7 @@ class FoodSamplingAPITest(TestCase):
         end_time = start_time + timedelta(days=60)
 
         self.client = TestClient(router)
-        self.user = User.objects.create_user(username='userA', password='abc123')
+        self.user = User.objects.create_user(username='081234567890', password='abc123')
         self.pond = Pond.objects.create(
             owner=self.user,
             name='Test Pond',
@@ -60,6 +61,19 @@ class FoodSamplingAPITest(TestCase):
     def test_list_food_sampling_unauthorized(self):
         response = self.client.get(f'/{self.pond.pond_id}/{self.food_sampling.food_id}/', headers={})
         self.assertEqual(response.status_code, 401)
+    
+    def test_get_latest_food_sampling(self):
+        response = self.client.get(f'/{self.pond.pond_id}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)
+    
+    def test_get_latest_food_sampling_invalid_pond(self):
+        response = self.client.get(f'/{uuid.uuid4()}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 404)
+    
+    def test_get_latest_pond_quality_invalid_user(self):
+        user = User.objects.create_user(username='081234567891', password='abc123')
+        response = self.client.get(f'/{self.pond.pond_id}/latest', headers={"Authorization": f"Bearer {str(AccessToken.for_user(user))}"})
+        self.assertEqual(response.status_code, 401)
 
 class FoodSamplingModelTest(TestCase):
     
@@ -68,7 +82,7 @@ class FoodSamplingModelTest(TestCase):
         end_time = start_time + timedelta(days=60)
 
         self.client = TestClient(router)
-        self.user = User.objects.create_user(username='userA', password='abc123')
+        self.user = User.objects.create_user(username='081234567890', password='abc123')
         self.pond = Pond.objects.create(
             owner=self.user,
             name='Test Pond',
