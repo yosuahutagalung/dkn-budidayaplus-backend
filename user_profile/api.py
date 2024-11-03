@@ -17,28 +17,10 @@ def handle_exceptions(func, *args, **kwargs):
     except Exception as e:
         raise HttpError(400, str(e))
 
-@router.put("/{username}/", response=UpdateProfileSchema)
-def update_profile(request, username: str, payload_profile: UpdateProfileSchema):
-    user = User(
-        first_name = payload_profile.first_name,
-        last_name = payload_profile.last_name,
-        username = "08888888888"
-    )
-    user_profile = UserProfile(
-        image_name = payload_profile.image_name
-    )
-    try:
-        service = UpdateServiceImpl.update_profile(username, user_profile, user)
-        result = UpdateProfileSchema(
-            first_name=service["user"].first_name,
-            last_name=service["user"].last_name,
-            image_name=service["profile"].image_name
-        )
-        return result
-    except UserProfile.DoesNotExist:
-        raise HttpError(404, "Profile tidak ditemukan")
-    except Exception as e:
-        raise HttpError(500, str(e))
+@router.put("/", response=UpdateProfileSchema)
+def update_profile(request, payload_profile: UpdateProfileSchema):
+    return handle_exceptions(UpdateServiceImpl.update_profile, payload_profile, request.auth)
+
 @router.get("/{username}/", response=ProfileSchema)
 def get_profile(request, username: str):
     return handle_exceptions(RetrieveServiceImpl.retrieve_profile, username)
