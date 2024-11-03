@@ -59,7 +59,7 @@ class PondQualityAPITest(TestCase):
     def test_list_pond_qualities_by_pond(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(len(response.json()['pond_qualities']), 1)
 
     def test_list_pond_qualities_by_pond_invalid_token(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/', headers={"Authorization": "Bearer Invalid Token"})
