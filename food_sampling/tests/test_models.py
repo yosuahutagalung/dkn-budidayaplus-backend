@@ -3,7 +3,7 @@ from ninja.testing import TestClient
 from django.contrib.auth.models import User
 from pond.models import Pond
 from cycle.models import Cycle
-from food_sampling import FoodSampling
+from food_sampling.models import FoodSampling
 from datetime import datetime, timedelta
 from food_sampling.api import router
 

@@ -25,7 +25,7 @@ def check_cycle_active(cycle):
 def get_food_sampling(request, cycle_id: str, pond_id: str, food_id: str):
     cycle = Cycle.objects.get(id=cycle_id)
     pond = get_object_or_404(Pond, pond_id=pond_id)
-    food_sampling = get_object_or_404(FoodSampling, pond_id=pond_id, food_id=food_id)
+    food_sampling = get_object_or_404(FoodSampling, food_id=food_id)
 
     check_cycle_active(cycle)
 
