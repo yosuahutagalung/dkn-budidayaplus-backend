@@ -5,11 +5,12 @@ from django.contrib.auth.models import User
 from .models import FishSampling
 from pond.models import Pond
 from cycle.models import Cycle
-from .schemas import FishSamplingCreateSchema, FishSamplingOutputSchema
+from .schemas import FishSamplingCreateSchema, FishSamplingOutputSchema, FishSamplingList
 from ninja_jwt.authentication import JWTAuth
 from ninja.errors import HttpError
 from datetime import datetime
 from django.utils.timezone import make_aware
+from django.core.exceptions import ObjectDoesNotExist
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
 CYCLE_NOT_ACTIVE = "Siklus tidak aktif"
@@ -50,32 +51,26 @@ def create_fish_sampling(request, pond_id: str, cycle_id: str, payload: FishSamp
         )
         return fish_sampling
 
-@router.get("/{pond_id}/{cycle_id}/{sampling_id}/", auth=JWTAuth(), response={200: FishSamplingOutputSchema})
-def get_fish_sampling(request, pond_id: str, sampling_id: str, cycle_id: str):
+@router.get("/{pond_id}/{cycle_id}/latest/", auth=JWTAuth(), response={200: FishSamplingOutputSchema})
+def get_latest_fish_sampling(request, pond_id: str, cycle_id: str):
     cycle = Cycle.objects.get(id=cycle_id)
     pond = get_object_or_404(Pond, pond_id=pond_id)
-    fish_sampling = get_object_or_404(FishSampling, sampling_id=sampling_id)
-
+    
     check_cycle_active(cycle)
-
-    if (fish_sampling.cycle != cycle):
+    
+    try:
+        fish_sampling = FishSampling.objects.filter(pond=pond, cycle=cycle).latest('recorded_at')
+    except ObjectDoesNotExist:
         raise HttpError(404, DATA_NOT_FOUND)
-    
-    if (fish_sampling.pond != pond):
-        raise HttpError(404, DATA_NOT_FOUND)
-    
-    if (fish_sampling.reporter != request.auth or pond.owner != request.auth):
-        raise HttpError(401, UNAUTHORIZED_ACCESS)
-    
     return fish_sampling
 
 
-@router.get("/{pond_id}/{cycle_id}/", auth=JWTAuth(), response={200: List[FishSamplingOutputSchema]})
+@router.get("/{pond_id}/{cycle_id}/", auth=JWTAuth(), response={200: FishSamplingList})
 def list_fish_samplings(request, pond_id: str, cycle_id: str):
     cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
     pond = get_object_or_404(Pond, pond_id=pond_id)
 
     check_cycle_active(cycle)
     
-    fish_samplings = FishSampling.objects.filter(cycle=cycle, pond=pond)
-    return [sampling for sampling in fish_samplings]
+    fish_samplings = FishSampling.objects.filter(cycle=cycle, pond=pond).order_by('-recorded_at')
+    return {"fish_samplings": fish_samplings, "cycle_id": cycle_id}
