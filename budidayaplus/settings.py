@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'pond',
     'pond_quality',
     'cycle',
+    'food_sampling',
     'user_profile',
     'ninja_extra',
     'corsheaders'
