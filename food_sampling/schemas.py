@@ -13,3 +13,7 @@ class FoodSamplingOutputSchema(Schema):
     reporter: str = Field(None, alias="reporter.username")
     food_quantity: int
     sample_date: date
+
+class FoodSamplingHistory(Schema):
+    food_sampling: List[FoodSamplingOutputSchema]
+    cycle_id: UUID4
