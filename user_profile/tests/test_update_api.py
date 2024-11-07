@@ -3,7 +3,6 @@ from ninja.testing import TestClient
 from user_profile.api import router
 from django.contrib.auth.models import User
 from user_profile.models import UserProfile
-from datetime import date
 from ninja_jwt.tokens import AccessToken
 from unittest.mock import patch
 from django.db.models.signals import post_save

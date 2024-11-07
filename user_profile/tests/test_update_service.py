@@ -26,6 +26,6 @@ class UpdateServiceImplTest(TestCase):
     def test_update_positive(self):
 
         profile = self.service.update_profile(self.payload, self.user)
-        self.assertEqual(profile.user.first_name, self.payload.first_name)
+        self.assertEqual(profile.first_name, self.payload.first_name)
         self.assertEqual(profile.image_name, self.payload.image_name)
-        self.assertEqual(profile.user.last_name, self.payload.last_name)
+        self.assertEqual(profile.last_name, self.payload.last_name)

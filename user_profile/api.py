@@ -18,7 +18,7 @@ def handle_exceptions(func, *args, **kwargs):
         raise HttpError(400, str(e))
 
 
-@router.put("/", response=ProfileSchema)
+@router.put("/", response=UpdateProfileSchema)
 def update_profile(request, payload_profile: UpdateProfileSchema):
     return handle_exceptions(UpdateServiceImpl.update_profile, payload_profile, request.auth)
 
