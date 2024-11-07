@@ -9,5 +9,9 @@ class FoodSampling(models.Model):
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE)
     reporter = models.ForeignKey(User, on_delete=models.CASCADE)
-    food_quantity = models.IntegerField()
+    food_quantity = models.FloatField()
     sample_date = models.DateField()
+
+    def __str__(self):
+        # return self.food_id
+        return f"Food Sampling for {self.pond.name} on {self.sample_date}"
