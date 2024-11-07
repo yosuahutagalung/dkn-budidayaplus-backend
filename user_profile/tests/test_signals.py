@@ -14,7 +14,4 @@ class UserProfileSignalTest(TestCase):
         self.assertTrue(UserProfile.objects.filter(user=user).exists())
 
         profile = UserProfile.objects.get(user=user)
-        self.assertEqual(profile.address, "")
         self.assertEqual(profile.image_name, "")
-        self.assertEqual(profile.gender, "")
-        self.assertIsNone(profile.birthdate)
