@@ -33,7 +33,7 @@ class FoodSamplingModelTest(TestCase):
             reporter=self.user,
             cycle=self.cycle,
             food_quantity='1.0',
-            sample_date='2024-10-15',
+            recorded_at = datetime.now(),
         )
 
     def test_str_method(self):

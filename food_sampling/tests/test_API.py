@@ -44,14 +44,14 @@ class FoodSamplingAPITest(TestCase):
             reporter=self.user,
             cycle=self.cycle,
             food_quantity=1.0,
-            sample_date='2024-10-15',
+            recorded_at = datetime.now()
         )
         self.food_sampling_userA = FoodSampling.objects.create(
             pond=self.pond,
             reporter=self.user,
             cycle=self.cycle,
             food_quantity=1.5,
-            sample_date='2024-10-16'
+            recorded_at = datetime.now()
         )
     
     def test_get_food_sampling(self):
@@ -166,7 +166,7 @@ class FoodSamplingAPITest(TestCase):
             'reporter_id': self.user.id,
             'cycle_id': str(self.cycle.id),     
             'food_quantity': 30,
-            'sample_date': '2024-09-10'
+            'recorded_at': datetime.now()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
 
@@ -177,7 +177,7 @@ class FoodSamplingAPITest(TestCase):
             'reporter_id': self.user.id,
             'cycle_id': str(self.cycle.id),
             'food_quantity': -30,
-            'sample_date': '2024-09-19'
+            'recorded_at': datetime.now()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
     
@@ -188,7 +188,7 @@ class FoodSamplingAPITest(TestCase):
             'reporter_id': self.user.id,
             'cycle_id': str(self.cycle.id),
             'food_quantity': 30,
-            'sample_date': '2024-09-19'
+            'recorded_at': datetime.now()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
     
@@ -199,6 +199,18 @@ class FoodSamplingAPITest(TestCase):
             'reporter_id': self.user.id,
             'cycle_id': str(uuid.uuid4()),
             'food_quantity': 30,
-            'sample_date': '2024-09-19'
+            'recorded_at': datetime.now()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 404)
+    
+    def test_add_food_sampling_already_existing(self):
+        response = self.client.post(f'/{self.cycle.id}/{self.pond.pond_id}/', data=json.dumps({
+            'sampling_id': str(self.food_sampling.sampling_id),
+            'pond_id': str(self.pond.pond_id),
+            'reporter_id': self.user.id,
+            'cycle_id': str(uuid.uuid4()),
+            'food_quantity': 1.0,
+            'recorded_at': datetime.now()
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(FoodSampling.objects.filter(cycle=self.cycle, pond=self.pond).count(), 1)
