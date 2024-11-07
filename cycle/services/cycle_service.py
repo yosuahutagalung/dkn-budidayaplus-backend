@@ -36,3 +36,12 @@ class CycleService:
         if cycle is None:
             raise ValueError("Siklus tidak ditemukan")
         return cycle
+
+    @staticmethod
+    def stop_cycle(cycle_id: str, supervisor: User):
+        cycle = CycleRepo.get_cycle_by_id(cycle_id)
+        if not cycle or cycle.supervisor != supervisor:
+            raise ValueError("Siklus tidak ditemukan atau Anda tidak memiliki izin untuk menghentikannya.")
+        if cycle.status != 'ACTIVE':
+            raise ValueError("Hanya siklus yang aktif yang dapat dihentikan.")
+        return CycleRepo.stop_cycle(cycle)

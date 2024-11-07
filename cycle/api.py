@@ -35,3 +35,13 @@ def get_cycle_by_id(request, id: str):
         raise HttpError(404, 'Siklus tidak ditemukan')
     except Exception as e:
         raise HttpError(400, str(e))
+
+@router.post('/{id}/stop', auth=JWTAuth())
+def stop_cycle(request, id: str):
+    try:
+        cycle = CycleService.stop_cycle(id, request.auth)
+        return CycleSchema.from_orm(cycle)
+    except ValueError as e:
+        raise HttpError(400, str(e))
+    except Exception as e:
+        raise HttpError(400, str(e))

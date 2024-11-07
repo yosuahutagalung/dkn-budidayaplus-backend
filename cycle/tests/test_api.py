@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from unittest.mock import patch, MagicMock
 from cycle.models import Cycle
 from ninja_jwt.tokens import AccessToken
-from datetime import date
+from datetime import date, timedelta
 from cycle.schemas import CycleInput
 
 class CycleAPITest(TestCase):
@@ -156,3 +156,42 @@ class CycleAPITest(TestCase):
         response = self.client.get(f'/{uuid.uuid4()}/', headers = {"Authorization": f"Bearer {AccessToken.for_user(self.user)}"})
 
         self.assertEqual(response.status_code, 400)
+
+    @patch('cycle.services.cycle_service.CycleService.stop_cycle')
+    def test_stop_cycle_success(self, mock_stop_cycle):
+        mock_cycle = MagicMock(spec=Cycle)
+        mock_cycle.id = uuid.uuid4()
+        mock_cycle.start_date = date.today() - timedelta(days=10)
+        mock_cycle.end_date = date.today() + timedelta(days=50)
+        mock_cycle.supervisor = self.user
+        mock_cycle.status = "STOPPED"
+        mock_stop_cycle.return_value = mock_cycle
+
+        self.client.post(
+            f'/{mock_cycle.id}/stop',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+
+    @patch('cycle.services.cycle_service.CycleService.stop_cycle')
+    def test_stop_cycle_already_stopped(self, mock_stop_cycle):
+        mock_stop_cycle.side_effect = ValueError("Hanya siklus yang aktif yang dapat dihentikan.")
+
+        response = self.client.post(
+            f'/{uuid.uuid4()}/stop',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail': 'Hanya siklus yang aktif yang dapat dihentikan.'})
+
+    @patch('cycle.services.cycle_service.CycleService.stop_cycle')
+    def test_stop_cycle_not_owner(self, mock_stop_cycle):
+        mock_stop_cycle.side_effect = ValueError("Siklus tidak ditemukan atau Anda tidak memiliki izin untuk menghentikannya.")
+
+        response = self.client.post(
+            f'/{uuid.uuid4()}/stop',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail': 'Siklus tidak ditemukan atau Anda tidak memiliki izin untuk menghentikannya.'})

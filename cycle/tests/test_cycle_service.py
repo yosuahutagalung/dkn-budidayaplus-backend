@@ -20,16 +20,22 @@ class CycleServiceTest(TestCase):
         patchers = [
             patch('cycle.repositories.cycle_repo.CycleRepo.is_active_cycle_exist'),
             patch('cycle.repositories.pond_fish_amount_repo.PondFishAmountRepo.bulk_create'),
-            patch('cycle.repositories.cycle_repo.CycleRepo.create')
+            patch('cycle.repositories.cycle_repo.CycleRepo.create'),
+            patch('cycle.repositories.cycle_repo.CycleRepo.stop_cycle'),
+            patch('cycle.repositories.cycle_repo.CycleRepo.get_cycle_by_id')
         ]
         
         self.mock_is_active_cycle_exist = patchers[0].start()
         self.mock_bulk_create_pfa = patchers[1].start()
         self.mock_create_cycle = patchers[2].start()
+        self.mock_stop_cycle = patchers[3].start()
+        self.mock_get_cycle_by_id = patchers[4].start()
 
         self.addCleanup(patchers[0].stop)
         self.addCleanup(patchers[1].stop)
         self.addCleanup(patchers[2].stop)
+        self.mock_stop_cycle = patchers[3].start()
+        self.mock_get_cycle_by_id = patchers[4].start()
 
     def test_create_cycle(self):
         self.mock_is_active_cycle_exist.return_value = False
@@ -94,6 +100,49 @@ class CycleServiceTest(TestCase):
         self.assertEqual(self.mock_create_cycle.call_count, 0)
         self.assertEqual(self.mock_is_active_cycle_exist.call_count, 1)
 
+    def test_stop_cycle_success(self):
+        cycle_mock = MagicMock()
+        cycle_mock.id = uuid.uuid4()
+        cycle_mock.status = "ACTIVE"
+        cycle_mock.supervisor = self.supervisor
+        self.mock_get_cycle_by_id.return_value = cycle_mock
+
+        def stop_cycle_side_effect(cycle):
+            cycle.status = "STOPPED"
+            cycle.end_date = date.today()
+            return cycle
+        self.mock_stop_cycle.side_effect = stop_cycle_side_effect
+
+        stopped_cycle = CycleService.stop_cycle(cycle_id=cycle_mock.id, supervisor=self.supervisor)
+        self.mock_stop_cycle.assert_called_once_with(cycle_mock)
+        self.assertEqual(stopped_cycle.status, "STOPPED")
+        self.assertEqual(stopped_cycle.end_date, date.today())
+
+    def test_stop_cycle_already_stopped(self):
+        cycle_mock = MagicMock()
+        cycle_mock.id = uuid.uuid4()
+        cycle_mock.status = "STOPPED"
+        cycle_mock.supervisor = self.supervisor
+        self.mock_get_cycle_by_id.return_value = cycle_mock
+
+        with self.assertRaises(ValueError) as context:
+            CycleService.stop_cycle(cycle_id=cycle_mock.id, supervisor=self.supervisor)
+        
+        self.mock_stop_cycle.assert_not_called()
+        self.assertIn("Hanya siklus yang aktif yang dapat dihentikan.", str(context.exception))
+
+    def test_stop_cycle_not_owner(self):
+        cycle_mock = MagicMock()
+        cycle_mock.id = uuid.uuid4()
+        cycle_mock.status = "ACTIVE"
+        cycle_mock.supervisor = MagicMock() 
+        self.mock_get_cycle_by_id.return_value = cycle_mock
+
+        with self.assertRaises(ValueError) as context:
+            CycleService.stop_cycle(cycle_id=cycle_mock.id, supervisor=self.supervisor)
+        
+        self.mock_stop_cycle.assert_not_called()
+        self.assertIn("Siklus tidak ditemukan atau Anda tidak memiliki izin untuk menghentikannya.", str(context.exception))
 
     @patch('cycle.repositories.cycle_repo.CycleRepo.get_active_cycle')
     def test_get_active_cycle(self, mock_get):

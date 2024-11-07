@@ -4,10 +4,21 @@ from django.contrib.auth.models import User
 import uuid
 
 class Cycle(models.Model):
+    STATUS_CHOICES = [
+        ('ACTIVE', 'Active'),
+        ('STOPPED', 'Stopped'),
+        ('COMPLETED', 'Completed')
+    ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     start_date = models.DateField()
     end_date = models.DateField()
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='ACTIVE')
+    
+    def stop(self):
+        self.status = 'STOPPED'
+        self.end_date = date.today()
+        self.save()
 
     
 class PondFishAmount(models.Model):
