@@ -1,6 +1,6 @@
 from ninja import Router
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
+from pond.services import PondService
 from .models import Pond
 from .schemas import PondSchema, PondOutputSchema
 from ninja_jwt.authentication import JWTAuth
@@ -10,15 +10,8 @@ router = Router()
 
 @router.post("/", auth=JWTAuth(), response={200: PondOutputSchema})
 def add_pond(request, payload: PondSchema):
-    owner = get_object_or_404(User, id=request.auth.id)
-    pond = Pond.objects.create(
-        owner=owner,
-        name=payload.name,
-        image_name=payload.image_name,
-        length=payload.length,
-        width=payload.width,
-        depth=payload.depth
-    )
+    owner = request.auth
+    pond = PondService.add_pond(owner=owner, payload=payload)
     return pond
 
 @router.get("/{pond_id}/", auth=JWTAuth(), response={200: PondOutputSchema})
