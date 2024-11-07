@@ -37,5 +37,4 @@ class FoodSamplingModelTest(TestCase):
         )
 
     def test_str_method(self):
-        expected_str = f"Food Sampling for {self.pond.name} on {self.food_sampling.sample_date}"
-        self.assertEqual(str(self.food_sampling), expected_str)
+        self.assertEqual(str(self.food_sampling), str(self.food_sampling.sampling_id))

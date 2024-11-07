@@ -5,7 +5,7 @@ from ninja_jwt.authentication import JWTAuth
 from .models import FoodSampling
 from pond.models import Pond
 from cycle.models import Cycle
-from .schemas import FoodSamplingCreateSchema, FoodSamplingOutputSchema
+from .schemas import FoodSamplingCreateSchema, FoodSamplingOutputSchema, FoodSamplingList
 from datetime import datetime
 from ninja.errors import HttpError
 from django.core.exceptions import ObjectDoesNotExist
@@ -43,7 +43,7 @@ def get_food_sampling(request, cycle_id: str, pond_id: str, sampling_id: str):
     return food_sampling
 
 
-@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: List[FoodSamplingOutputSchema]})
+@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: FoodSamplingList})
 def list_food_samplings(request, pond_id: str, cycle_id: str):
     cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
     pond = get_object_or_404(Pond, pond_id=pond_id)
@@ -52,7 +52,10 @@ def list_food_samplings(request, pond_id: str, cycle_id: str):
 
     food_samplings = FoodSampling.objects.filter(cycle=cycle, pond=pond)
 
-    return [food for food in food_samplings]
+    return {
+        "food_samplings": food_samplings,
+        "cycle_id": cycle_id
+    }
 
 @router.get("/{cycle_id}/{pond_id}/latest", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
 def get_latest_food_sampling(request, pond_id: str, cycle_id: str):
@@ -62,7 +65,7 @@ def get_latest_food_sampling(request, pond_id: str, cycle_id: str):
     check_cycle_active(cycle)
 
     try:
-        food_sampling = FoodSampling.objects.filter(pond=pond, cycle=cycle).latest('sample_date')
+        food_sampling = FoodSampling.objects.filter(pond=pond, cycle=cycle).latest('recorded_at')
     except ObjectDoesNotExist:
         raise HttpError(404, DATA_NOT_FOUND)
 
@@ -80,13 +83,18 @@ def create_food_sampling(request, pond_id: str, cycle_id:str, payload: FoodSampl
     except Http404:
         raise HttpError(404, "Pond/Cycle tidak ditemukan")
     
+    today = datetime.now().date()
+    existing_food_sampling = FoodSampling.objects.filter(cycle=cycle, pond=pond, recorded_at__date=today).first()
+    if existing_food_sampling:
+        existing_food_sampling.delete()
+
     try:
         food_sampling = FoodSampling.objects.create(
             pond=pond,
             reporter=reporter,
             cycle=cycle,
             food_quantity=payload.food_quantity,
-            sample_date=payload.sample_date
+            recorded_at=payload.recorded_at
         )
     except:
         raise HttpError(400, "Input kuantitas makanan tidak valid")
