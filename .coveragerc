@@ -1,5 +1,5 @@
 [run]
-source =  .
+source = .
 omit =
     */tests/*
     budidayaplus/urls.py  # Replace project_name with your actual project folder
