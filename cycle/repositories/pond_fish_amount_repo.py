@@ -20,3 +20,4 @@ class PondFishAmountRepo:
             update_data.append(pond_fish_amount)
             
         PondFishAmount.objects.bulk_update(update_data, ['fish_amount'])
+

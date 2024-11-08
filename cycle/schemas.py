@@ -22,6 +22,5 @@ class CycleSchema(Schema):
     id: UUID4
     start_date: date
     end_date: date
-    status: str
     supervisor: str = Field(..., alias='supervisor.username')
     pond_fish_amount: List[PondFishAmountSchema]
