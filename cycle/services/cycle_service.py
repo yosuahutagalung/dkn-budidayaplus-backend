@@ -13,12 +13,12 @@ class CycleService:
 
         if not is_valid_period(payload.start_date, payload.end_date):
             raise ValueError("Periode siklus harus 60 hari")
-        
+
         for pond_fish_amount in payload.pond_fish_amount:
             if (not is_valid_fish_amount(pond_fish_amount.fish_amount)):
                 raise ValueError("Jumlah ikan harus lebih dari 0")
 
-        cycle = CycleRepo.create(payload.start_date, payload.end_date, supervisor)        
+        cycle = CycleRepo.create(payload.start_date, payload.end_date, supervisor)
         PondFishAmountRepo.bulk_create(payload.pond_fish_amount, cycle)
 
         return cycle 
@@ -37,11 +37,3 @@ class CycleService:
             raise ValueError("Siklus tidak ditemukan")
         return cycle
 
-    @staticmethod
-    def stop_cycle(cycle_id: str, supervisor: User):
-        cycle = CycleRepo.get_cycle_by_id(cycle_id)
-        if not cycle or cycle.supervisor != supervisor:
-            raise ValueError("Siklus tidak ditemukan atau Anda tidak memiliki izin untuk menghentikannya.")
-        if cycle.status != 'ACTIVE':
-            raise ValueError("Hanya siklus yang aktif yang dapat dihentikan.")
-        return CycleRepo.stop_cycle(cycle)

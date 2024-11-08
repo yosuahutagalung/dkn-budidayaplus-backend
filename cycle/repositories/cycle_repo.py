@@ -24,10 +24,3 @@ class CycleRepo:
     def get_cycle_by_id(id: str):
         return Cycle.objects.filter(id=id).first()
 
-    @staticmethod
-    def stop_cycle(cycle: Cycle):
-        if cycle.status == "ACTIVE":
-            cycle.status = "STOPPED"
-            cycle.end_date = date.today()
-            cycle.save()
-        return cycle
