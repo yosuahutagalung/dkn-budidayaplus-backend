@@ -1,6 +1,7 @@
 from ninja import Field, Schema
 from datetime import date
 from pydantic import UUID4
+from typing import Optional, List
 
 class FoodSamplingCreateSchema(Schema):
     food_quantity: float
@@ -13,7 +14,3 @@ class FoodSamplingOutputSchema(Schema):
     reporter: str = Field(None, alias="reporter.username")
     food_quantity: float
     sample_date: date
-
-class FoodSamplingHistory(Schema):
-    food_sampling: List[FoodSamplingOutputSchema]
-    cycle_id: UUID4
