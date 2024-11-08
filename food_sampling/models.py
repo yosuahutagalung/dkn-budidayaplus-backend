@@ -10,8 +10,7 @@ class FoodSampling(models.Model):
     pond = models.ForeignKey(Pond, on_delete=models.CASCADE)
     reporter = models.ForeignKey(User, on_delete=models.CASCADE)
     food_quantity = models.FloatField()
-    sample_date = models.DateField()
+    recorded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        # return self.food_id
-        return f"Food Sampling for {self.pond.name} on {self.sample_date}"
+        return str(self.sampling_id)
