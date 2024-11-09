@@ -5,9 +5,8 @@ from ninja_jwt.authentication import JWTAuth
 from cycle.models import Cycle
 from pond.models import Pond
 from pond_quality.models import PondQuality
-from pond_quality.schemas import PondQualityInput, PondQualityOutput
+from pond_quality.schemas import PondQualityInput, PondQualityOutput, PondQualityHistory
 from django.contrib.auth.models import User
-from typing import List
 from ninja.errors import HttpError
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -22,7 +21,7 @@ def check_cycle_active(cycle):
     if not (cycle.start_date <= today <= cycle.end_date):
         raise HttpError(400, CYCLE_NOT_ACTIVE)
 
-@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: List[PondQualityOutput]})
+@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityHistory})
 def list_pond_quality(request, cycle_id: str, pond_id: str):
     cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
     pond = get_object_or_404(Pond, pond_id=pond_id)
@@ -30,7 +29,11 @@ def list_pond_quality(request, cycle_id: str, pond_id: str):
     check_cycle_active(cycle)
     
     pond_quality = PondQuality.objects.filter(cycle=cycle, pond=pond)
-    return pond_quality
+
+    return {
+        "pond_qualities": pond_quality,
+        "cycle_id": cycle_id
+    }
 
 
 @router.post("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
@@ -41,6 +44,12 @@ def add_pond_quality(request, cycle_id: str, pond_id: str, payload: PondQualityI
     
     pond = get_object_or_404(Pond, pond_id=pond_id)
     reporter = get_object_or_404(User, id=request.auth.id)
+
+    today = datetime.now().date()
+    existing_pond_quality = PondQuality.objects.filter(cycle=cycle, pond=pond, recorded_at__date=today).first()
+    if existing_pond_quality:
+        existing_pond_quality.delete()
+
     pond_quality = PondQuality.objects.create(
         cycle = cycle,
         pond = pond,
