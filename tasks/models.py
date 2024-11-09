@@ -8,6 +8,9 @@ class TaskTemplate(models.Model):
     task_type = models.CharField(max_length=4, choices=TaskType.choices)
     day_of_culture = models.PositiveIntegerField()
 
+    class Meta:
+        ordering = ['day_of_culture']
+
 
 class Task(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -16,4 +19,7 @@ class Task(models.Model):
     date = models.DateField()
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
     assignee = models.CharField(max_length=13)
+
+    class Meta:
+        ordering = ['date']
 
