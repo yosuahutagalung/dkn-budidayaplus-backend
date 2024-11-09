@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'user_profile',
     'ninja_extra',
     'corsheaders'
+    'tasks',
 ]
 
 NINJA_JWT = {
