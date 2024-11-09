@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'food_sampling',
     'user_profile',
     'ninja_extra',
-    'corsheaders'
+    'corsheaders',
     'tasks',
 ]
 

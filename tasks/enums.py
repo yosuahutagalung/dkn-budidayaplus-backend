@@ -6,7 +6,7 @@ class TaskStatus(enum.Enum):
 
     @classmethod
     def choices(cls):
-        return tuple(cls)
+        return [(key.value, key.value) for key in cls]
 
 
 class TaskType(enum.Enum):
@@ -16,5 +16,5 @@ class TaskType(enum.Enum):
 
     @classmethod
     def choices(cls):
-        return tuple(cls)
+        return [(key.value, key.value) for key in cls]
 
