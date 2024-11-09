@@ -1,6 +1,6 @@
 from ninja import Schema, Field
 from pydantic import UUID4
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 class PondQualityInput(Schema):
@@ -34,3 +34,7 @@ class PondQualityOutput(Schema):
     ammonia: float
     nitrate: float
     phosphate: float
+
+class PondQualityHistory(Schema):
+    pond_qualities: List[PondQualityOutput]
+    cycle_id: UUID4
