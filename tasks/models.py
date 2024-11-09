@@ -4,7 +4,6 @@ from tasks.enums import TaskStatus, TaskType
 from cycle.models import Cycle
 
 class TaskTemplate(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     task_type = models.CharField(max_length=20, choices=TaskType.choices)
     day_of_culture = models.PositiveIntegerField()
 
