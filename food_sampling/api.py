@@ -2,6 +2,7 @@ from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from ninja_jwt.authentication import JWTAuth
+from django.contrib.auth.models import User
 from .models import FoodSampling
 from pond.models import Pond
 from cycle.models import Cycle
@@ -98,5 +99,5 @@ def create_food_sampling(request, pond_id: str, cycle_id:str, payload: FoodSampl
         )
     except:
         raise HttpError(400, "Input kuantitas makanan tidak valid")
-    
+
     return food_sampling
