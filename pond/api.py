@@ -16,13 +16,13 @@ def add_pond(request, payload: PondSchema):
 
 @router.get("/{pond_id}/", auth=JWTAuth(), response={200: PondOutputSchema})
 def get_pond(request, pond_id: str):
-    pond = get_object_or_404(Pond, pond_id=pond_id)
+    pond = PondService.get_pond(pond_id)
     return pond
 
 @router.get("/", auth=JWTAuth(), response={200: List[PondOutputSchema]})
 def list_ponds_by_user(request):
     user = request.auth
-    ponds = Pond.objects.filter(owner=user)
+    ponds = PondService.list_ponds_by_user(user)
     return ponds
 
 @router.delete("/{pond_id}/", auth=JWTAuth())
