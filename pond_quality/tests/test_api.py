@@ -59,7 +59,7 @@ class PondQualityAPITest(TestCase):
     def test_list_pond_qualities_by_pond(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(len(response.json()['pond_qualities']), 1)
 
     def test_list_pond_qualities_by_pond_invalid_token(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/', headers={"Authorization": "Bearer Invalid Token"})
@@ -103,6 +103,23 @@ class PondQualityAPITest(TestCase):
         self.assertEqual(data['pond'], str(self.pond.pond_id))
         self.assertEqual(data['image_name'], 'test.jpg')
         self.assertEqual(data['ph_level'], 7.0)
+
+    def test_add_pond_quality_already_existing(self):
+        response = self.client.post(f'/{self.cycle.id}/{self.pond.pond_id}/', data=json.dumps({
+            'image_name': 'test.jpg',
+            'ph_level': 7.0,
+            'salinity': 0.0,
+            'water_temperature': 25.0,
+            'water_clarity': 0.0,
+            'water_circulation': 0.0,
+            'dissolved_oxygen': 0.0,
+            'orp': 0.0,
+            'ammonia': 0.0,
+            'nitrate': 0.0,
+            'phosphate': 0.0
+        }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(PondQuality.objects.filter(cycle=self.cycle, pond=self.pond).count(), 1)
 
     def test_add_pond_quality_no_image_name(self):
         response = self.client.post(f'/{self.cycle.id}/{self.pond.pond_id}/', data=json.dumps({
