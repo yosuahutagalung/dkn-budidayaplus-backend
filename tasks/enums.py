@@ -1,12 +1,12 @@
 import enum
 
 class TaskStatus(enum.Enum):
-    DONE = "DONE"
     TODO = "TODO"
+    DONE = "DONE"
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.value) for key in cls]
+        return [(key.value, key.name) for key in cls]
 
 
 class TaskType(enum.Enum):
@@ -16,5 +16,4 @@ class TaskType(enum.Enum):
 
     @classmethod
     def choices(cls):
-        return [(key.value, key.value) for key in cls]
-
+        return [(key.value, key.name) for key in cls]

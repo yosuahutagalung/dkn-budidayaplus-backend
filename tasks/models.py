@@ -17,8 +17,7 @@ class Task(models.Model):
     date = models.DateField()
     status = models.CharField(max_length=4, choices=TaskStatus.choices, default=TaskStatus.TODO)
     cycle = models.ForeignKey(Cycle, on_delete=models.CASCADE)
-    assignee = models.CharField(max_length=13)
+    assignee = models.CharField(max_length=13, blank=True)
 
     class Meta:
         ordering = ['date']
-
