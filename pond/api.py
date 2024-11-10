@@ -27,8 +27,7 @@ def list_ponds_by_user(request):
 
 @router.delete("/{pond_id}/", auth=JWTAuth())
 def delete_pond(request, pond_id: str):
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    pond.delete()
+    PondService.delete_pond(pond_id)
     return {"success": True}
 
 @router.put("/{pond_id}/", auth=JWTAuth(), response={200: PondOutputSchema})
