@@ -1,3 +1,4 @@
+from typing import List
 from django.contrib.auth.models import User
 from .models import Pond
 from .schemas import PondSchema
@@ -14,3 +15,11 @@ class PondService:
             width=payload.width,
             depth=payload.depth
         )
+    
+    @staticmethod
+    def get_pond(pond_id: str) -> Pond:
+        return PondRepository.get_pond_by_id(pond_id)
+    
+    @staticmethod
+    def list_ponds_by_user(user: User) -> List[Pond]:
+        return PondRepository.list_ponds_by_user(user)
