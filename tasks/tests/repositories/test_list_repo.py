@@ -24,7 +24,15 @@ class ListRepoTest(TestCase):
         mock_task2.status = 'TODO'
         mock_task2.cycle_id = cycle_id
 
-        mock_list.return_value = [mock_task1, mock_task2]
+        mock_task3 = MagicMock(spec=Task)
+        mock_task3.id = uuid.uuid4()
+        mock_task3.task_type = 'POND_QUALITY'
+        mock_task3.date = date.today()
+        mock_task3.status = 'TODO'
+        mock_task3.cycle_id = uuid.uuid4()
+
+        mock_task_list = [mock_task1, mock_task2, mock_task3]
+        mock_list.return_value = [task for task in mock_task_list if task.cycle_id == cycle_id]
 
         tasks = ListRepo.list_tasks(cycle_id=cycle_id)
 
