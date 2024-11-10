@@ -23,3 +23,7 @@ class PondService:
     @staticmethod
     def list_ponds_by_user(user: User) -> List[Pond]:
         return PondRepository.list_ponds_by_user(user)
+    
+    @staticmethod
+    def delete_pond(pond_id: str) -> None:
+        PondRepository.delete_pond(pond_id)

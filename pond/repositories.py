@@ -23,3 +23,7 @@ class PondRepository:
     @staticmethod
     def list_ponds_by_user(user: User) -> List[Pond]:
         return Pond.objects.filter(owner=user)
+    
+    @staticmethod
+    def delete_pond(pond_id: str) -> None:
+        get_object_or_404(Pond, pond_id=pond_id).delete()

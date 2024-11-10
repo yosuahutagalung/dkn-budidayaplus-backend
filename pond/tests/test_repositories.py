@@ -35,3 +35,9 @@ class PondRepositoryTest(TestCase):
         self.assertEqual(len(ponds), 2)
         self.assertIn(pond1, ponds)
         self.assertIn(pond2, ponds)
+
+    def test_delete_pond(self):
+        pond = PondRepository.create_pond(self.user, "Pond 1", "image.jpg", 10.0, 5.0, 2.0)
+        PondRepository.delete_pond(pond.pond_id)
+        self.assertEqual(Pond.objects.count(), 0)
+        self.assertFalse(Pond.objects.filter(pond_id=pond.pond_id).exists())
