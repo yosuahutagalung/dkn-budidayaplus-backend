@@ -20,4 +20,9 @@ def list_tasks(request):
 
 @router.get("/sorted", response={200: SortedTaskSchema})
 def list_tasks_sorted(request):
-    pass
+    try:
+        cycle = CycleService.get_active_cycle(request.auth)
+        tasks = ListServiceImpl.list_tasks_sorted_date(cycle.id)
+        return tasks
+    except:
+        raise HttpError(400, "Data tidak ditemukan")
