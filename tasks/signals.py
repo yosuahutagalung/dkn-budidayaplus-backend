@@ -25,5 +25,3 @@ def create_tasks(sender, instance, created, **kwargs):
                 cycle=cycle,
                 assignee='',
             )
-
-        print(f'Successfully copied {counter} TaskTemplate entries to Task for Cycle {cycle.id}')

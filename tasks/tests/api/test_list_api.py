@@ -42,36 +42,38 @@ class TaskAPITest(TestCase):
 
         self.task_list = [self.task, self.task2, self.task3]
 
-        self.mock_list_task = patch('tasks.services.list_service_impl.ListServiceImpl.list_tasks').start()
-        self.mock_get_active_cycle = patch('cycle.services.cycle_service.CycleService.get_active_cycle').start()
-
         self.expected_output = [task for task in self.task_list if task.cycle_id == self.cycle.id]
-        self.mock_list_task.return_value = self.expected_output
-        self.mock_get_active_cycle.return_value = self.cycle
-
-    def tearDown(self):
-        patch.stopall()
 
     def test_list_tasks_api(self):
-        response = list_tasks(self.request)
+        with patch('tasks.services.list_service_impl.ListServiceImpl.list_tasks') as mock_list_tasks, \
+            patch('cycle.services.cycle_service.CycleService.get_active_cycle') as mock_get_active_cycle:
 
-        print(response[0].id)
-        print(response[1].id)
-        print(response[0].task_type)
-        print(response[1].task_type)
-        self.assertEqual(response[0].id, self.expected_output[0].id)
-        self.assertEqual(response[0].task_type, self.expected_output[0].task_type)
-        self.assertEqual(response[1].id, self.expected_output[1].id)
-        self.assertEqual(response[1].task_type, self.expected_output[1].task_type)
+            mock_list_tasks.return_value = self.expected_output
+            mock_get_active_cycle.return_value = self.cycle
+
+            response = list_tasks(self.request)
+
+            self.assertEqual(response[0].id, self.expected_output[0].id)
+            self.assertEqual(response[0].task_type, self.expected_output[0].task_type)
+            self.assertEqual(response[1].id, self.expected_output[1].id)
+            self.assertEqual(response[1].task_type, self.expected_output[1].task_type)
     
     def test_list_tasks_api_empty(self):
-        self.mock_list_task.return_value = []
-        response = list_tasks(self.request)
+        with patch('tasks.services.list_service_impl.ListServiceImpl.list_tasks') as mock_list_tasks, \
+            patch('cycle.services.cycle_service.CycleService.get_active_cycle') as mock_get_active_cycle:
 
-        self.assertEqual(response, [])
+            mock_list_tasks.return_value = []
+            mock_get_active_cycle.return_value = self.cycle
+
+            response = list_tasks(self.request)
+
+            self.assertEqual(response, [])
 
     def test_list_tasks_api_not_found_cycle(self):
-        self.mock_get_active_cycle.return_value = None
-        
-        with self.assertRaises(HttpError):
-            response = list_tasks(self.request)
+        with patch('tasks.services.list_service_impl.ListServiceImpl.list_tasks') as mock_list_tasks, \
+            patch('cycle.services.cycle_service.CycleService.get_active_cycle') as mock_get_active_cycle:
+
+            mock_get_active_cycle.return_value = None
+            
+            with self.assertRaises(HttpError):
+                response = list_tasks(self.request)
