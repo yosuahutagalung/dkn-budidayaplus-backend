@@ -25,4 +25,4 @@ class PondRepository:
     
     @staticmethod
     def delete_pond(pond_id: str) -> None:
-        return
+        Pond.objects.filter(pond_id=pond_id).delete()
