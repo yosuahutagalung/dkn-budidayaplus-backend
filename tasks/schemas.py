@@ -12,6 +12,6 @@ class TaskSchema(Schema):
     cycle_id: UUID4
     assignee: Optional[str] = ''
 
-class SeparateTaskSchema(Schema):
+class SortedTaskSchema(Schema):
     past: List[TaskSchema]
     upcoming: List[TaskSchema]

@@ -1,6 +1,6 @@
 from ninja import Router
 from ninja_jwt.authentication import JWTAuth
-from tasks.schemas import TaskSchema
+from tasks.schemas import TaskSchema, SortedTaskSchema
 from tasks.services.list_service_impl import ListServiceImpl
 from cycle.services.cycle_service import CycleService
 from ninja.errors import HttpError
@@ -16,3 +16,8 @@ def list_tasks(request):
         return tasks
     except:
         raise HttpError(400, "Data tidak ditemukan")
+
+
+@router.get("/sorted", response={200: SortedTaskSchema})
+def list_tasks_sorted(request):
+    pass
