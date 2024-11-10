@@ -5,4 +5,4 @@ class ListRepo(ABC):
     @staticmethod
     @abstractmethod
     def list_tasks(cycle_id: str):
-        pass
+        return Task.objects.filter(cycle_id=cycle_id)
