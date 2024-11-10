@@ -9,4 +9,7 @@ class ListServiceImpl(ListService):
 
     @staticmethod
     def list_tasks_sorted_date(cycle_id: str) -> dict:
-        return {}
+        return {
+            "upcoming": ListRepo.list_upcoming_tasks(cycle_id=cycle_id),
+            "past": ListRepo.list_past_tasks(cycle_id=cycle_id)
+        }
