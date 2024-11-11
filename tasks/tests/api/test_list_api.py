@@ -106,3 +106,12 @@ class TaskAPITest(TestCase):
             self.assertEqual(response["upcoming"][0].id, self.task.id)
             self.assertEqual(response["upcoming"][1].id, self.task2.id)
             self.assertEqual(response["past"][0].id, self.task3.id)
+        
+
+    def test_lists_tasks_api_sorted_no_cycle(self):
+        with patch('cycle.services.cycle_service.CycleService.get_active_cycle') as mock_get_active_cycle:
+
+            mock_get_active_cycle.return_value = None
+            
+            with self.assertRaises(HttpError):
+                list_tasks_sorted(self.request)
