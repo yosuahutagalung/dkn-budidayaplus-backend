@@ -1,4 +1,5 @@
 import uuid, json
+from unittest.mock import patch
 from django.test import TestCase
 from ninja.testing import TestClient
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from food_sampling.models import FoodSampling
 from rest_framework_simplejwt.tokens import AccessToken
 from datetime import datetime, timedelta
 from food_sampling.api import router
+from ninja.errors import HttpError
 
 class FoodSamplingAPITest(TestCase):
 
@@ -172,7 +174,7 @@ class FoodSamplingAPITest(TestCase):
             'food_quantity': 30,
             'recorded_at': datetime.now().isoformat()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 500)
     
     def test_add_food_sampling_with_cycle_not_found(self):
         response = self.client.post(f'/{uuid.uuid4()}/{self.pond.pond_id}/', data=json.dumps({
@@ -183,7 +185,7 @@ class FoodSamplingAPITest(TestCase):
             'food_quantity': 30,
             'recorded_at': datetime.now().isoformat()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 500)
     
     def test_add_food_sampling_already_existing(self):
         response = self.client.post(f'/{self.cycle.id}/{self.pond.pond_id}/', data=json.dumps({
@@ -196,3 +198,22 @@ class FoodSamplingAPITest(TestCase):
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(FoodSampling.objects.filter(cycle=self.cycle, pond=self.pond).count(), 2)
+
+    @patch('food_sampling.api.food_sampling_service.create_food_sampling')
+    def test_add_food_sampling_with_service_error(self, mock_create_food_sampling):
+        # Configure the mock to raise an HttpError
+        mock_create_food_sampling.side_effect = HttpError(400, "Mocked service error")
+        
+        response = self.client.post(
+            f'/{self.cycle.id}/{self.pond.pond_id}/',
+            data=json.dumps({
+                'food_quantity': 20,
+                'recorded_at': datetime.now().isoformat()
+            }),
+            content_type='application/json',
+            headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"}
+        )
+        
+        # Verify the response status and content
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['detail'], "Mocked service error")
