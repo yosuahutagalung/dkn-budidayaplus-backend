@@ -21,7 +21,7 @@ def create_tasks(sender, instance, created, **kwargs):
             Task.objects.create(
                 task_type=template.task_type,
                 date=task_date,
-                status=TaskStatus.TODO,
+                status=TaskStatus.TODO.value,
                 cycle=cycle,
                 assignee='',
             )

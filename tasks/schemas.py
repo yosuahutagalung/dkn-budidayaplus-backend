@@ -12,6 +12,11 @@ class TaskSchema(Schema):
     cycle_id: UUID4
     assignee: Optional[str] = ''
 
+    @staticmethod
+    def resolve_task_type(obj):
+        return ' '.join(obj.task_type.split('_')).title()
+
+
 class SortedTaskSchema(Schema):
     past: List[TaskSchema]
     upcoming: List[TaskSchema]

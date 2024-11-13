@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock
 from django.test import TestCase
-from tasks.models import Task, TaskTemplate
+from tasks.models import TaskTemplate
 from cycle.models import Cycle
 from datetime import timedelta, date
 from tasks.signals import create_tasks
@@ -31,14 +31,14 @@ class TestCycleSignal(TestCase):
         mock_create_task.assert_any_call(
             task_type='POND_QUALITY',
             date=start_date,
-            status=TaskStatus.TODO,
+            status=TaskStatus.TODO.value,
             cycle=mock_cycle,
             assignee=''
         )
         mock_create_task.assert_any_call(
             task_type='FISH_SAMPLING',
             date=start_date + timedelta(days=1),
-            status=TaskStatus.TODO,
+            status=TaskStatus.TODO.value,
             cycle=mock_cycle,
             assignee=''
         )
