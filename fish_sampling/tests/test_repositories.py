@@ -8,6 +8,10 @@ from fish_sampling.repositories import FishSamplingRepository
 
 class FishSamplingRepositoryTest(TestCase):
     def setUp(self):
+        date_now = datetime.now()
+        start_date = date_now - timedelta(days=30)
+        end_date = start_date + timedelta(days=60)
+
         self.user = User.objects.create(username="testuser", password="password")
         
         self.pond = Pond.objects.create(
@@ -20,8 +24,17 @@ class FishSamplingRepositoryTest(TestCase):
         
         self.cycle = Cycle.objects.create(
             supervisor=self.user,
-            start_date=datetime.now().date(),
-            end_date=datetime.now().date() + timedelta(days=30)
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+        self.fish_sampling = FishSampling.objects.create(
+            pond=self.pond,
+            cycle=self.cycle,
+            reporter=self.user,
+            fish_weight=20.0,
+            fish_length=30.0,
+            recorded_at=datetime.now()
         )
 
     def test_create_fish_sampling(self):
@@ -42,3 +55,17 @@ class FishSamplingRepositoryTest(TestCase):
         self.assertEqual(fish_sampling.reporter, self.user)
         self.assertEqual(fish_sampling.fish_weight, fish_weight)
         self.assertEqual(fish_sampling.fish_length, fish_length)
+    
+    def test_get_latest_fish_sampling(self):
+        latest_sampling = FishSamplingRepository.get_latest_fish_sampling(self.pond, self.cycle)
+        self.assertEqual(latest_sampling, self.fish_sampling)
+    
+    def test_get_latest_fish_sampling_no_data(self):
+        self.fish_sampling.delete()
+        latest_sampling = FishSamplingRepository.get_latest_fish_sampling(self.pond, self.cycle)
+        self.assertIsNone(latest_sampling)
+
+    def test_list_fish_samplings(self):
+        samplings = FishSamplingRepository.list_fish_samplings(self.cycle, self.pond)
+        self.assertEqual(len(samplings), 1)
+        self.assertEqual(samplings[0], self.fish_sampling)
