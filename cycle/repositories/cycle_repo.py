@@ -28,5 +28,8 @@ class CycleRepo:
 
     @staticmethod
     def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
-        pass
+        if direction == 'past':
+            return Cycle.objects.filter(supervisor=supervisor, end_date__lt=date)
+        elif direction == 'future':
+            return Cycle.objects.filter(supervisor=supervisor, start_date__gt=date)
 

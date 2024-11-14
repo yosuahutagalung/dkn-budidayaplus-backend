@@ -38,7 +38,7 @@ class TestGetCyclePastAndFuture(TestCase):
 
         self.assertEqual(len(cycles), 1)
         self.assertEqual(cycles[0].id, self.cycle2.id)
-        self.assertNotIn(self.cycle1, cycles)
+        self.assertNotIn(self.cycle, cycles)
 
     @patch('cycle.models.Cycle.objects.filter')
     def test_get_cycle_future(self, mock_filter):
@@ -48,5 +48,5 @@ class TestGetCyclePastAndFuture(TestCase):
 
         self.assertEqual(len(cycles), 1)
         self.assertEqual(cycles[0].id, self.cycle3.id)
-        self.assertNotIn(self.cycle1, cycles)
+        self.assertNotIn(self.cycle, cycles)
 
