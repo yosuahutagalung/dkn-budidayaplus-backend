@@ -32,7 +32,7 @@ class CycleService:
             raise ValueError("Siklus tidak ditemukan")
         return cycle
 
-    @staticmethod   
+    @staticmethod
     def get_cycle_by_id(id: str):
         cycle = CycleRepo.get_cycle_by_id(id)
         if cycle is None:
@@ -41,5 +41,5 @@ class CycleService:
 
     @staticmethod
     def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
-        pass
+        return CycleRepo.get_cycle_past_or_future(supervisor, date, direction)
 
