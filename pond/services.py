@@ -30,4 +30,8 @@ class PondService:
 
     @staticmethod
     def update_pond(pond_id: str, payload: PondSchema) -> Pond:
-        return
+        pond = PondRepository.get_pond_by_id(pond_id)
+        return PondRepository.update_pond(
+            pond=pond,
+            **payload.dict()
+        )
