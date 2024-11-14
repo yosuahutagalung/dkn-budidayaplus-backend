@@ -32,13 +32,5 @@ def delete_pond(request, pond_id: str):
 
 @router.put("/{pond_id}/", auth=JWTAuth(), response={200: PondOutputSchema})
 def update_pond(request, pond_id: str, payload: PondSchema):
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    
-    data = payload.dict()
-    for attr, value in data.items():
-        if not value:
-            continue
-        setattr(pond, attr, value)
-
-    pond.save()
+    pond = PondService.update_pond(pond_id, payload)
     return pond
