@@ -30,4 +30,15 @@ class PondRepository:
 
     @staticmethod
     def update_pond(pond: Pond, name: Optional[str], image_name: Optional[str], length: Optional[float], width: Optional[float], depth: Optional[float]) -> Pond:
-        return
+        if name:
+            pond.name = name
+        if image_name:
+            pond.image_name = image_name
+        if length:
+            pond.length = length
+        if width:
+            pond.width = width
+        if depth:
+            pond.depth = depth
+        pond.save()
+        return pond
