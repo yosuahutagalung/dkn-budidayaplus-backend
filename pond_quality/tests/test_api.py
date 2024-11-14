@@ -122,7 +122,7 @@ class PondQualityAPITest(TestCase):
     def test_list_pond_qualitys(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['pond_qualitys']), 2)
+        self.assertEqual(len(response.json()['pond_qualities']), 2)
 
     def test_list_pond_quality_unauthorized(self):
         response = self.client.get(f'/{self.cycle.id}/{self.pond.pond_id}/{self.pond_quality.id}/', headers={})
@@ -213,7 +213,7 @@ class PondQualityAPITest(TestCase):
             'phosphate': 0.0,
             'recorded_at': datetime.now().isoformat()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 404)
     
     def test_add_pond_quality_with_cycle_not_found(self):
         response = self.client.post(f'/{uuid.uuid4()}/{self.pond.pond_id}/', data=json.dumps({
@@ -230,7 +230,7 @@ class PondQualityAPITest(TestCase):
             'phosphate': 0.0,
             'recorded_at': datetime.now().isoformat()
         }), content_type='application/json', headers={"Authorization": f"Bearer {str(AccessToken.for_user(self.user))}"})
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 404)
     
     def test_add_pond_quality_already_existing(self):
         response = self.client.post(f'/{self.cycle.id}/{self.pond.pond_id}/', data=json.dumps({

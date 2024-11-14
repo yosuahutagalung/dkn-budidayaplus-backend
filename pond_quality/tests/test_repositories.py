@@ -83,4 +83,22 @@ class PondQualityRepositoryTest(TestCase):
     def test_delete_pond_quality(self):
         PondQualityRepository.delete_pond_quality(self.pond_quality)
         with self.assertRaises(PondQuality.DoesNotExist):
-            PondQuality.objects.get(sampling_id=self.pond_quality.sampling_id)
+            PondQuality.objects.get(id=self.pond_quality.id)
+    
+    def test_get_pond_quality_by_id(self):
+        pond_quality = PondQualityRepository.get_pond_quality_by_id(self.pond_quality.id)
+        self.assertEqual(pond_quality, self.pond_quality)
+    
+    def test_get_latest_pond_quality(self):
+        latest = PondQualityRepository.get_latest_pond_quality(self.pond, self.cycle)
+        self.assertEqual(latest, self.pond_quality)
+
+    def test_list_pond_qualities(self):
+        pond_qualities = PondQualityRepository.list_pond_qualities(self.cycle, self.pond)
+        self.assertEqual(len(pond_qualities), 1)
+        self.assertEqual(pond_qualities[0], self.pond_quality)
+
+    def test_get_latest_pond_quality_no_result(self):
+        self.pond_quality.delete()
+        latest = PondQualityRepository.get_latest_pond_quality(self.pond, self.cycle)
+        self.assertIsNone(latest)
