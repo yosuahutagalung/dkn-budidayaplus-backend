@@ -27,3 +27,7 @@ class PondRepository:
     @staticmethod
     def delete_pond(pond_id: str) -> None:
         get_object_or_404(Pond, pond_id=pond_id).delete()
+
+    @staticmethod
+    def update_pond(pond: Pond, name: Optional[str], image_name: Optional[str], length: Optional[float], width: Optional[float], depth: Optional[float]) -> Pond:
+        return

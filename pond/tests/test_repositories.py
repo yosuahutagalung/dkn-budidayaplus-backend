@@ -41,3 +41,13 @@ class PondRepositoryTest(TestCase):
         PondRepository.delete_pond(pond.pond_id)
         self.assertEqual(Pond.objects.count(), 0)
         self.assertFalse(Pond.objects.filter(pond_id=pond.pond_id).exists())
+
+    def test_update_pond(self):
+        pond = PondRepository.create_pond(self.user, "Pond 1", "image.jpg", 10.0, 5.0, 2.0)
+        updated_pond = PondRepository.update_pond(pond, "Pond 2", "image2.jpg", 20.0, 10.0, 4.0)
+        self.assertEqual(Pond.objects.count(), 1)
+        self.assertEqual(updated_pond.name, "Pond 2")
+        self.assertEqual(updated_pond.image_name, "image2.jpg")
+        self.assertEqual(updated_pond.length, 20.0)
+        self.assertEqual(updated_pond.width, 10.0)
+        self.assertEqual(updated_pond.depth, 4.0)

@@ -20,18 +20,21 @@ class PondServiceTest(TestCase):
             patch('pond.repositories.PondRepository.create_pond'),
             patch('pond.repositories.PondRepository.get_pond_by_id'),
             patch('pond.repositories.PondRepository.list_ponds_by_user'),
-            patch('pond.repositories.PondRepository.delete_pond')
+            patch('pond.repositories.PondRepository.delete_pond'),
+            patch('pond.repositories.PondRepository.update_pond')
         ]
 
         self.mock_create_pond = patchers[0].start()
         self.mock_get_pond_by_id = patchers[1].start()
         self.mock_list_ponds_by_user = patchers[2].start()
         self.mock_delete_pond = patchers[3].start()
+        self.mock_update_pond = patchers[4].start()
 
         self.addCleanup(patchers[0].stop)
         self.addCleanup(patchers[1].stop)
         self.addCleanup(patchers[2].stop)
         self.addCleanup(patchers[3].stop)
+        self.addCleanup(patchers[4].stop)
 
     def test_add_pond(self):
         self.mock_create_pond.return_value = MagicMock()
@@ -71,3 +74,18 @@ class PondServiceTest(TestCase):
         
         self.mock_delete_pond.assert_called_once_with(self.pond_id)
         self.assertTrue(self.mock_delete_pond.called)
+
+    def test_update_pond(self):
+        self.mock_update_pond.return_value = MagicMock()
+        
+        pond = PondService.update_pond(self.pond_id, self.pond_data)
+        
+        self.mock_update_pond.assert_called_once_with(
+            pond=self.mock_get_pond_by_id.return_value,
+            name=self.pond_data.name,
+            image_name=self.pond_data.image_name,
+            length=self.pond_data.length,
+            width=self.pond_data.width,
+            depth=self.pond_data.depth
+        )
+        self.assertEqual(pond, self.mock_update_pond.return_value)
