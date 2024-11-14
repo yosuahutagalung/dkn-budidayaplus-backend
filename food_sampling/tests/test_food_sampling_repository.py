@@ -66,3 +66,13 @@ class FoodSamplingRepositoryTest(TestCase):
         FoodSamplingRepository.delete_food_sampling(self.food_sampling)
         with self.assertRaises(FoodSampling.DoesNotExist):
             FoodSampling.objects.get(sampling_id=self.food_sampling.sampling_id)
+
+    def test_get_food_sampling_by_id(self):
+        food_sampling = FoodSamplingRepository.get_food_sampling_by_id(self.food_sampling.sampling_id)
+        self.assertEqual(food_sampling, self.food_sampling)
+    
+    def test_get_latest_food_sampling(self):
+        latest_sampling = FoodSamplingRepository.get_latest_food_sampling(self.pond, self.cycle)
+        self.assertEqual(latest_sampling, self.food_sampling)
+    
+    
