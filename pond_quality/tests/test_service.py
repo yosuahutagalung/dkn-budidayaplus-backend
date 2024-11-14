@@ -65,7 +65,7 @@ class PondQualityServiceTest(TestCase):
             phosphate = 0.0
         )
         self.mock_repository.get_existing_pond_quality.return_value = None
-        self.mock_repository.create_pond_quality.side_effect = ValueError("Invalid food quantity")
+        self.mock_repository.create_pond_quality.side_effect = ValueError("Invalid pond quality")
 
         with self.assertRaises(HttpError) as context:
             self.service.create_pond_quality(
