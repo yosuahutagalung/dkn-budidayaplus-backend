@@ -1,3 +1,5 @@
+from datetime import date
+from typing import Literal
 from django.contrib.auth.models import User
 from cycle.utils import is_valid_fish_amount, is_valid_period
 from cycle.repositories.cycle_repo import CycleRepo
@@ -36,4 +38,8 @@ class CycleService:
         if cycle is None:
             raise ValueError("Siklus tidak ditemukan")
         return cycle
+
+    @staticmethod
+    def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
+        pass
 
