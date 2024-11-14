@@ -74,5 +74,15 @@ class FoodSamplingRepositoryTest(TestCase):
     def test_get_latest_food_sampling(self):
         latest_sampling = FoodSamplingRepository.get_latest_food_sampling(self.pond, self.cycle)
         self.assertEqual(latest_sampling, self.food_sampling)
+
+    def test_list_food_samplings(self):
+        samplings = FoodSamplingRepository.list_food_samplings(self.cycle, self.pond)
+        self.assertEqual(len(samplings), 1)
+        self.assertEqual(samplings[0], self.food_sampling)
+
+    def test_get_latest_food_sampling_no_result(self):
+        self.food_sampling.delete()
+        latest_sampling = FoodSamplingRepository.get_latest_food_sampling(self.pond, self.cycle)
+        self.assertIsNone(latest_sampling)
     
     
