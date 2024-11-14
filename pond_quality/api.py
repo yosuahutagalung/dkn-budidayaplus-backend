@@ -1,97 +1,65 @@
-from datetime import datetime
-from django.shortcuts import get_object_or_404
+from typing import List
 from ninja import Router
+from django.shortcuts import get_object_or_404
 from ninja_jwt.authentication import JWTAuth
-from cycle.models import Cycle
-from pond.models import Pond
-from pond_quality.models import PondQuality
-from pond_quality.schemas import PondQualityInput, PondQualityOutput, PondQualityHistory
-from django.contrib.auth.models import User
-from ninja.errors import HttpError
-from django.core.exceptions import ObjectDoesNotExist
+from .schemas import PondQualityInput, PondQualityOutput, PondQualityHistory
+from pond_quality.services.pond_quality_service import PondQualityService
+from pond_quality.repositories.pond_quality_repository import PondQualityRepository
+from ninja.errors import HttpError as NinjaHttpError
+from django.http import Http404
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
 CYCLE_NOT_ACTIVE = "Siklus tidak aktif"
 UNAUTHORIZED_ACCESS = "Anda tidak memiliki akses untuk melihat data ini"
 
 router = Router()
-
-def check_cycle_active(cycle):
-    today = datetime.now().date()
-    if not (cycle.start_date <= today <= cycle.end_date):
-        raise HttpError(400, CYCLE_NOT_ACTIVE)
-
-@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityHistory})
-def list_pond_quality(request, cycle_id: str, pond_id: str):
-    cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-
-    check_cycle_active(cycle)
-    
-    pond_quality = PondQuality.objects.filter(cycle=cycle, pond=pond)
-
-    return {
-        "pond_qualities": pond_quality,
-        "cycle_id": cycle_id
-    }
-
-
-@router.post("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
-def add_pond_quality(request, cycle_id: str, pond_id: str, payload: PondQualityInput):
-    cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
-
-    check_cycle_active(cycle)
-    
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    reporter = get_object_or_404(User, id=request.auth.id)
-
-    today = datetime.now().date()
-    existing_pond_quality = PondQuality.objects.filter(cycle=cycle, pond=pond, recorded_at__date=today).first()
-    if existing_pond_quality:
-        existing_pond_quality.delete()
-
-    pond_quality = PondQuality.objects.create(
-        cycle = cycle,
-        pond = pond,
-        reporter = reporter,
-        **payload.dict()
-    )
-    return pond_quality
-
+pond_quality_service = PondQualityService(PondQualityRepository())
 
 @router.get("/{cycle_id}/{pond_id}/{pond_quality_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
 def get_pond_quality(request, cycle_id: str, pond_id: str, pond_quality_id: str):
-    cycle = Cycle.objects.get(id=cycle_id)
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    pond_quality = get_object_or_404(PondQuality, id=pond_quality_id)
+    try:
+        return pond_quality_service.get_pond_quality(cycle_id, pond_id, pond_quality_id, request.auth)
+    except NinjaHttpError as e:
+        raise e
+    except Http404 as e:
+        raise NinjaHttpError(404, "Not Found")
+    except Exception:
+        raise NinjaHttpError(500, "An unexpected error occurred")
 
-    check_cycle_active(cycle)
-    
-    if (pond_quality.cycle != cycle):
-        raise HttpError(404, DATA_NOT_FOUND)
-    
-    if (pond_quality.pond != pond):
-        raise HttpError(404, DATA_NOT_FOUND)
-    
-    if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        raise HttpError(401, UNAUTHORIZED_ACCESS)
-    
-    return pond_quality
 
+@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityHistory})
+def list_pond_qualities(request, pond_id: str, cycle_id: str):
+    try:
+        pond_qualities = pond_quality_service.list_pond_qualities(cycle_id, pond_id, request.auth)
+        return {
+            "pond_qualities": pond_qualities,
+            "cycle_id": cycle_id
+        }
+    except NinjaHttpError as e:
+        raise e
+    except Http404 as e:
+        raise NinjaHttpError(404, "Not Found")
+    except Exception:
+        raise NinjaHttpError(500, "An unexpected error occurred")
 
 @router.get("/{cycle_id}/{pond_id}/latest", auth=JWTAuth(), response={200: PondQualityOutput})
-def get_latest_pond_quality(request, cycle_id: str, pond_id: str):
-    cycle = Cycle.objects.get(id=cycle_id)
-    pond = get_object_or_404(Pond, pond_id=pond_id)
-    
-    check_cycle_active(cycle)
-    
+def get_latest_pond_quality(request, pond_id: str, cycle_id: str):
     try:
-        pond_quality = PondQuality.objects.filter(pond=pond, cycle=cycle).latest('recorded_at')
-    except ObjectDoesNotExist:
-        raise HttpError(404, DATA_NOT_FOUND)
-
-    if (pond_quality.reporter != request.auth or pond.owner != request.auth):
-        raise HttpError(401, UNAUTHORIZED_ACCESS)
-    
-    return pond_quality
+        return pond_quality_service.get_latest_pond_quality(cycle_id, pond_id, request.auth)
+    except NinjaHttpError as e:
+        raise e
+    except Http404 as e:
+        raise NinjaHttpError(404, "Not Found")
+    except Exception:
+        raise NinjaHttpError(500, "An unexpected error occurred")
+        
+@router.post("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: PondQualityOutput})
+def create_pond_quality(request, pond_id:str, cycle_id:str, payload:PondQualityInput):
+    try:
+        return pond_quality_service.create_pond_quality(pond_id, cycle_id, request.auth.id, payload)
+    except NinjaHttpError as e:
+        raise e
+    except Http404 as e:
+        raise NinjaHttpError(404, "Not Found")
+    except Exception:
+        raise NinjaHttpError(500, "An unexpected error occurred")
