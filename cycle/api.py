@@ -36,3 +36,7 @@ def get_cycle_by_id(request, id: str):
     except Exception as e:
         raise HttpError(400, str(e))
 
+@router.get('/list', auth=JWTAuth())
+def get_cycle_list(request):
+    pass
+
