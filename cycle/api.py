@@ -40,5 +40,12 @@ def get_cycle_by_id(request, id: str):
 
 @router.get('/list', auth=JWTAuth())
 def get_cycle_list(request):
-    pass
+    try:
+        return {
+            'active': CycleService.get_active_cycle_safe(request.auth),
+            'past': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'past'),
+            'future': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'future')
+        }
+    except Exception as e:
+        raise HttpError(400, str(e))
 
