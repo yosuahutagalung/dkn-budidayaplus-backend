@@ -45,5 +45,6 @@ class CycleService:
 
     @staticmethod
     def get_active_cycle_safe(supervisor: User):
-        pass
+        cycle = CycleRepo.get_active_cycle_safe(supervisor)
+        return cycle
 
