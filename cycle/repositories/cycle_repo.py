@@ -23,6 +23,10 @@ class CycleRepo:
         return Cycle.objects.filter(supervisor=supervisor, start_date__lte=date.today(), end_date__gte=date.today()).first()
 
     @staticmethod
+    def get_active_cycle_safe(supervisor: User):
+        pass
+
+    @staticmethod
     def get_cycle_by_id(id: str):
         return Cycle.objects.filter(id=id).first()
 
