@@ -43,3 +43,7 @@ class CycleService:
     def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
         return CycleRepo.get_cycle_past_or_future(supervisor, date, direction)
 
+    @staticmethod
+    def get_active_cycle_safe(supervisor: User):
+        pass
+
