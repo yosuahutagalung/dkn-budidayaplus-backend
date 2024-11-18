@@ -1,3 +1,4 @@
+from django.utils import timezone
 from ninja import Router
 from cycle.schemas import CycleInput, CycleSchema
 from ninja_jwt.authentication import JWTAuth
@@ -33,6 +34,18 @@ def get_cycle_by_id(request, id: str):
         return CycleSchema.from_orm(cycle)
     except ValueError as e:
         raise HttpError(404, 'Siklus tidak ditemukan')
+    except Exception as e:
+        raise HttpError(400, str(e))
+
+
+@router.get('/list', auth=JWTAuth())
+def get_cycle_list(request):
+    try:
+        return {
+            'active': CycleService.get_active_cycle_safe(request.auth),
+            'past': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'past'),
+            'future': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'future')
+        }
     except Exception as e:
         raise HttpError(400, str(e))
 
