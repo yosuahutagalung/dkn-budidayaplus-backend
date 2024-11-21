@@ -1,0 +1,1442 @@
+[
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 1,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 1
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 2,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 1
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 3,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 1
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 4,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 2
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 5,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 2
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 6,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 2
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 7,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 3
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 8,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 3
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 9,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 3
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 10,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 4
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 11,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 4
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 12,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 4
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 13,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 5
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 14,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 5
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 15,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 5
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 16,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 6
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 17,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 6
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 18,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 6
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 19,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 7
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 20,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 7
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 21,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 7
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 22,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 8
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 23,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 8
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 24,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 8
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 25,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 9
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 26,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 9
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 27,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 9
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 28,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 10
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 29,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 10
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 30,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 10
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 31,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 11
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 32,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 11
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 33,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 11
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 34,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 12
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 35,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 12
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 36,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 12
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 37,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 13
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 38,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 13
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 39,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 13
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 40,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 14
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 41,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 14
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 42,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 14
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 43,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 15
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 44,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 15
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 45,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 15
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 46,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 16
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 47,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 16
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 48,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 16
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 49,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 17
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 50,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 17
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 51,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 17
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 52,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 18
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 53,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 18
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 54,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 18
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 55,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 19
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 56,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 19
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 57,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 19
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 58,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 20
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 59,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 20
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 60,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 20
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 61,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 21
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 62,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 21
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 63,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 21
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 64,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 22
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 65,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 22
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 66,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 22
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 67,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 23
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 68,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 23
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 69,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 23
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 70,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 24
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 71,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 24
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 72,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 24
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 73,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 25
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 74,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 25
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 75,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 25
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 76,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 26
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 77,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 26
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 78,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 26
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 79,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 27
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 80,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 27
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 81,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 27
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 82,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 28
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 83,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 28
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 84,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 28
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 85,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 29
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 86,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 29
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 87,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 29
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 88,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 30
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 89,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 30
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 90,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 30
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 91,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 31
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 92,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 31
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 93,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 31
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 94,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 32
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 95,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 32
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 96,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 32
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 97,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 33
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 98,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 33
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 99,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 33
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 100,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 34
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 101,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 34
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 102,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 34
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 103,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 35
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 104,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 35
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 105,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 35
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 106,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 36
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 107,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 36
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 108,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 36
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 109,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 37
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 110,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 37
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 111,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 37
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 112,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 38
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 113,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 38
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 114,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 38
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 115,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 39
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 116,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 39
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 117,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 39
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 118,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 40
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 119,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 40
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 120,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 40
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 121,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 41
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 122,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 41
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 123,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 41
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 124,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 42
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 125,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 42
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 126,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 42
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 127,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 43
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 128,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 43
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 129,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 43
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 130,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 44
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 131,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 44
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 132,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 44
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 133,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 45
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 134,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 45
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 135,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 45
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 136,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 46
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 137,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 46
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 138,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 46
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 139,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 47
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 140,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 47
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 141,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 47
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 142,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 48
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 143,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 48
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 144,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 48
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 145,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 49
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 146,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 49
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 147,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 49
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 148,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 50
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 149,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 50
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 150,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 50
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 151,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 51
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 152,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 51
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 153,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 51
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 154,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 52
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 155,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 52
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 156,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 52
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 157,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 53
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 158,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 53
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 159,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 53
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 160,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 54
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 161,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 54
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 162,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 54
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 163,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 55
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 164,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 55
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 165,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 55
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 166,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 56
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 167,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 56
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 168,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 56
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 169,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 57
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 170,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 57
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 171,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 57
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 172,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 58
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 173,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 58
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 174,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 58
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 175,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 59
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 176,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 59
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 177,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 59
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 178,
+    "fields": {
+      "task_type": "POND_QUALITY",
+      "day_of_culture": 60
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 179,
+    "fields": {
+      "task_type": "FISH_SAMPLING",
+      "day_of_culture": 60
+    }
+  },
+  {
+    "model": "tasks.tasktemplate",
+    "pk": 180,
+    "fields": {
+      "task_type": "FOOD_SAMPLING",
+      "day_of_culture": 60
+    }
+  }
+]
