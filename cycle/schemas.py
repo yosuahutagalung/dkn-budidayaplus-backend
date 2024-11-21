@@ -24,3 +24,11 @@ class CycleSchema(Schema):
     end_date: date
     supervisor: str = Field(..., alias='supervisor.username')
     pond_fish_amount: List[PondFishAmountSchema]
+
+
+class CycleListSchema(Schema):
+    active: List[CycleSchema]
+    past: List[CycleSchema]
+    future: List[CycleSchema]
+    stopped: List[CycleSchema]
+
