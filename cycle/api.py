@@ -1,6 +1,6 @@
 from django.utils import timezone
 from ninja import Router
-from cycle.schemas import CycleInput, CycleSchema
+from cycle.schemas import CycleInput, CycleListSchema, CycleSchema
 from ninja_jwt.authentication import JWTAuth
 from cycle.services.cycle_service import CycleService
 from ninja.errors import HttpError
@@ -38,14 +38,18 @@ def get_cycle_by_id(request, id: str):
         raise HttpError(400, str(e))
 
 
-@router.get('/list', auth=JWTAuth())
+@router.get('/list', auth=JWTAuth(), response={200: CycleListSchema})
 def get_cycle_list(request):
     try:
+        active_cycles = CycleService.get_active_cycle_safe(request.auth)
+        past_cycles = CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'past')
+        future_cycles = CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'future')
+        stopped_cycles = CycleService.get_stopped_cycle(request.auth)
         return {
-            'active': CycleService.get_active_cycle_safe(request.auth),
-            'past': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'past'),
-            'future': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'future'),
-            'stopped': CycleService.get_stopped_cycle(request.auth)
+            'active': active_cycles,
+            'past': past_cycles,
+            'future': future_cycles
+            'stopped': stopped_cycles
         }
     except Exception as e:
         raise HttpError(400, str(e))
