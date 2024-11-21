@@ -4,6 +4,7 @@ from tasks.repositories.list_repo import ListRepo
 from tasks.models import Task
 from django.utils import timezone
 import uuid
+from ninja.errors import HttpError
 
 class ListRepoTest(TestCase):
     def setUp(self):
@@ -81,3 +82,31 @@ class ListRepoTest(TestCase):
         self.assertEqual(tasks[1].task_type, self.mock_task2.task_type)
         self.assertNotIn(self.mock_task3, tasks)
         self.assertNotIn(self.mock_task4, tasks)
+    
+    @patch('tasks.models.Task.objects.get')
+    def test_assign_task(self, mock_get):
+        mock_task = MagicMock(spec=Task)
+        mock_task.id = self.mock_task1.id
+        mock_task.assignee = ''
+
+        mock_get.return_value = mock_task
+
+        request = MagicMock()
+        request.auth.first_name = "test_user"
+
+        updated_task = ListRepo.assign_task(request, task_id=str(mock_task.id))
+
+        self.assertEqual(updated_task.assignee, "test_user")
+        mock_task.save.assert_called_once()
+
+    @patch('tasks.models.Task.objects.get')
+    def test_assign_task_task_not_found(self, mock_get):
+        mock_get.side_effect = Task.DoesNotExist
+
+        with self.assertRaises(HttpError) as context:
+            request = MagicMock()
+            request.auth.first_name = "test_user"
+            ListRepo.assign_task(request, task_id=str(uuid.uuid4()))
+
+        self.assertEqual(context.exception.status_code, 404)
+        self.assertEqual(str(context.exception), "Task not found")

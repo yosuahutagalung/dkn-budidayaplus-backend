@@ -5,14 +5,16 @@ from datetime import date, timedelta
 from cycle.models import Cycle
 from django.http import HttpRequest
 from django.contrib.auth.models import User
-from tasks.api import list_tasks, list_tasks_sorted
+from tasks.api import list_tasks, list_tasks_sorted, assign_task
 from ninja.errors import HttpError
 import uuid
+
 
 class TaskAPITest(TestCase):
     def setUp(self):
         self.request = MagicMock(spec=HttpRequest)
         self.request.auth = MagicMock(spec=User)
+        self.request.auth.first_name = "test_assignee"
 
         self.cycle = MagicMock(spec=Cycle)
         self.cycle.id = uuid.uuid4()
@@ -25,6 +27,7 @@ class TaskAPITest(TestCase):
         self.task.date = date.today()
         self.task.status = 'TODO'
         self.task.cycle_id = self.cycle.id
+        self.task.assignee = None
 
         self.task2 = MagicMock(spec=Task)
         self.task2.id = uuid.uuid4()
@@ -50,6 +53,8 @@ class TaskAPITest(TestCase):
         self.task_list = [self.task, self.task2, self.task3, self.task4]
 
         self.expected_output = [task for task in self.task_list if task.cycle_id == self.cycle.id]
+
+        self.patch_task_get = patch('tasks.repositories.list_repo.Task.objects.get', return_value=self.task)
 
     def test_list_tasks_api(self):
         with patch('tasks.services.list_service_impl.ListServiceImpl.list_tasks') as mock_list_tasks, \
@@ -115,3 +120,25 @@ class TaskAPITest(TestCase):
             
             with self.assertRaises(HttpError):
                 list_tasks_sorted(self.request)
+
+    def test_assign_task_success(self):
+        with self.patch_task_get, patch('tasks.repositories.list_repo.Task.save') as mock_save:
+            self.task.save = mock_save
+
+            response = assign_task(self.request, self.task.id)
+
+            self.assertEqual(response.assignee, "test_assignee")
+
+            mock_save.assert_called_once()
+
+            self.assertEqual(self.task.assignee, "test_assignee")
+
+            self.assertEqual(response.id, self.task.id)
+
+    def test_assign_task_not_found(self):
+        with patch('tasks.repositories.list_repo.Task.objects.get', side_effect=Task.DoesNotExist):
+            with self.assertRaises(HttpError) as cm:
+                assign_task(self.request, "invalid_task_id")  
+
+            self.assertEqual(cm.exception.status_code, 404)
+            self.assertEqual(str(cm.exception), "Task not found")
