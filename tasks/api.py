@@ -26,3 +26,7 @@ def list_tasks_sorted(request):
         return tasks
     except:
         raise HttpError(400, "Data tidak ditemukan")
+    
+@router.put("/{task_id}/status/", response={200: TaskSchema})
+def set_status(request):
+    return
