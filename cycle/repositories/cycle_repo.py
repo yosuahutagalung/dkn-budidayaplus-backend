@@ -7,7 +7,7 @@ from datetime import date
 class CycleRepo:
     @staticmethod
     def is_active_cycle_exist(supervisor: User, start: date, end: date):
-        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=end, end_date__gte=start).exists()
+        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=end, end_date__gte=start, is_stopped='False').exists()
 
     @staticmethod
     def create(start: date, end: date, supervisor: User):
@@ -20,11 +20,11 @@ class CycleRepo:
 
     @staticmethod
     def get_active_cycle(supervisor: User):
-        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=date.today(), end_date__gte=date.today()).first()
+        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=date.today(), end_date__gte=date.today(), is_stopped='False').first()
 
     @staticmethod
     def get_active_cycle_safe(supervisor: User):
-        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=date.today(), end_date__gte=date.today())
+        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=date.today(), end_date__gte=date.today(), is_stopped='False')
 
     @staticmethod
     def get_cycle_by_id(id: str):
@@ -37,4 +37,12 @@ class CycleRepo:
             'future': {'start_date__gt': date}
         }
         return Cycle.objects.filter(supervisor=supervisor, **filters[direction])
+
+    @staticmethod
+    def stop_cycle(cycle_id: str):
+        cycle = Cycle.objects.filter(id=cycle_id).first()
+        if cycle:
+            cycle.is_stopped = True
+            cycle.save()
+        return cycle
 
