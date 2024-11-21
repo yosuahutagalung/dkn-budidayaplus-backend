@@ -30,4 +30,5 @@ class CycleListSchema(Schema):
     active: List[CycleSchema]
     past: List[CycleSchema]
     future: List[CycleSchema]
+    stopped: List[CycleSchema]
 
