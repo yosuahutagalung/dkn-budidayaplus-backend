@@ -16,10 +16,10 @@ class ListRepo:
         return Task.objects.filter(cycle_id=cycle_id, date__gte=timezone.now().date())
 
     @staticmethod
-    def assign_task(task_id: str, assignee: str) -> Task:
+    def assign_task(request, task_id: str) -> Task:
         try:
             task = Task.objects.get(id=task_id)
-            task.assignee = assignee
+            task.assignee = request.auth.first_name
             task.save()
             return task
         except Task.DoesNotExist:

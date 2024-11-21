@@ -1,5 +1,6 @@
 from tasks.services.list_service import ListService
 from tasks.repositories.list_repo import ListRepo
+from django.contrib.auth.models import User
 
 class ListServiceImpl(ListService):
     @staticmethod
@@ -14,5 +15,5 @@ class ListServiceImpl(ListService):
         }
     
     @staticmethod
-    def assign_task(task_id: str, assignee: str):
-        return ListRepo.assign_task(task_id=task_id, assignee=assignee)
+    def assign_task(request, task_id: str):
+        return ListRepo.assign_task(request=request, task_id=task_id)
