@@ -26,3 +26,11 @@ def list_tasks_sorted(request):
         return tasks
     except:
         raise HttpError(400, "Data tidak ditemukan")
+
+@router.put("/assign/{task_id}", response={200: TaskSchema})
+def assign_task(request, task_id: str, assignee: str):
+    try:
+        task = ListServiceImpl.assign_task(task_id=task_id, assignee=assignee)
+        return task
+    except HttpError as e:
+        raise e

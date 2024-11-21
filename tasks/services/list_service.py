@@ -14,3 +14,10 @@ class ListService(ABC):
         cycle sorted into upcoming and past
         tasks 
         """
+    
+    @staticmethod
+    @abstractmethod
+    def assign_task(task_id: str, assignee: str):
+        """
+        Assign a task to an assignee
+        """

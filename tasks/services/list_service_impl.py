@@ -12,3 +12,7 @@ class ListServiceImpl(ListService):
             "upcoming": ListRepo.list_upcoming_tasks(cycle_id=cycle_id),
             "past": ListRepo.list_past_tasks(cycle_id=cycle_id)
         }
+    
+    @staticmethod
+    def assign_task(task_id: str, assignee: str):
+        return ListRepo.assign_task(task_id=task_id, assignee=assignee)
