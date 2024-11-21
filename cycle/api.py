@@ -48,7 +48,7 @@ def get_cycle_list(request):
         return {
             'active': active_cycles,
             'past': past_cycles,
-            'future': future_cycles
+            'future': future_cycles,
             'stopped': stopped_cycles
         }
     except Exception as e:
