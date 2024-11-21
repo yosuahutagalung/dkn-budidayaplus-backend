@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from cycle.models import Cycle
 from django.http import HttpRequest
 from django.contrib.auth.models import User
-from tasks.api import list_tasks, list_tasks_sorted
+from tasks.api import list_tasks, list_tasks_sorted, assign_task
 from ninja.errors import HttpError
 import uuid
 
@@ -25,6 +25,7 @@ class TaskAPITest(TestCase):
         self.task.date = date.today()
         self.task.status = 'TODO'
         self.task.cycle_id = self.cycle.id
+        self.task.assignee = "test_assignee"
 
         self.task2 = MagicMock(spec=Task)
         self.task2.id = uuid.uuid4()
@@ -115,3 +116,25 @@ class TaskAPITest(TestCase):
             
             with self.assertRaises(HttpError):
                 list_tasks_sorted(self.request)
+    
+    def test_assign_task_success(self):
+        with patch('tasks.services.list_service_impl.ListServiceImpl.assign_task') as mock_assign_task:
+            mock_assign_task.return_value = self.task
+            self.task.assignee = self.task.assignee 
+
+            response = assign_task(self.request, str(self.task.id), self.task.assignee)
+
+            self.assertEqual(response.id, self.task.id)
+            self.assertEqual(response.assignee, self.task.assignee)
+            mock_assign_task.assert_called_once_with(task_id=str(self.task.id), assignee=self.task.assignee)
+    
+    def test_assign_task_not_found(self):
+        with patch('tasks.services.list_service_impl.ListServiceImpl.assign_task') as mock_assign_task:
+            mock_assign_task.side_effect = HttpError(404, "Task not found")
+
+            with self.assertRaises(HttpError) as context:
+                assign_task(self.request, str(uuid.uuid4()), self.task.assignee)
+
+            self.assertEqual(context.exception.status_code, 404)
+            self.assertEqual(str(context.exception), "Task not found")
+            mock_assign_task.assert_called_once()
