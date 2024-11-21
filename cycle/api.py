@@ -44,8 +44,20 @@ def get_cycle_list(request):
         return {
             'active': CycleService.get_active_cycle_safe(request.auth),
             'past': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'past'),
-            'future': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'future')
+            'future': CycleService.get_cycle_past_or_future(request.auth, timezone.now().date(), 'future'),
+            'stopped': CycleService.get_stopped_cycle(request.auth)
         }
+    except Exception as e:
+        raise HttpError(400, str(e))
+
+
+@router.post('/stop/{id}/', auth=JWTAuth())
+def stop_cycle(request, id: str):
+    try:
+        CycleService.stop_cycle(id, request.auth)
+        return {"message": "Siklus berhasil dihentikan"}
+    except ValueError as e:
+        raise HttpError(400, str(e))
     except Exception as e:
         raise HttpError(400, str(e))
 
