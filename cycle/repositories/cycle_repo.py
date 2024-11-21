@@ -18,9 +18,8 @@ class CycleRepo:
 
     @staticmethod
     def get_active_cycle(supervisor: User):
-        return Cycle.objects.filter(supervisor=supervisor, start_date__lte=date.today(), end_date__gte=date.today()).first()
-    
+        return Cycle.objects.filter(supervisor=supervisor, start_date__gt=date.today()).last()
+
     @staticmethod
     def get_cycle_by_id(id: str):
         return Cycle.objects.filter(id=id).first()
-
