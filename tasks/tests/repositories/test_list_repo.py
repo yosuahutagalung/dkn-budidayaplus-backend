@@ -91,11 +91,12 @@ class ListRepoTest(TestCase):
 
         mock_get.return_value = mock_task
 
-        assignee = "test_user"
-        updated_task = ListRepo.assign_task(task_id=str(mock_task.id), assignee=assignee)
+        request = MagicMock()
+        request.auth.first_name = "test_user"
 
-        # Assertions
-        self.assertEqual(updated_task.assignee, assignee)
+        updated_task = ListRepo.assign_task(request, task_id=str(mock_task.id))
+
+        self.assertEqual(updated_task.assignee, "test_user")
         mock_task.save.assert_called_once()
 
     @patch('tasks.models.Task.objects.get')
@@ -103,7 +104,9 @@ class ListRepoTest(TestCase):
         mock_get.side_effect = Task.DoesNotExist
 
         with self.assertRaises(HttpError) as context:
-            ListRepo.assign_task(task_id=str(uuid.uuid4()), assignee="test_user")
+            request = MagicMock()
+            request.auth.first_name = "test_user"
+            ListRepo.assign_task(request, task_id=str(uuid.uuid4()))
 
         self.assertEqual(context.exception.status_code, 404)
         self.assertEqual(str(context.exception), "Task not found")

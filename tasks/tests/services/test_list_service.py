@@ -4,6 +4,7 @@ from tasks.services.list_service_impl import ListServiceImpl
 from tasks.models import Task
 import uuid
 from ninja.errors import HttpError
+from django.http import HttpRequest
 
 class ListServiceImplTest(TestCase):
 
@@ -66,12 +67,13 @@ class ListServiceImplTest(TestCase):
             mock_task.assignee = assignee
 
             mock_assign_task.return_value = mock_task
+            request = MagicMock(HttpRequest)
 
-            assigned_task = ListServiceImpl.assign_task(task_id=task_id, assignee=assignee)
+            assigned_task = ListServiceImpl.assign_task(request=request, task_id=task_id)
 
             self.assertEqual(assigned_task.id, task_id)
             self.assertEqual(assigned_task.assignee, assignee)
-            mock_assign_task.assert_called_once_with(task_id=task_id, assignee=assignee)
+            mock_assign_task.assert_called_once_with(request=request, task_id=task_id)
 
     def test_assign_task_not_found(self):
         with patch('tasks.repositories.list_repo.ListRepo.assign_task') as mock_assign_task:
@@ -80,9 +82,13 @@ class ListServiceImplTest(TestCase):
 
             mock_assign_task.side_effect = HttpError(404, "Task not found")
 
+            request = MagicMock(HttpRequest)
+            request.auth = MagicMock()  
+            request.auth.first_name = assignee  
+
             with self.assertRaises(HttpError) as context:
-                ListServiceImpl.assign_task(task_id=task_id, assignee=assignee)
+                ListServiceImpl.assign_task(request=request, task_id=task_id)
 
             self.assertEqual(context.exception.status_code, 404)
             self.assertEqual(str(context.exception), "Task not found")
-            mock_assign_task.assert_called_once_with(task_id=task_id, assignee=assignee)
+            mock_assign_task.assert_called_once_with(request=request, task_id=task_id)
