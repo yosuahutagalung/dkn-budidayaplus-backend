@@ -4,6 +4,7 @@ from tasks.schemas import TaskSchema, SortedTaskSchema
 from tasks.services.list_service_impl import ListServiceImpl
 from cycle.services.cycle_service import CycleService
 from ninja.errors import HttpError
+from ninja.pagination import paginate
 from typing import List
 
 router = Router(auth=JWTAuth())
@@ -26,3 +27,8 @@ def list_tasks_sorted(request):
         return tasks
     except:
         raise HttpError(400, "Data tidak ditemukan")
+
+@router.get("/filter", response={200: List[TaskSchema]})
+@paginate
+def filter_tasks(request):
+    return

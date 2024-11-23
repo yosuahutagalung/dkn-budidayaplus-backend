@@ -35,6 +35,6 @@ class TestFilterService(TestCase):
     @patch('tasks.repositories.filter_repo.FilterRepo.filter_tasks')
     def test_filter_tasks(self, mock_filter):
         mock_filter.return_value = [task for task in self.task_repository if task.assignee == "Rafi"]
-        tasks = FilterServiceImpl.filter_tasks(assignee_username="Rafi")
+        tasks = FilterServiceImpl.filter_tasks(cycle_id='1', assignee_username="Rafi")
         self.assertEqual(tasks, mock_filter.return_value)
 

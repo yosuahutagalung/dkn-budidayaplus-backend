@@ -35,28 +35,28 @@ class TestFilterRepo(TestCase):
     def test_filter_tasks_by_assignee(self, mock_filter):
         assignee = "Rafi"
         mock_filter.return_value = [task for task in self.task_repository if task.assignee == assignee]
-        tasks = FilterRepo.filter_tasks(assignee_username=assignee)
+        tasks = FilterRepo.filter_tasks(cycle_id='test',assignee_username=assignee)
         self.assertEqual(tasks, mock_filter.return_value)
 
     @patch('tasks.models.Task.objects.filter')
     def test_filter_tasks_by_period(self, mock_filter):
         period = "today"
         mock_filter.return_value = [task for task in self.task_repository if task.date == timezone.now().date()]
-        tasks = FilterRepo.filter_tasks(period=period)
+        tasks = FilterRepo.filter_tasks(cycle_id='test', period=period)
         self.assertEqual(tasks, mock_filter.return_value)
 
     @patch('tasks.models.Task.objects.filter')
     def test_filter_tasks_by_period_past(self, mock_filter):
         period = "past"
         mock_filter.return_value = [task for task in self.task_repository if task.date < timezone.now().date()]
-        tasks = FilterRepo.filter_tasks(period=period)
+        tasks = FilterRepo.filter_tasks(cycle_id='test', period=period)
         self.assertEqual(tasks, mock_filter.return_value)
 
     @patch('tasks.models.Task.objects.filter')
     def test_filter_tasks_by_period_upcoming(self, mock_filter):
         period = "upcoming"
         mock_filter.return_value = [task for task in self.task_repository if task.date > timezone.now().date()]
-        tasks = FilterRepo.filter_tasks(period=period)
+        tasks = FilterRepo.filter_tasks(cycle_id='test', period=period)
         self.assertEqual(tasks, mock_filter.return_value)
 
     @patch('tasks.models.Task.objects.filter')
@@ -64,6 +64,6 @@ class TestFilterRepo(TestCase):
         assignee = "Rafi"
         period = "today"
         mock_filter.return_value = [task for task in self.task_repository if task.assignee == assignee and task.date == timezone.now().date()]
-        tasks = FilterRepo.filter_tasks(assignee_username=assignee, period=period)
+        tasks = FilterRepo.filter_tasks(cycle_id='test', assignee_username=assignee, period=period)
         self.assertEqual(tasks, mock_filter.return_value)
 
