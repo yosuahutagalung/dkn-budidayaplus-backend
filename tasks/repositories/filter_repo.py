@@ -4,7 +4,7 @@ from tasks.models import Task
 
 class FilterRepo:
     @staticmethod
-    def filter_tasks(cycle_id: str, period: str = "today", assignee_username: str = ""):
+    def filter_tasks(cycle_id: str, period: str|None = None, assignee_username: str|None = None):
         filters = {}
         today = now().date()
 
