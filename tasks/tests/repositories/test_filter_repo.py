@@ -46,6 +46,20 @@ class TestFilterRepo(TestCase):
         self.assertEqual(tasks, mock_filter.return_value)
 
     @patch('tasks.models.Task.objects.filter')
+    def test_filter_tasks_by_period_past(self, mock_filter):
+        period = "past"
+        mock_filter.return_value = [task for task in self.task_repository if task.date < timezone.now().date()]
+        tasks = FilterRepo.filter_tasks(period=period)
+        self.assertEqual(tasks, mock_filter.return_value)
+
+    @patch('tasks.models.Task.objects.filter')
+    def test_filter_tasks_by_period_upcoming(self, mock_filter):
+        period = "upcoming"
+        mock_filter.return_value = [task for task in self.task_repository if task.date > timezone.now().date()]
+        tasks = FilterRepo.filter_tasks(period=period)
+        self.assertEqual(tasks, mock_filter.return_value)
+
+    @patch('tasks.models.Task.objects.filter')
     def test_filter_tasks_by_assignee_and_period(self, mock_filter):
         assignee = "Rafi"
         period = "today"
