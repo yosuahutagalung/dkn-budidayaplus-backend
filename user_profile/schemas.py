@@ -20,3 +20,8 @@ class UpdateProfileSchema(Schema):
     first_name: Optional[str] = ''
     last_name: Optional[str] = ''
     image_name: Optional[str] = ''
+
+class WorkerSchema(Schema):
+    id: UUID4
+    first_name: Optional[str]= ''
+    last_name: Optional[str]= ''

@@ -4,7 +4,8 @@ from user_profile.services.update_service_impl import UpdateServiceImpl
 from ninja_jwt.authentication import JWTAuth
 from user_profile.models import UserProfile
 from ninja.errors import HttpError
-from user_profile.schemas import ProfileSchema, UpdateProfileSchema
+from user_profile.schemas import ProfileSchema, UpdateProfileSchema, WorkerSchema
+from typing import List
 
 router = Router(auth=JWTAuth())
 
@@ -31,3 +32,7 @@ def get_profile(request, username: str):
 @router.get("/", response=ProfileSchema)
 def get_profile_by_user(request):
     return handle_exceptions(RetrieveServiceImpl.retrieve_profile_by_user, request.auth)
+
+@router.get("/workers/list/", response={200: List[WorkerSchema]})
+def get_workers_by_user(request):
+    return handle_exceptions(RetrieveServiceImpl.get_workers, request.auth)
