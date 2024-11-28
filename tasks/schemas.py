@@ -18,8 +18,11 @@ class TaskSchema(Schema):
     def resolve_task_type(obj):
         return ' '.join(obj.task_type.split('_')).title()
     
+    @validator("status", pre=True, always=True)
     def serialize_status(cls, value):
-        return
+        if isinstance(value, TaskStatus):
+            return value.value
+        return value
 
 
 class SortedTaskSchema(Schema):
