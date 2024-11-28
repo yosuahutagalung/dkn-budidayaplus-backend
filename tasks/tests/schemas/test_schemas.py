@@ -20,3 +20,15 @@ class TestTaskSchemas(TestCase):
         
         self.assertEqual(task_serialized.task_type, 'Pond Quality')
         
+    def test_serialize_status(self):
+        task = MagicMock(spec=Task)
+        task.id = uuid.uuid4()
+        task.task_type = TaskType.POND_QUALITY.value
+        task.status = TaskStatus.TODO
+        task.date = timezone.now().date()
+        task.cycle_id = uuid.uuid4()
+        task.assignee = ''
+        
+        task_serialized = TaskSchema.from_orm(task)
+        
+        self.assertEqual(task_serialized.status, TaskStatus.TODO.value)

@@ -1,5 +1,5 @@
 from ninja import Schema
-from pydantic import UUID4
+from pydantic import UUID4, validator
 from datetime import date
 from typing import Optional
 from typing import List
@@ -17,6 +17,9 @@ class TaskSchema(Schema):
     @staticmethod
     def resolve_task_type(obj):
         return ' '.join(obj.task_type.split('_')).title()
+    
+    def serialize_status(cls, value):
+        return
 
 
 class SortedTaskSchema(Schema):
