@@ -66,4 +66,10 @@ class TestFilterRepo(TestCase):
         mock_filter.return_value = [task for task in self.task_repository if task.assignee == assignee and task.date == timezone.now().date()]
         tasks = FilterRepo.filter_tasks(cycle_id='test', assignee_username=assignee, period=period)
         self.assertEqual(tasks, mock_filter.return_value)
-
+    
+    @patch('tasks.models.Task.objects.filter')
+    def test_filter_tasks_by_date(self, mock_filter):
+        filter_date = timezone.now().date()  
+        mock_filter.return_value = [task for task in self.task_repository if task.date == filter_date]
+        tasks = FilterRepo.filter_tasks_by_date(cycle_id='test', date=filter_date)
+        self.assertEqual(tasks, mock_filter.return_value)
