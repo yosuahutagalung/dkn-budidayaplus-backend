@@ -25,3 +25,4 @@ class WorkerSchema(Schema):
     id: UUID4
     first_name: Optional[str]= ''
     last_name: Optional[str]= ''
+    phone_number: str
