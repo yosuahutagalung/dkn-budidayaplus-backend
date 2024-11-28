@@ -40,7 +40,7 @@ class RetrieveServiceImplTest(TestCase):
             self.service.retrieve_profile_by_user(User.objects.create_user(username='08123456788', password='admin1234'))
 
     def test_get_workers_by_user(self):
-        expected = [WorkerSchema(id=self.worker.id, first_name="lala", last_name="lele")]
+        expected = [WorkerSchema(id=self.worker.id, phone_number= "08123456789", first_name="lala", last_name="lele")]
         actual = self.service.get_workers(self.user)
         self.assertEqual(actual, expected)
 

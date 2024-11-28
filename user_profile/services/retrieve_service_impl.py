@@ -27,6 +27,7 @@ class RetrieveServiceImpl(RetrieveService):
                 id=worker.id,
                 first_name=worker.user_profile.user.first_name,
                 last_name=worker.user_profile.user.last_name,
+                phone_number=worker.user_profile.user.username,
             ))
 
         return ans
