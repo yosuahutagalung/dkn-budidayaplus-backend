@@ -1,6 +1,6 @@
 from django.utils.timezone import now
 from tasks.models import Task
-
+from datetime import date
 
 class FilterRepo:
     @staticmethod
@@ -20,3 +20,6 @@ class FilterRepo:
 
         return Task.objects.filter(**filters, cycle_id=cycle_id)
 
+    @staticmethod
+    def filter_tasks_by_date(cycle_id: str, date: date):
+        return Task.objects.filter(cycle_id=cycle_id, date=date)
