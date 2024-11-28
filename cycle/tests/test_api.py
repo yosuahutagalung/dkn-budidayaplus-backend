@@ -156,3 +156,68 @@ class CycleAPITest(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    @patch('cycle.services.cycle_service.CycleService.stop_cycle')
+    def test_stop_cycle(self, mock_stop_cycle):
+        mock_cycle = MagicMock(spec=Cycle)
+        mock_cycle.id = uuid.uuid4()
+        mock_cycle.is_stopped = True
+        mock_stop_cycle.return_value = mock_cycle
+
+        response = self.client.post(
+            f'/stop/{mock_cycle.id}/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"message": "Siklus berhasil dihentikan"})
+
+    @patch('cycle.services.cycle_service.CycleService.get_cycle_by_id')
+    def test_get_cycle_by_id(self, mock_get_cycle_by_id):
+        mock_cycle = MagicMock(spec=Cycle)
+        mock_cycle.id = uuid.uuid4()
+        mock_cycle.start_date = date(2024, 10, 23)
+        mock_cycle.end_date = date(2024, 12, 22)
+        mock_cycle.supervisor = self.user
+        mock_get_cycle_by_id.return_value = mock_cycle
+
+        response = self.client.get(
+            f'/{mock_cycle.id}/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+        self.assertEqual(response.status_code, 200)
+
+    @patch('cycle.services.cycle_service.CycleService.get_cycle_by_id')
+    def test_get_cycle_by_id_not_found(self, mock_get_cycle_by_id):
+        mock_get_cycle_by_id.return_value = None
+
+        response = self.client.get(
+            f'/{uuid.uuid4()}/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+        self.assertEqual(response.status_code, 404)
+
+    @patch('cycle.services.cycle_service.CycleService.stop_cycle')
+    def test_stop_cycle_value_error(self, mock_stop_cycle):
+        mock_stop_cycle.side_effect = ValueError("Cycle not found or unauthorized")
+    
+        response = self.client.post(
+            f'/stop/{uuid.uuid4()}/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+    
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail': 'Cycle not found or unauthorized'})
+
+    @patch('cycle.services.cycle_service.CycleService.stop_cycle')
+    def test_stop_cycle_generic_exception(self, mock_stop_cycle):
+        mock_stop_cycle.side_effect = Exception("Unexpected error occurred")
+    
+        response = self.client.post(
+            f'/stop/{uuid.uuid4()}/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+    
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'detail': 'Unexpected error occurred'})
+
+
+

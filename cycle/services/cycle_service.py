@@ -1,8 +1,11 @@
+from datetime import date
+from typing import Literal
 from django.contrib.auth.models import User
 from cycle.utils import is_valid_fish_amount, is_valid_period
 from cycle.repositories.cycle_repo import CycleRepo
 from cycle.repositories.pond_fish_amount_repo import PondFishAmountRepo
 from cycle.schemas import CycleInput
+from cycle.models import Cycle
 
 
 class CycleService:
@@ -30,10 +33,30 @@ class CycleService:
             raise ValueError("Siklus tidak ditemukan")
         return cycle
 
-    @staticmethod   
+    @staticmethod
     def get_cycle_by_id(id: str):
         cycle = CycleRepo.get_cycle_by_id(id)
         if cycle is None:
             raise ValueError("Siklus tidak ditemukan")
         return cycle
 
+    @staticmethod
+    def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
+        return CycleRepo.get_cycle_past_or_future(supervisor, date, direction)
+
+    @staticmethod
+    def get_active_cycle_safe(supervisor: User):
+        cycle = CycleRepo.get_active_cycle_safe(supervisor)
+        return cycle
+
+    @staticmethod
+    def get_stopped_cycle(supervisor: User):
+        return Cycle.objects.filter(supervisor=supervisor, is_stopped=True)
+
+    @staticmethod
+    def stop_cycle(cycle_id: str, supervisor: User):
+        cycle = CycleRepo.get_cycle_by_id(cycle_id)
+        if not cycle:
+            raise ValueError("Siklus tidak ditemukan")
+        CycleRepo.stop_cycle(cycle_id)
+        return cycle

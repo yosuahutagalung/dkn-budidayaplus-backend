@@ -8,6 +8,7 @@ class Cycle(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_stopped = models.BooleanField(default=False)
 
 class PondFishAmount(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
