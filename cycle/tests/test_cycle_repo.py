@@ -76,3 +76,22 @@ class CycleRepoTest(TestCase):
 
         self.assertIsNone(cycle_by_id)
 
+    def test_stop_cycle(self):
+        cycle = Cycle.objects.create(
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=60),
+            supervisor=self.user,
+            is_stopped=False
+        )
+
+        stopped_cycle = CycleRepo.stop_cycle(cycle.id)
+        cycle.refresh_from_db()
+
+        self.assertEqual(stopped_cycle, cycle)
+        self.assertTrue(cycle.is_stopped)
+
+    def test_stop_cycle_not_exist(self):
+        ex_id = uuid.uuid4()
+        stopped_cycle = CycleRepo.stop_cycle(str(ex_id))
+        self.assertIsNone(stopped_cycle)
+

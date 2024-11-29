@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'food_sampling',
     'user_profile',
     'ninja_extra',
-    'corsheaders'
+    'corsheaders',
+    'tasks',
 ]
 
 NINJA_JWT = {
@@ -201,7 +202,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
