@@ -11,6 +11,7 @@ from user_profile.signals import create_user_profile
 service_impl = "RetrieveServiceImpl"
 MOCK_SERVICE = f'user_profile.services.retrieve_service_impl.{service_impl}.retrieve_profile'
 MOCK_SERVICE_BY_USER = f'user_profile.services.retrieve_service_impl.{service_impl}.retrieve_profile_by_user'
+MOCK_SERVICE_WORKERS_BY_USER = f'user_profile.services.retrieve_service_impl.{service_impl}.get_workers'
 
 class RetrieveUserProfileAPITest(TestCase):
     def setUp(self):
@@ -106,6 +107,49 @@ class RetrieveUserProfileAPITest(TestCase):
 
         response = self.client.get(
             '/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json().get("detail"), "Unexpected error")
+
+    @patch(MOCK_SERVICE_WORKERS_BY_USER)
+    def test_get_workers_by_user(self, mock_get_workers):
+        mock_get_workers.return_value = []
+
+        response = self.client.get(
+            '/workers/list/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
+        )
+        self.assertEqual(response.status_code, 200)
+
+    @patch(MOCK_SERVICE_WORKERS_BY_USER)
+    def test_get_workers_by_user_not_found(self, mock_get_workers):
+        mock_get_workers.side_effect = UserProfile.DoesNotExist
+
+        response = self.client.get(
+            '/workers/list/',
+            headers={"Authorization": f"Bearer {AccessToken.for_user(User.objects.create_user(username='08123456788', password='admin1234'))}"}
+        )
+        self.assertEqual(response.status_code, 404)
+    
+    @patch(MOCK_SERVICE_WORKERS_BY_USER)
+    def test_get_workers_by_user_unauthorized(self, mock_get_workers):
+        mock_get_workers.return_value = []
+
+        response = self.client.get(
+            '/workers/list/',
+            headers={"Authorization": "Bearer invalid_token"}
+        )
+        self.assertEqual(response.status_code, 401)
+
+    @patch(MOCK_SERVICE_WORKERS_BY_USER)
+    def test_get_workers_by_user_generic_error(self, mock_get_workers):
+        """Test generic error handling when an unexpected exception occurs."""
+        mock_get_workers.side_effect = Exception("Unexpected error")
+
+        response = self.client.get(
+            '/workers/list/',
             headers={"Authorization": f"Bearer {AccessToken.for_user(self.user)}"}
         )
 
