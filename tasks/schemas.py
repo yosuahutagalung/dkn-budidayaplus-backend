@@ -4,6 +4,8 @@ from datetime import date
 from typing import Optional
 from typing import List
 
+from tasks.enums import TaskPeriod
+
 class TaskSchema(Schema):
     id: UUID4
     task_type: str
@@ -20,3 +22,10 @@ class TaskSchema(Schema):
 class SortedTaskSchema(Schema):
     past: List[TaskSchema]
     upcoming: List[TaskSchema]
+
+
+class TaskFilterSchema(Schema):
+    limit: int = 10
+    offset: int = 0
+    period: Optional[TaskPeriod] = None
+    assignee: Optional[str] = None
