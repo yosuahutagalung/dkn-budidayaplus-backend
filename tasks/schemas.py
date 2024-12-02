@@ -1,10 +1,10 @@
 from ninja import Schema
-from pydantic import UUID4
+from pydantic import UUID4, validator
 from datetime import date
 from typing import Optional
 from typing import List
+from tasks.enums import TaskStatus, TaskPeriod
 
-from tasks.enums import TaskPeriod
 
 class TaskSchema(Schema):
     id: UUID4
@@ -17,12 +17,20 @@ class TaskSchema(Schema):
     @staticmethod
     def resolve_task_type(obj):
         return ' '.join(obj.task_type.split('_')).title()
+    
+    @validator("status", pre=True, always=True)
+    def serialize_status(cls, value):
+        if isinstance(value, TaskStatus):
+            return value.value
+        return value
 
 
 class SortedTaskSchema(Schema):
     past: List[TaskSchema]
     upcoming: List[TaskSchema]
 
+class TaskStatusSchema(Schema):
+    status: TaskStatus
 
 class TaskFilterSchema(Schema):
     limit: int = 10
