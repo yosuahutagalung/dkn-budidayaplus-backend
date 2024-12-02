@@ -3,6 +3,8 @@ from pydantic import UUID4, validator
 from datetime import date
 from typing import Optional
 from typing import List
+
+from pydantic.functional_validators import field_validator
 from tasks.enums import TaskStatus, TaskPeriod
 
 
@@ -17,13 +19,6 @@ class TaskSchema(Schema):
     @staticmethod
     def resolve_task_type(obj):
         return ' '.join(obj.task_type.split('_')).title()
-    
-    @validator("status", pre=True, always=True)
-    def serialize_status(cls, value):
-        if isinstance(value, TaskStatus):
-            return value.value
-        return value
-
 
 class SortedTaskSchema(Schema):
     past: List[TaskSchema]

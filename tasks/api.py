@@ -1,6 +1,7 @@
 from ninja import Query, Router
 from ninja_jwt.authentication import JWTAuth
 from tasks.models import Task
+from tasks.repositories.assign_repo import AssignRepo
 from tasks.schemas import TaskSchema, SortedTaskSchema, TaskStatusSchema, TaskFilterSchema
 from tasks.services.filter_service_impl import FilterServiceImpl
 from tasks.services.list_service_impl import ListServiceImpl
@@ -48,3 +49,4 @@ def filter_tasks(request, filters: Query[TaskFilterSchema]):
         return tasks[filters.offset : filters.offset + filters.limit]
     except:
         raise HttpError(400, "Data tidak ditemukan")
+
