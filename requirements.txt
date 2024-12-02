@@ -8,3 +8,4 @@ django-ninja-jwt
 python-dotenv
 Django
 django-cors-headers
+django-stubs

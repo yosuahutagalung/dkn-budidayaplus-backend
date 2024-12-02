@@ -3,8 +3,8 @@ from pydantic import UUID4, validator
 from datetime import date
 from typing import Optional
 from typing import List
+from tasks.enums import TaskStatus, TaskPeriod
 
-from tasks.enums import TaskStatus
 
 class TaskSchema(Schema):
     id: UUID4
@@ -31,3 +31,9 @@ class SortedTaskSchema(Schema):
 
 class TaskStatusSchema(Schema):
     status: TaskStatus
+
+class TaskFilterSchema(Schema):
+    limit: int = 10
+    offset: int = 0
+    period: Optional[TaskPeriod] = None
+    assignee: Optional[str] = None
