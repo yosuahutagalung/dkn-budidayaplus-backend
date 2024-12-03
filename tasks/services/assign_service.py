@@ -6,7 +6,7 @@ from tasks.models import Task
 class AssignService(ABC):
     @staticmethod
     @abstractmethod
-    def assign_task(task_id: str, assignee: User) -> Task:
+    def assign_task(task_id: str, requester: User, assignee: User) -> Task:
         """
         Assigns a task to a user
         """

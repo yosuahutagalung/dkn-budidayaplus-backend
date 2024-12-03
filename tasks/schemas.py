@@ -1,10 +1,8 @@
 from ninja import Schema
-from pydantic import UUID4, validator
+from pydantic import UUID4
 from datetime import date
 from typing import Optional
 from typing import List
-
-from pydantic.functional_validators import field_validator
 from tasks.enums import TaskStatus, TaskPeriod
 
 
@@ -32,3 +30,6 @@ class TaskFilterSchema(Schema):
     offset: int = 0
     period: Optional[TaskPeriod] = None
     assignee: Optional[str] = None
+
+class AssignTaskSchema(Schema):
+    assignee: str
