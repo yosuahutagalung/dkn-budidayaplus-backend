@@ -1,5 +1,7 @@
 from typing import List
+from django.core.exceptions import PermissionDenied, ValidationError
 from ninja import Router
+from user_profile.services.create_worker_service import CreateWorkerService
 from user_profile.services.create_worker_service_impl import CreateWorkerServiceImpl
 from user_profile.services.get_team_service_impl import GetTeamServiceImpl
 from user_profile.services.retrieve_service_impl import RetrieveServiceImpl
@@ -37,4 +39,10 @@ def get_workers(request):
 
 @router.post("/create-worker", response=ProfileSchema)
 def create_worker(request, payload_worker: CreateWorkerSchema):
-    return handle_exceptions(CreateWorkerServiceImpl.create_worker, payload_worker, request.auth)
+    try: 
+        return CreateWorkerServiceImpl.create_worker(payload_worker, request.auth)
+    except ValidationError as e:
+        raise HttpError(400, str(e))
+    except PermissionDenied as e:
+        raise HttpError(403, str(e))
+

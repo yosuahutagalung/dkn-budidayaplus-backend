@@ -10,9 +10,10 @@ class UserProfile(models.Model):
 
     @property
     def role(self):
-        if isinstance(self, Worker):
+        if hasattr(self, 'worker'):
             return Role.WORKER.value
-        return Role.SUPERVISOR.value
+        else:
+            return Role.SUPERVISOR.value
 
 class Worker(UserProfile):
     assigned_supervisor = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='workers')
