@@ -39,6 +39,7 @@ def register(request, data: RegisterSchema):
             password=data.password,
             first_name=data.first_name,
             last_name=data.last_name,
+            is_staff=True
         )
         refresh = RefreshToken.for_user(user)
         return {
