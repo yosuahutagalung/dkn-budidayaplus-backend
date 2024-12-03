@@ -9,7 +9,7 @@ class CreateWorkerServiceImpl(CreateWorkerService):
     @staticmethod
     def create_worker(payload_worker, supervisor):
         if not supervisor.is_staff:
-            raise PermissionDenied("Anda bukan supervisor")
+            raise PermissionDenied()
 
         if User.objects.filter(username=payload_worker.phone_number).exists():
             raise ValidationError("Nomor telefon sudah digunakan")

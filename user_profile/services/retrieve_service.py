@@ -13,3 +13,7 @@ class RetrieveService(ABC):
     def retrieve_profile_by_user(user: User) -> UserProfile:
         """Retrieve a profile by user's token""" 
 
+    @staticmethod
+    @abstractmethod
+    def retrieve_user(username: str) -> User:
+        """Retrieve a User object by username"""
