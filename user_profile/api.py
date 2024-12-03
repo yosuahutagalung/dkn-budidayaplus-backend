@@ -1,11 +1,13 @@
+from typing import List
 from ninja import Router
+from user_profile.services.create_worker_service_impl import CreateWorkerServiceImpl
+from user_profile.services.get_team_service_impl import GetTeamServiceImpl
 from user_profile.services.retrieve_service_impl import RetrieveServiceImpl
 from user_profile.services.update_service_impl import UpdateServiceImpl
 from ninja_jwt.authentication import JWTAuth
 from user_profile.models import UserProfile
 from ninja.errors import HttpError
-from user_profile.schemas import ProfileSchema, UpdateProfileSchema, WorkerSchema
-from typing import List
+from user_profile.schemas import CreateWorkerSchema, ProfileSchema, UpdateProfileSchema
 
 router = Router(auth=JWTAuth())
 
@@ -29,10 +31,10 @@ def get_profile(request, username: str):
     return handle_exceptions(RetrieveServiceImpl.retrieve_profile, username)
 
 
-@router.get("/", response=ProfileSchema)
-def get_profile_by_user(request):
-    return handle_exceptions(RetrieveServiceImpl.retrieve_profile_by_user, request.auth)
+@router.get("/", response=List[ProfileSchema])
+def get_workers(request):
+    return handle_exceptions(GetTeamServiceImpl.get_team, request.auth)
 
-@router.get("/workers/list/", response={200: List[WorkerSchema]})
-def get_workers_by_user(request):
-    return handle_exceptions(RetrieveServiceImpl.get_workers, request.auth)
+@router.post("/create-worker", response=ProfileSchema)
+def create_worker(request, payload_worker: CreateWorkerSchema):
+    return handle_exceptions(CreateWorkerServiceImpl.create_worker, payload_worker, request.auth)
