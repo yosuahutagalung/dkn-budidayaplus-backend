@@ -3,6 +3,8 @@ from pydantic import UUID4
 from datetime import date
 from typing import Optional
 from typing import List
+from tasks.enums import TaskStatus, TaskPeriod
+
 
 class TaskSchema(Schema):
     id: UUID4
@@ -16,7 +18,18 @@ class TaskSchema(Schema):
     def resolve_task_type(obj):
         return ' '.join(obj.task_type.split('_')).title()
 
-
 class SortedTaskSchema(Schema):
     past: List[TaskSchema]
     upcoming: List[TaskSchema]
+
+class TaskStatusSchema(Schema):
+    status: TaskStatus
+
+class TaskFilterSchema(Schema):
+    limit: int = 10
+    offset: int = 0
+    period: Optional[TaskPeriod] = None
+    assignee: Optional[str] = None
+
+class AssignTaskSchema(Schema):
+    assignee: str

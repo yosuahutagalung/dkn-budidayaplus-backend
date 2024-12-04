@@ -15,8 +15,6 @@ class TestTaskSchemas(TestCase):
         task.date = timezone.now().date()
         task.cycle_id = uuid.uuid4()
         task.assignee = ''
-        
         task_serialized = TaskSchema.from_orm(task)
-        
         self.assertEqual(task_serialized.task_type, 'Pond Quality')
-        
+

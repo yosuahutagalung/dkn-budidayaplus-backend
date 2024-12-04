@@ -1,6 +1,5 @@
 from typing import List
-from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from ninja import Router
 from user_profile.services.create_worker_service_impl import CreateWorkerServiceImpl
 from user_profile.services.get_team_service_impl import GetTeamServiceImpl
@@ -40,9 +39,16 @@ def get_workers(request):
 
 @router.post("/create-worker", response=ProfileSchema)
 def create_worker(request, payload_worker: CreateWorkerSchema):
-    handle_exceptions(CreateWorkerServiceImpl.create_worker, payload_worker, request.auth)
+    try:
+        return CreateWorkerServiceImpl.create_worker(payload_worker, request.auth)
+    except ValidationError as e:
+        raise HttpError(400, str(e))
+    except PermissionDenied as e:
+        raise HttpError(403, "Anda tidak memiliki akses untuk melakukan ini")
+    except Exception as e:
+        raise HttpError(400, str(e))
 
-@router.get("/workers-only")
+@router.get("/workers-only", response=List[ProfileSchema])
 def get_workers_only(request):
     return handle_exceptions(GetTeamServiceImpl.get_workers_only_list, request.auth)
 
