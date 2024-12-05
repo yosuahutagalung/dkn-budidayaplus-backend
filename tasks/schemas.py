@@ -5,6 +5,10 @@ from typing import Optional
 from typing import List
 from tasks.enums import TaskStatus, TaskPeriod
 
+class TaskPondSchema(Schema):
+    pond_id: UUID4
+    name: str
+
 
 class TaskSchema(Schema):
     id: UUID4
@@ -13,6 +17,7 @@ class TaskSchema(Schema):
     status: str
     cycle_id: UUID4
     assignee: Optional[str] = ''
+    pond: TaskPondSchema
 
     @staticmethod
     def resolve_task_type(obj):

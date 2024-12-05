@@ -11,3 +11,10 @@ class AssignService(ABC):
         Assigns a task to a user
         """
 
+    @staticmethod
+    @abstractmethod
+    def unassign_task(task_id: str) -> Task:
+        """
+        Unassigns a task from any user
+        """
+
