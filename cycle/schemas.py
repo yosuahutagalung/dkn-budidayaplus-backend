@@ -24,6 +24,7 @@ class CycleSchema(Schema):
     end_date: date
     supervisor: str = Field(..., alias='supervisor.username')
     pond_fish_amount: List[PondFishAmountSchema]
+    is_stopped: bool
 
 
 class CycleListSchema(Schema):

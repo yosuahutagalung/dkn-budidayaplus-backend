@@ -1,14 +1,12 @@
 from datetime import date
 from typing import Literal
 from django.contrib.auth.models import User
-from django.db.models import Value
 from cycle.utils import is_valid_fish_amount, is_valid_period
 from cycle.repositories.cycle_repo import CycleRepo
 from cycle.repositories.pond_fish_amount_repo import PondFishAmountRepo
 from cycle.schemas import CycleInput
 from cycle.models import Cycle
 from cycle.signals import create_cycle_signal
-from user_profile.models import UserProfile
 from user_profile.utils import get_supervisor
 
 

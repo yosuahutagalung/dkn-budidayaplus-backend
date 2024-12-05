@@ -3,6 +3,8 @@ from pydantic import UUID4
 from typing import Optional, List
 from datetime import datetime
 
+from user_profile.schemas import UserSchema
+
 class PondQualityInput(Schema):
     image_name: Optional[str] = ''
     ph_level: float
@@ -21,7 +23,7 @@ class PondQualityOutput(Schema):
     id: UUID4
     cycle: UUID4 = Field(None, alias="cycle.id")
     pond: UUID4 = Field(None, alias="pond.pond_id")
-    reporter: str = Field(None, alias="reporter.username")
+    reporter: UserSchema
     recorded_at: datetime
     image_name: Optional[str] = ''
     ph_level: float

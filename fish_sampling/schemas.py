@@ -1,7 +1,9 @@
 from typing import List
-from ninja import Field, Schema
+from ninja import Schema
 from datetime import datetime
 from pydantic import UUID4
+
+from user_profile.schemas import UserSchema
 
 class FishSamplingCreateSchema(Schema):
     fish_weight: float
@@ -10,7 +12,7 @@ class FishSamplingCreateSchema(Schema):
 class FishSamplingOutputSchema(Schema):
     sampling_id: UUID4
     pond_id: UUID4
-    reporter: str = Field(None, alias="reporter.username")
+    reporter: UserSchema 
     fish_weight: float
     fish_length: float
     recorded_at: datetime
