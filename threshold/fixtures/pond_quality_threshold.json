@@ -22,7 +22,8 @@
         "min_nitrate": 0.0,
         "max_nitrate": 10.0,
         "min_phosphate": 0.0,
-        "max_phosphate": 5.0
+        "max_phosphate": 5.0,
+        "tolerance_rate": 0.2
       }
     }
   ]

@@ -19,22 +19,40 @@ def validate_pond_quality_against_threshold(pond_quality):
         raise HttpError(500, "Threshold tidak ditemukan.")
 
     violations = []
+    states = {}
+    status = "healthy"
 
     checks = [
-        ("pH Level", pond_quality.ph_level, threshold.min_ph, threshold.max_ph),
-        ("Salinitas", pond_quality.salinity, threshold.min_salinity, threshold.max_salinity),
-        ("Suhu", pond_quality.water_temperature, threshold.min_temperature, threshold.max_temperature),
-        ("Kecerahan", pond_quality.water_clarity, threshold.min_clarity, threshold.max_clarity),
-        ("Sirkulasi", pond_quality.water_circulation, threshold.min_circulation, threshold.max_circulation),
-        ("Kadar Oksigen", pond_quality.dissolved_oxygen, threshold.min_dissolved_oxygen, threshold.max_dissolved_oxygen),
-        ("ORP", pond_quality.orp, threshold.min_orp, threshold.max_orp),
-        ("Kadar Amonia", pond_quality.ammonia, threshold.min_ammonia, threshold.max_ammonia),
-        ("Kadar Nitrat", pond_quality.nitrate, threshold.min_nitrate, threshold.max_nitrate),
-        ("Kadar Fosfat", pond_quality.phosphate, threshold.min_phosphate, threshold.max_phosphate),
+        ("pH Level", "ph_level", pond_quality.ph_level, threshold.min_ph, threshold.max_ph),
+        ("Salinity", "salinity", pond_quality.salinity, threshold.min_salinity, threshold.max_salinity),
+        ("Temperature", "water_temperature", pond_quality.water_temperature, threshold.min_temperature, threshold.max_temperature),
+        ("Clarity", "water_clarity", pond_quality.water_clarity, threshold.min_clarity, threshold.max_clarity),
+        ("Circulation", "water_circulation", pond_quality.water_circulation, threshold.min_circulation, threshold.max_circulation),
+        ("Dissolved Oxygen", "dissolved_oxygen", pond_quality.dissolved_oxygen, threshold.min_dissolved_oxygen, threshold.max_dissolved_oxygen),
+        ("ORP", "orp", pond_quality.orp, threshold.min_orp, threshold.max_orp),
+        ("Ammonia", "ammonia", pond_quality.ammonia, threshold.min_ammonia, threshold.max_ammonia),
+        ("Nitrate", "nitrate", pond_quality.nitrate, threshold.min_nitrate, threshold.max_nitrate),
+        ("Phosphate", "phosphate", pond_quality.phosphate, threshold.min_phosphate, threshold.max_phosphate),
     ]
 
-    for field, value, min_val, max_val in checks:
-        if not (min_val <= value <= max_val):
-            violations.append(f"{field}: {value} - Tidak sesuai batas standar ({min_val} - {max_val}).")
+    for field_name, key, value, min_val, max_val in checks:
+        tolerance = threshold.tolerance_rate * (max_val - min_val)
+        healthy_min = min_val - tolerance
+        healthy_max = max_val + tolerance
 
-    return violations
+        if value < healthy_min or value > healthy_max:
+            states[key] = "unhealthy"
+            violations.append(f"{field_name} {value} is outside the acceptable range ({min_val} - {max_val}) with threshold of {int(threshold.tolerance_rate*100)}%.")
+        elif min_val <= value <= max_val:
+            states[key] = "healthy"
+        else:
+            states[key] = "borderline"
+    
+    print(threshold.tolerance_rate * len(checks))
+    if violations:
+        status = "borderline"
+        
+    if len(violations) > threshold.tolerance_rate * len(checks):
+        status = "unhealthy"
+
+    return status, violations, states

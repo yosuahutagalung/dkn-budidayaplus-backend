@@ -21,6 +21,7 @@ class PondQualityThreshold(models.Model):
     max_nitrate = models.FloatField()
     min_phosphate = models.FloatField()
     max_phosphate = models.FloatField()
+    tolerance_rate = models.FloatField()
 
     def __str__(self):
         return "Pond Quality Threshold"
