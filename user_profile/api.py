@@ -33,9 +33,13 @@ def get_profile(request, username: str):
     return handle_exceptions(RetrieveServiceImpl.retrieve_profile, username)
 
 
-@router.get("/", response=List[ProfileSchema])
-def get_workers(request):
+@router.get("/team", response=List[ProfileSchema])
+def get_team(request):
     return handle_exceptions(GetTeamServiceImpl.get_team, request.auth)
+
+@router.get('/', response=ProfileSchema)
+def get_profile_by_user(request):
+    return handle_exceptions(RetrieveServiceImpl.retrieve_profile_by_user, request.auth)
 
 @router.post("/create-worker", response=ProfileSchema)
 def create_worker(request, payload_worker: CreateWorkerSchema):

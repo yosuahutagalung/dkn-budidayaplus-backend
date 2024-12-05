@@ -1,12 +1,14 @@
 from datetime import date
 from typing import Literal
 from django.contrib.auth.models import User
+from django.db.models import Value
 from cycle.utils import is_valid_fish_amount, is_valid_period
 from cycle.repositories.cycle_repo import CycleRepo
 from cycle.repositories.pond_fish_amount_repo import PondFishAmountRepo
 from cycle.schemas import CycleInput
 from cycle.models import Cycle
 from cycle.signals import create_cycle_signal
+from user_profile.models import UserProfile
 
 
 class CycleService:
@@ -30,7 +32,13 @@ class CycleService:
         return cycle 
 
     @staticmethod
-    def get_active_cycle(supervisor: User):
+    def get_active_cycle(user: User):
+        if not user.is_staff:
+            profile = UserProfile.objects.select_related('worker__assigned_supervisor__user').get(user=user)
+            supervisor = profile.worker.assigned_supervisor.user
+        else:
+            supervisor = user
+
         cycle = CycleRepo.get_active_cycle(supervisor)
         if cycle is None:
             raise ValueError("Siklus tidak ditemukan")
