@@ -9,6 +9,7 @@ from cycle.schemas import CycleInput
 from cycle.models import Cycle
 from cycle.signals import create_cycle_signal
 from user_profile.models import UserProfile
+from user_profile.utils import get_supervisor
 
 
 class CycleService:
@@ -33,12 +34,7 @@ class CycleService:
 
     @staticmethod
     def get_active_cycle(user: User):
-        if not user.is_staff:
-            profile = UserProfile.objects.select_related('worker__assigned_supervisor__user').get(user=user)
-            supervisor = profile.worker.assigned_supervisor.user
-        else:
-            supervisor = user
-
+        supervisor = get_supervisor(user)
         cycle = CycleRepo.get_active_cycle(supervisor)
         if cycle is None:
             raise ValueError("Siklus tidak ditemukan")
@@ -52,16 +48,19 @@ class CycleService:
         return cycle
 
     @staticmethod
-    def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
+    def get_cycle_past_or_future(user: User, date: date, direction: Literal['past', 'future']):
+        supervisor = get_supervisor(user)
         return CycleRepo.get_cycle_past_or_future(supervisor, date, direction)
 
     @staticmethod
-    def get_active_cycle_safe(supervisor: User):
+    def get_active_cycle_safe(user: User):
+        supervisor = get_supervisor(user)
         cycle = CycleRepo.get_active_cycle_safe(supervisor)
         return cycle
 
     @staticmethod
-    def get_stopped_cycle(supervisor: User):
+    def get_stopped_cycle(user: User):
+        supervisor = get_supervisor(user)
         return Cycle.objects.filter(supervisor=supervisor, is_stopped=True)
 
     @staticmethod
