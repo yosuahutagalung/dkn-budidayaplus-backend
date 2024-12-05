@@ -7,6 +7,7 @@ from cycle.api import router as cycle_router
 from food_sampling.api import router as food_sampling_router
 from user_profile.api import router as user_profile_router
 from tasks.api import router as tasks_router
+from threshold.api import router as threshold_router
 
 api = NinjaAPI()
 api.add_router("/cycle/", cycle_router)
@@ -17,3 +18,4 @@ api.add_router("/pond-quality/", pond_quality_router)
 api.add_router("/profile", user_profile_router)
 api.add_router("/food-sampling/", food_sampling_router)
 api.add_router("/tasks/", tasks_router)
+api.add_router("/threshold/", threshold_router)

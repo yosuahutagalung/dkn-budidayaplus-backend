@@ -1,0 +1,30 @@
+[
+    {
+      "model": "threshold.pondqualitythreshold",
+      "pk": 1,
+      "fields": {
+        "min_ph": 6.5,
+        "max_ph": 8.5,
+        "min_salinity": 0.0,
+        "max_salinity": 1.0,
+        "min_temperature": 25.0,
+        "max_temperature": 30.0,
+        "min_clarity": 20.0,
+        "max_clarity": 100.0,
+        "min_circulation": 1.0,
+        "max_circulation": 5.0,
+        "min_dissolved_oxygen": 5.0,
+        "max_dissolved_oxygen": 8.0,
+        "min_orp": 200.0,
+        "max_orp": 400.0,
+        "min_ammonia": 0.0,
+        "max_ammonia": 1.0,
+        "min_nitrate": 0.0,
+        "max_nitrate": 10.0,
+        "min_phosphate": 0.0,
+        "max_phosphate": 5.0,
+        "tolerance_rate": 0.2
+      }
+    }
+  ]
+  
