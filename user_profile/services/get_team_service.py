@@ -18,3 +18,8 @@ class GetTeamService(ABC):
     @abstractmethod
     def is_in_team(user: User, supervisor: User) -> bool:
         """Check if the selected user is in the team of the selected supervisor"""
+
+    @staticmethod
+    @abstractmethod
+    def get_team_by_username(username: str) -> List[UserProfile]:
+        """Retrieve list of team members by username"""
