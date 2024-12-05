@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 
 from ninja.errors import HttpError
 from cycle.models import Cycle
-from tasks.api import filter_tasks
+from tasks.api import filter_tasks, filter_tasks_by_date
 from tasks.enums import TaskPeriod
 from tasks.models import Task
 from django.utils import timezone
@@ -93,4 +93,19 @@ class TestTaskFilterAPI(TestCase):
             with self.assertRaises(HttpError) as context:
                 filter_tasks(mock_request, filters)
                 self.assertEqual(context.exception.message, "Data tidak ditemukan")
+    
+    def test_filter_tasks_by_date_success(self):
+        with patch('tasks.services.filter_service_impl.FilterServiceImpl.filter_tasks_by_date') as mock_filter, \
+             patch('cycle.services.cycle_service.CycleService.get_active_cycle') as mock_cycle:
 
+            mock_cycle.return_value = self.cycle
+            filter_date = timezone.now().date() 
+
+            mock_filter.return_value = [task for task in self.task_repository if task.date == filter_date]
+
+            mock_request = MagicMock(spec=HttpRequest)
+            mock_request.auth = MagicMock()
+
+            response = filter_tasks_by_date(mock_request, date=filter_date)
+            
+            self.assertEqual(response, mock_filter.return_value)

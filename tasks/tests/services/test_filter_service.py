@@ -37,4 +37,11 @@ class TestFilterService(TestCase):
         mock_filter.return_value = [task for task in self.task_repository if task.assignee == "Rafi"]
         tasks = FilterServiceImpl.filter_tasks(cycle_id='1', assignee_username="Rafi")
         self.assertEqual(tasks, mock_filter.return_value)
+    
+    @patch('tasks.repositories.filter_repo.FilterRepo.filter_tasks_by_date')
+    def test_filter_tasks_by_date(self, mock_filter_by_date):
+        filter_date = timezone.now().date() 
+        mock_filter_by_date.return_value = [task for task in self.task_repository if task.date == filter_date]
+        tasks = FilterServiceImpl.filter_tasks_by_date(cycle_id='1', date=filter_date)
+        self.assertEqual(tasks, mock_filter_by_date.return_value)
 
