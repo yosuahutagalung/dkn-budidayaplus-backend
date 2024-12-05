@@ -10,4 +10,3 @@ def get_supervisor(user: User):
 
     profile = UserProfile.objects.select_related('worker__assigned_supervisor__user').get(user=user)
     return profile.worker.assigned_supervisor.user
-

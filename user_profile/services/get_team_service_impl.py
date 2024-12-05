@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from user_profile.models import UserProfile
 from user_profile.services.get_team_service import GetTeamService
 
@@ -13,6 +14,13 @@ class GetTeamServiceImpl(GetTeamService):
             return [supervisor] + list(supervisor.workers.all())
 
         return [user_profile] + list(user_profile.workers.all())
+
+
+    @staticmethod
+    def get_team_by_username(username):
+        user = User.objects.get(username=username)
+        return GetTeamServiceImpl.get_team(user)
+
 
     @staticmethod
     def get_workers_only_list(user):
