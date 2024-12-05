@@ -6,6 +6,7 @@ from cycle.repositories.cycle_repo import CycleRepo
 from cycle.repositories.pond_fish_amount_repo import PondFishAmountRepo
 from cycle.schemas import CycleInput
 from cycle.models import Cycle
+from cycle.signals import create_cycle_signal
 
 
 class CycleService:
@@ -23,6 +24,8 @@ class CycleService:
 
         cycle = CycleRepo.create(payload.start_date, payload.end_date, supervisor)
         PondFishAmountRepo.bulk_create(payload.pond_fish_amount, cycle)
+
+        create_cycle_signal.send(sender=CycleService, instance=cycle, created=True)
 
         return cycle 
 

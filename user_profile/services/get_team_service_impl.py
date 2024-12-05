@@ -1,4 +1,3 @@
-from django.core.exceptions import PermissionDenied
 from user_profile.models import UserProfile
 from user_profile.services.get_team_service import GetTeamService
 
@@ -17,9 +16,12 @@ class GetTeamServiceImpl(GetTeamService):
 
     @staticmethod
     def get_workers_only_list(user):
-        user_profile = UserProfile.objects.prefetch_related('workers').get(user=user)
-        if user_profile.role == 'worker':
-            raise PermissionDenied()
+        user_profile = UserProfile.objects.select_related('worker__assigned_supervisor').prefetch_related('workers').get(user=user)
+
+        if hasattr(user_profile, 'worker'):
+            assigned_supervisor = user_profile.worker.assigned_supervisor
+            return list(assigned_supervisor.workers.all())
+
         return list(user_profile.workers.all())
 
     @staticmethod

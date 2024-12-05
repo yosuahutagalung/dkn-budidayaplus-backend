@@ -4,6 +4,7 @@ from ninja import Query, Router
 from ninja_jwt.authentication import JWTAuth
 from tasks.models import Task
 from tasks.schemas import AssignTaskSchema, TaskSchema, SortedTaskSchema, TaskStatusSchema, TaskFilterSchema
+from tasks.services.retrieve_service_impl import RetrieveServiceImpl as TaskRetrieveServiceImpl
 from tasks.services.assign_service_impl import AssignServiceImpl
 from tasks.services.filter_service_impl import FilterServiceImpl
 from tasks.services.list_service_impl import ListServiceImpl
@@ -66,3 +67,20 @@ def assign_task(request, task_id: str, payload: AssignTaskSchema):
         raise HttpError(404, f"Pengguna tidak ditemukan")
     except PermissionDenied as e:
         raise HttpError(403, str(e))
+
+
+@router.get("/{task_id}", response={200: TaskSchema})
+def get_task_by_id(request, task_id: str):
+    try:
+        task = TaskRetrieveServiceImpl.retrieve_task(task_id)
+        return task
+    except Task.DoesNotExist:
+        raise HttpError(404, "Tugas tidak ditemukan")
+
+@router.put("/{task_id}/unassign", response={200: TaskSchema})
+def unassign_task(request, task_id: str):
+    try:
+        task = AssignServiceImpl.unassign_task(task_id=task_id)
+        return task
+    except Task.DoesNotExist:
+        raise HttpError(404, "Tugas tidak ditemukan")
