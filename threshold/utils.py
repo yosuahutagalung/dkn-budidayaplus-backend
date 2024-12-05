@@ -4,6 +4,9 @@ from threshold.models import PondQualityThreshold
 from pond_quality.models import PondQuality
 
 DATA_NOT_FOUND = "Data tidak ditemukan"
+GREEN = "healthy"
+YELLOW = "moderate"
+RED = "unhealthy"
 
 def get_latest_pond_quality(user, pond, cycle):
     try:
@@ -20,7 +23,7 @@ def validate_pond_quality_against_threshold(pond_quality):
 
     violations = []
     states = {}
-    status = "healthy"
+    status = GREEN
 
     checks = [
         ("pH Level", "ph_level", pond_quality.ph_level, threshold.min_ph, threshold.max_ph),
@@ -41,18 +44,17 @@ def validate_pond_quality_against_threshold(pond_quality):
         healthy_max = max_val + tolerance
 
         if value < healthy_min or value > healthy_max:
-            states[key] = "unhealthy"
-            violations.append(f"{field_name} {value} is outside the acceptable range ({min_val} - {max_val}) with threshold of {int(threshold.tolerance_rate*100)}%.")
+            states[key] = RED
+            violations.append(f"{field_name} {value} diluar dari batas standar ({min_val} - {max_val}) dengan toleransi {int(threshold.tolerance_rate*100)}%.")
         elif min_val <= value <= max_val:
-            states[key] = "healthy"
+            states[key] = GREEN
         else:
-            states[key] = "borderline"
+            states[key] = YELLOW
     
-    print(threshold.tolerance_rate * len(checks))
     if violations:
-        status = "borderline"
+        status = YELLOW
         
     if len(violations) > threshold.tolerance_rate * len(checks):
-        status = "unhealthy"
+        status = RED
 
     return status, violations, states
