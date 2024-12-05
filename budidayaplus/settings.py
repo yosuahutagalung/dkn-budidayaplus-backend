@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'ninja_extra',
     'corsheaders',
     'tasks',
+    'threshold',
 ]
 
 NINJA_JWT = {
