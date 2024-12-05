@@ -46,7 +46,6 @@ def set_status(request, task_id: str, payload: TaskStatusSchema):
     except Task.DoesNotExist:
         raise HttpError(404, f"Task with ID {task_id} does not exist")
 
-
 @router.get("/filter", response={200: List[TaskSchema]})
 def filter_tasks(request, filters: Query[TaskFilterSchema]):
     try:
@@ -69,6 +68,14 @@ def assign_task(request, task_id: str, payload: AssignTaskSchema):
     except PermissionDenied as e:
         raise HttpError(403, str(e))
 
+@router.get("/filter-by-date", response={200: List[TaskSchema]})
+def filter_tasks_by_date(request, date: date = Query(None)):
+    try:
+        cycle = CycleService.get_active_cycle(request.auth)
+        tasks = FilterServiceImpl.filter_tasks_by_date(cycle.id, date)
+        return tasks
+    except:
+        raise HttpError(400, "Data tidak ditemukan")
 
 @router.get("/{task_id}", response={200: TaskSchema})
 def get_task_by_id(request, task_id: str):
@@ -85,11 +92,3 @@ def unassign_task(request, task_id: str):
         return task
     except Task.DoesNotExist:
         raise HttpError(404, "Tugas tidak ditemukan")
-@router.get("/filter-by-date", response={200: List[TaskSchema]})
-def filter_tasks_by_date(request, date: date = Query(None)):
-    try:
-        cycle = CycleService.get_active_cycle(request.auth)
-        tasks = FilterServiceImpl.filter_tasks_by_date(cycle.id, date)
-        return tasks
-    except:
-        raise HttpError(400, "Data tidak ditemukan")
