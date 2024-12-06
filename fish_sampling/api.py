@@ -2,6 +2,9 @@ from typing import List
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from cycle.services.cycle_service import CycleService
+
+from user_profile.utils import get_supervisor
 from .models import FishSampling
 from pond.models import Pond
 from cycle.models import Cycle
@@ -34,6 +37,7 @@ def create_fish_sampling(request, pond_id: str, cycle_id: str, payload: FishSamp
     pond = get_object_or_404(Pond, pond_id=pond_id)
     reporter = get_object_or_404(User, id=request.auth.id)
     cycle = get_object_or_404(Cycle, id=cycle_id)
+    supervisor = get_supervisor(user=request.auth)
 
     check_cycle_active(cycle)
 
@@ -41,6 +45,8 @@ def create_fish_sampling(request, pond_id: str, cycle_id: str, payload: FishSamp
 
     if payload.fish_weight <= 0 or payload.fish_length <= 0:
         raise HttpError(400, "Berat dan panjang ikan harus lebih dari 0")
+    elif pond.owner != supervisor:
+        raise HttpError(404, "Data tidak ditemukan")
     else:
         fish_sampling = FishSampling.objects.create(
             pond=pond,
@@ -51,13 +57,14 @@ def create_fish_sampling(request, pond_id: str, cycle_id: str, payload: FishSamp
         )
         return fish_sampling
 
+
 @router.get("/{pond_id}/{cycle_id}/latest/", auth=JWTAuth(), response={200: FishSamplingOutputSchema})
 def get_latest_fish_sampling(request, pond_id: str, cycle_id: str):
     cycle = Cycle.objects.get(id=cycle_id)
     pond = get_object_or_404(Pond, pond_id=pond_id)
-    
+
     check_cycle_active(cycle)
-    
+
     try:
         fish_sampling = FishSampling.objects.filter(pond=pond, cycle=cycle).latest('recorded_at')
     except ObjectDoesNotExist:
@@ -65,12 +72,13 @@ def get_latest_fish_sampling(request, pond_id: str, cycle_id: str):
     return fish_sampling
 
 
-@router.get("/{pond_id}/{cycle_id}/", auth=JWTAuth(), response={200: FishSamplingList})
-def list_fish_samplings(request, pond_id: str, cycle_id: str):
-    cycle = get_object_or_404(Cycle, id=cycle_id, supervisor=request.auth)
+@router.get("/{pond_id}/", auth=JWTAuth(), response={200: FishSamplingList})
+def list_fish_samplings(request, pond_id: str):
+    cycle = CycleService.get_active_cycle(request.auth)
     pond = get_object_or_404(Pond, pond_id=pond_id)
 
     check_cycle_active(cycle)
-    
+
     fish_samplings = FishSampling.objects.filter(cycle=cycle, pond=pond).order_by('-recorded_at')
-    return {"fish_samplings": fish_samplings, "cycle_id": cycle_id}
+    return {"fish_samplings": fish_samplings, "cycle_id": cycle.id}
+

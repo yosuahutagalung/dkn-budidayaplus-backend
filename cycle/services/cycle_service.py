@@ -6,6 +6,8 @@ from cycle.repositories.cycle_repo import CycleRepo
 from cycle.repositories.pond_fish_amount_repo import PondFishAmountRepo
 from cycle.schemas import CycleInput
 from cycle.models import Cycle
+from cycle.signals import create_cycle_signal
+from user_profile.utils import get_supervisor
 
 
 class CycleService:
@@ -24,10 +26,13 @@ class CycleService:
         cycle = CycleRepo.create(payload.start_date, payload.end_date, supervisor)
         PondFishAmountRepo.bulk_create(payload.pond_fish_amount, cycle)
 
+        create_cycle_signal.send(sender=CycleService, instance=cycle, created=True)
+
         return cycle 
 
     @staticmethod
-    def get_active_cycle(supervisor: User):
+    def get_active_cycle(user: User):
+        supervisor = get_supervisor(user)
         cycle = CycleRepo.get_active_cycle(supervisor)
         if cycle is None:
             raise ValueError("Siklus tidak ditemukan")
@@ -41,16 +46,19 @@ class CycleService:
         return cycle
 
     @staticmethod
-    def get_cycle_past_or_future(supervisor: User, date: date, direction: Literal['past', 'future']):
+    def get_cycle_past_or_future(user: User, date: date, direction: Literal['past', 'future']):
+        supervisor = get_supervisor(user)
         return CycleRepo.get_cycle_past_or_future(supervisor, date, direction)
 
     @staticmethod
-    def get_active_cycle_safe(supervisor: User):
+    def get_active_cycle_safe(user: User):
+        supervisor = get_supervisor(user)
         cycle = CycleRepo.get_active_cycle_safe(supervisor)
         return cycle
 
     @staticmethod
-    def get_stopped_cycle(supervisor: User):
+    def get_stopped_cycle(user: User):
+        supervisor = get_supervisor(user)
         return Cycle.objects.filter(supervisor=supervisor, is_stopped=True)
 
     @staticmethod
