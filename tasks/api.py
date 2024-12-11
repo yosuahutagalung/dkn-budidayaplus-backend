@@ -12,6 +12,7 @@ from tasks.services.set_status_service_impl import SetStatusServiceImpl
 from cycle.services.cycle_service import CycleService
 from ninja.errors import HttpError
 from typing import List
+import sentry_sdk
 
 from user_profile.services.retrieve_service_impl import RetrieveServiceImpl
 from datetime import date

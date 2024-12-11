@@ -15,10 +15,23 @@ from pathlib import Path
 from django.conf import settings
 import os
 # from dotenv import load_dotenv 
+import sentry_sdk
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+sentry_sdk.init(
+    dsn="https://d047d3627c681d77230ab52a43bac9af@o4508447325814784.ingest.us.sentry.io/4508447332499456",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    _experiments={
+        # Set continuous_profiling_auto_start to True
+        # to automatically start the profiler on when
+        # possible.
+        "continuous_profiling_auto_start": True,
+    },
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
