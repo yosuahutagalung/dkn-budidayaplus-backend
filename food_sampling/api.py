@@ -32,14 +32,11 @@ def get_food_sampling(request, cycle_id: str, pond_id: str, sampling_id: str):
         raise HttpError(500, "An unexpected error occurred")
 
 
-@router.get("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: FoodSamplingList})
-def list_food_samplings(request, pond_id: str, cycle_id: str):
+@router.get("/{pond_id}/", auth=JWTAuth(), response={200: FoodSamplingList})
+def list_food_samplings(request, pond_id: str):
     try:
-        food_samplings = food_sampling_service.list_food_samplings(cycle_id, pond_id, request.auth)
-        return {
-            "food_samplings": food_samplings,
-            "cycle_id": cycle_id
-        }
+        food_samplings = food_sampling_service.list_food_samplings(pond_id, request.auth)
+        return food_samplings
     except HttpError as e:
         raise e
     except Exception:
@@ -53,7 +50,7 @@ def get_latest_food_sampling(request, pond_id: str, cycle_id: str):
         raise e
     except Exception:
         raise HttpError(500, "An unexpected error occurred")
-        
+
 @router.post("/{cycle_id}/{pond_id}/", auth=JWTAuth(), response={200: FoodSamplingOutputSchema})
 def create_food_sampling(request, pond_id:str, cycle_id:str, payload:FoodSamplingCreateSchema):
     try:

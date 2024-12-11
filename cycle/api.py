@@ -1,5 +1,7 @@
+from typing import List
 from django.utils import timezone
 from ninja import Router
+from cycle.models import Cycle
 from cycle.schemas import CycleInput, CycleListSchema, CycleSchema
 from ninja_jwt.authentication import JWTAuth
 from cycle.services.cycle_service import CycleService

@@ -37,6 +37,10 @@ def get_profile(request, username: str):
 def get_team(request):
     return handle_exceptions(GetTeamServiceImpl.get_team, request.auth)
 
+@router.get("/team/{username}", response=List[ProfileSchema])
+def get_team_by_username(request, username: str):
+    return handle_exceptions(GetTeamServiceImpl.get_team_by_username, username)
+
 @router.get('/', response=ProfileSchema)
 def get_profile_by_user(request):
     return handle_exceptions(RetrieveServiceImpl.retrieve_profile_by_user, request.auth)
